@@ -21,7 +21,7 @@ import DesignArchitecute from './pages/DesignArchitecture';
 import Careers from './pages/Careers'
 
 function App() {
-  const isAuthenticated = true; // Replace with your actual auth logic
+  const isAuthenticated = false; // Replace with your actual auth logic
 
   return (
     <Router>
