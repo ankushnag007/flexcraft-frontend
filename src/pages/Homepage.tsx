@@ -6,7 +6,10 @@ import {
   Server, Code, Database, Shield, BarChart, Users, Bell, GitBranch, Layout, 
   GitPullRequest, Terminal, Package, Monitor, Smartphone, Tablet, LifeBuoy 
 } from 'lucide-react';
-import Demo from '../Assets/videos/motiongraphic.mp4'
+import Demo from '../Assets/videos/motiongraphic.mp4';
+import Demo1 from '../Assets/videos/motiongraphic2.mp4';
+import Demo2 from '../Assets/videos/motiongraphic3.mp4';
+
 import Placeholder from '../Assets/videos/images/team.png'
 import logo from '../Assets/videos/images/logo2.png'
 
@@ -241,7 +244,7 @@ const FlexcraftHomepage = () => {
           <VideoPlayer 
             videoSrc={Demo}
             thumbnail={Placeholder}
-            autoplay
+            
           />
         </div>
       </motion.section>
@@ -404,8 +407,8 @@ const FlexcraftHomepage = () => {
             </div>
             <div className="relative w-full h-80 bg-gray-100 overflow-hidden rounded-lg shadow-xl">
               <VideoPlayer 
-                videoSrc="https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-                thumbnail="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1674&q=80"
+                videoSrc={Demo1}
+                thumbnail={Placeholder}
               />
             </div>
           </div>
@@ -424,8 +427,8 @@ const FlexcraftHomepage = () => {
           <div className="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
             <div className="relative w-full h-80 bg-gray-100 overflow-hidden rounded-lg shadow-xl lg:order-first">
               <VideoPlayer 
-                videoSrc="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-                thumbnail="https://images.unsplash.com/photo-1677442135722-5fba49a0d258?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80"
+                videoSrc={Demo2}
+                thumbnail={Placeholder}
               />
             </div>
             <div className="mb-8 lg:mb-0">
@@ -924,15 +927,15 @@ const FlexcraftHomepage = () => {
 
 // Video Player Component
 const VideoPlayer = ({ videoSrc, thumbnail }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.8);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [volume, setVolume] = useState(0);
+  const [isMuted, setIsMuted] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [playbackRate, setPlaybackRate] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
-  const [showControls, setShowControls] = useState(true);
+  const [showControls, setShowControls] = useState(false);
   
   const videoRef = useRef(null);
   const playerRef = useRef(null);
