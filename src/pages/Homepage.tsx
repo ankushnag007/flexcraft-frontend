@@ -11,7 +11,7 @@ import Demo1 from '../Assets/videos/motiongraphic2.mp4';
 import Demo2 from '../Assets/videos/motiongraphic3.mp4';
 
 import Placeholder from '../Assets/videos/images/team.png'
-import logo from '../Assets/videos/images/logo2.png'
+import logo from '../Assets/videos/images/logo.png'
 
 const FlexcraftHomepage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -100,7 +100,7 @@ const FlexcraftHomepage = () => {
       <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white">
         <div className="mb-4">
           <div className="rounded-full flex items-center justify-center animate-pulse">
-            <img src={logo} className='h-20 w-auto' alt="Loading" />
+            <img src={logo} className='h-6 w-auto' alt="Flexcraft Logo" />
           </div>
         </div>
         <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
@@ -115,10 +115,10 @@ const FlexcraftHomepage = () => {
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
           <div className="flex items-center">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 w-10 h-10 rounded-md flex items-center justify-center">
-              <span className="text-white text-xl font-bold">F</span>
+            <div className="flex items-center justify-center">
+              <img src={logo} className='h-6 w-auto' alt="Flexcraft Logo" />
             </div>
-            <span className="ml-2 text-xl font-bold text-gray-900">flexcraft</span>
+            {/* <span className="ml-2 text-xl font-bold text-gray-900">flexcraft</span> */}
             
             <nav className="hidden md:ml-10 md:space-x-8 md:flex">
               <a href="/features" className="text-sm font-medium text-gray-500 hover:text-gray-900">Features</a>
@@ -226,28 +226,28 @@ const FlexcraftHomepage = () => {
       </motion.div>
 
       {/* Demo Video Section */}
-      <motion.section 
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
-        variants={sectionVariants}
-        initial="offscreen"
-        whileInView="onscreen"
-        viewport={{ once: true, amount: 0.3 }}
-      >
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">See Flexcraft in Action</h2>
-          <p className="text-lg text-gray-500 max-w-3xl mx-auto">
-            Watch our demo to see how Flexcraft can transform your development workflow.
-          </p>
-        </div>
-        
-        <div className="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden shadow-2xl">
-          <VideoPlayer 
-            videoSrc={Demo}
-            thumbnail={Placeholder}
-            
-          />
-        </div>
-      </motion.section>
+     {/* Demo Video Section */}
+<motion.section 
+  className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
+  variants={sectionVariants}
+  initial="offscreen"
+  whileInView="onscreen"
+  viewport={{ once: true, amount: 0.3 }}
+>
+  <div className="text-center mb-12">
+    <h2 className="text-3xl font-bold text-gray-900 mb-4">See Flexcraft in Action</h2>
+    <p className="text-lg text-gray-500 max-w-3xl mx-auto">
+      Watch our demo to see how Flexcraft can transform your development workflow.
+    </p>
+  </div>
+  
+  <div className="rounded-xl overflow-hidden shadow-2xl">
+    <VideoPlayer 
+      videoSrc={Demo}
+      thumbnail={Placeholder}
+    />
+  </div>
+</motion.section>
 
       {/* Feature Highlights */}
       <motion.section 

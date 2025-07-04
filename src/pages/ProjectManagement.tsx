@@ -255,25 +255,231 @@ const JiraLikeProjectManagement = () => {
         return (
           <div className="bg-white p-6 rounded-lg shadow min-h-screen">
             <h2 className="text-xl font-bold mb-4">Your Work</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h3 className="font-medium mb-2">Assigned to you</h3>
-                <p className="text-gray-600">
-                  {tasks.filter((t) => t.assignee === "John Doe").length} tasks
-                </p>
+            <div className="bg-white p-6 rounded-lg shadow min-h-screen">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Your Work</h2>
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <svg 
+              className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth="2" 
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              ></path>
+            </svg>
+          </div>
+          
+          <select 
+            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-auto"
+            // value={filter}
+            // onChange={(e) => setFilter(e.target.value)}
+          >
+            <option value="all">All Tasks</option>
+            <option value="assigned">Assigned to Me</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+      
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="font-medium text-gray-700 mb-1">Assigned to you</h3>
+              {/* <p className="text-2xl font-bold text-gray-800">{assignedCount} tasks</p> */}
+            </div>
+            <div className="bg-blue-100 p-3 rounded-lg">
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-green-50 p-4 rounded-lg border border-green-100 hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="font-medium text-gray-700 mb-1">Recently viewed</h3>
+              <p className="text-2xl font-bold text-gray-800">3 projects</p>
+            </div>
+            <div className="bg-green-100 p-3 rounded-lg">
+              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-purple-50 p-4 rounded-lg border border-purple-100 hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="font-medium text-gray-700 mb-1">Worked on</h3>
+              <p className="text-2xl font-bold text-gray-800">12 tasks this week</p>
+            </div>
+            <div className="bg-purple-100 p-3 rounded-lg">
+              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Task List */}
+      <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+        <div className="grid grid-cols-12 bg-gray-100 px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+          <div className="col-span-5">Task</div>
+          <div className="col-span-2">Project</div>
+          <div className="col-span-2">Due Date</div>
+          <div className="col-span-3 text-right">Status</div>
+        </div>
+        
+        <div className="divide-y divide-gray-200">
+          {filteredTasks.length === 0 ? (
+            <div className="text-center py-8">
+              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">No tasks found</h3>
+              <p className="mt-1 text-sm text-gray-500">Try changing your filters or search query</p>
+            </div>
+          ) : (
+            filteredTasks.map(task => (
+              <div 
+                key={task.id} 
+                className="grid grid-cols-12 px-4 py-4 hover:bg-gray-50 transition-colors"
+              >
+                <div className="col-span-5">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 mr-3">
+                      <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                        <span className="text-white text-sm font-medium">
+                          {task.assignee.split(' ').map(n => n[0]).join('')}
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-900">{task.title}</div>
+                      <div className="text-sm text-gray-500 mt-1 line-clamp-1">{task.description}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="col-span-2 flex items-center">
+                  <span className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded text-xs">
+                    {/* {task.project} */}
+                  </span>
+                </div>
+                
+                <div className="col-span-2 flex items-center">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span className="text-sm text-gray-600">{new Date(task.dueDate).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                
+                <div className="col-span-3 flex items-center justify-end space-x-2">
+                  {/* <PriorityBadge priority={task.priority} />
+                  <StatusBadge status={task.status} /> */}
+                  <button className="text-gray-400 hover:text-gray-600">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <div className="bg-green-50 p-4 rounded-lg">
-                <h3 className="font-medium mb-2">Recently viewed</h3>
-                <p className="text-gray-600">3 projects</p>
+            ))
+          )}
+        </div>
+      </div>
+      
+      {/* Stats Section */}
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-lg border border-gray-200">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Task Distribution</h3>
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700">To Do</span>
+                <span className="text-sm font-medium text-gray-700">{tasks.filter(t => t.status === 'todo').length}</span>
               </div>
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <h3 className="font-medium mb-2">Worked on</h3>
-                <p className="text-gray-600">12 tasks this week</p>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-gray-500 h-2.5 rounded-full" 
+                  style={{ width: `${(tasks.filter(t => t.status === 'todo').length / tasks.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700">In Progress</span>
+                {/* <span className="text-sm font-medium text-gray-700">{inProgressCount}</span> */}
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-blue-500 h-2.5 rounded-full" 
+                  // style={{ width: `${(inProgressCount / tasks.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700">Completed</span>
+                {/* <span className="text-sm font-medium text-gray-700">{completedCount}</span> */}
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-green-500 h-2.5 rounded-full" 
+                  // style={{ width: `${(completedCount / tasks.length) * 100}%` }}
+                ></div>
               </div>
             </div>
           </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg border border-gray-200">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Priority Breakdown</h3>
+          <div className="flex justify-between items-center">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-red-500">{tasks.filter(t => t.priority === 'high').length}</div>
+              <div className="text-sm text-gray-600 mt-1">High Priority</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-yellow-500">{tasks.filter(t => t.priority === 'medium').length}</div>
+              <div className="text-sm text-gray-600 mt-1">Medium</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-500">{tasks.filter(t => t.priority === 'low').length}</div>
+              <div className="text-sm text-gray-600 mt-1">Low</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+          </div>
         );
-      case "Projects":
+      case "Tasks":
         return (
           <div>
             {/* Project Header */}
@@ -833,38 +1039,38 @@ const JiraLikeProjectManagement = () => {
         );
       case "Dashboards":
         return (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Dashboards</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex items-center mb-3">
-                  <BarChart2 className="w-5 h-5 text-blue-500 mr-2" />
-                  <h3 className="font-medium">Project Overview</h3>
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-bold mb-4">Dashboards</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-center mb-3">
+                    <BarChart2 className="w-5 h-5 text-blue-500 mr-2" />
+                    <h3 className="font-medium">Project Overview</h3>
+                  </div>
+                  <p className="text-gray-600 text-sm">
+                    High-level metrics and progress
+                  </p>
                 </div>
-                <p className="text-gray-600 text-sm">
-                  High-level metrics and progress
-                </p>
-              </div>
-              <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex items-center mb-3">
-                  <PieChart className="w-5 h-5 text-green-500 mr-2" />
-                  <h3 className="font-medium">Work Distribution</h3>
+                <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-center mb-3">
+                    <PieChart className="w-5 h-5 text-green-500 mr-2" />
+                    <h3 className="font-medium">Work Distribution</h3>
+                  </div>
+                  <p className="text-gray-600 text-sm">
+                    Tasks by status and assignee
+                  </p>
                 </div>
-                <p className="text-gray-600 text-sm">
-                  Tasks by status and assignee
-                </p>
-              </div>
-              <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex items-center mb-3">
-                  <GanttChart className="w-5 h-5 text-purple-500 mr-2" />
-                  <h3 className="font-medium">Timeline</h3>
+                <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-center mb-3">
+                    <GanttChart className="w-5 h-5 text-purple-500 mr-2" />
+                    <h3 className="font-medium">Timeline</h3>
+                  </div>
+                  <p className="text-gray-600 text-sm">
+                    Project schedule and milestones
+                  </p>
                 </div>
-                <p className="text-gray-600 text-sm">
-                  Project schedule and milestones
-                </p>
               </div>
             </div>
-          </div>
         );
       case "Teams":
         return (
@@ -907,7 +1113,7 @@ const JiraLikeProjectManagement = () => {
             </div>
           </div>
         );
-      case "Plans":
+      // case "Plans":
         return (
           <div className="bg-white p-6 rounded-lg shadow">
             <h2 className="text-xl font-bold mb-4">Plans</h2>
@@ -1276,6 +1482,17 @@ const JiraLikeProjectManagement = () => {
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-6">
                 <nav className="flex space-x-1">
+                {/* <button
+                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                      activeContentTab === "Dashboards"
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                    }`}
+                    onClick={() => setActiveContentTab("Dashboards")}
+                  >
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Dashboards
+                  </button> */}
                   <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                       activeContentTab === "Your work"
@@ -1289,16 +1506,16 @@ const JiraLikeProjectManagement = () => {
                   </button>
                   <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                      activeContentTab === "Projects"
+                      activeContentTab === "Tasks"
                         ? "bg-blue-50 text-blue-600"
                         : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                     }`}
-                    onClick={() => setActiveContentTab("Projects")}
+                    onClick={() => setActiveContentTab("Tasks")}
                   >
                     <Folder className="w-4 h-4 mr-2" />
-                    Projects
+                    Tasks
                   </button>
-                  <button
+                  {/* <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                       activeContentTab === "Filters"
                         ? "bg-blue-50 text-blue-600"
@@ -1308,18 +1525,8 @@ const JiraLikeProjectManagement = () => {
                   >
                     <Sliders className="w-4 h-4 mr-2" />
                     Filters
-                  </button>
-                  <button
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                      activeContentTab === "Dashboards"
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                    }`}
-                    onClick={() => setActiveContentTab("Dashboards")}
-                  >
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Dashboards
-                  </button>
+                  </button> */}
+             
                   <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                       activeContentTab === "Teams"
@@ -1331,7 +1538,7 @@ const JiraLikeProjectManagement = () => {
                     <TeamIcon className="w-4 h-4 mr-2" />
                     Teams
                   </button>
-                  <button
+                  {/* <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                       activeContentTab === "Plans"
                         ? "bg-blue-50 text-blue-600"
@@ -1341,7 +1548,7 @@ const JiraLikeProjectManagement = () => {
                   >
                     <CreditCard className="w-4 h-4 mr-2" />
                     Plans
-                  </button>
+                  </button> */}
                   <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                       activeContentTab === "Apps"
