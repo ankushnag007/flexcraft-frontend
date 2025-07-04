@@ -241,12 +241,25 @@ const FlexcraftHomepage = () => {
     </p>
   </div>
   
-  <div className="rounded-xl overflow-hidden shadow-2xl">
-    <VideoPlayer 
-      videoSrc={Demo}
-      thumbnail={Placeholder}
-    />
+  <div className="rounded-xl ">
+  <div style={{ position: 'relative', paddingBottom: '56.25%' }}> {/* 16:9 aspect ratio container */}
+    <iframe
+      loading="lazy"
+      src="https://app.storylane.io/demo/p6lmcjgg4zbx?embed=inline"
+      name="sl-embed"
+      allow="fullscreen"
+      allowFullScreen
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '80%',
+        border: 'none'
+      }}
+    ></iframe>
   </div>
+</div>  
 </motion.section>
 
       {/* Feature Highlights */}
