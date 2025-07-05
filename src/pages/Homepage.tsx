@@ -245,7 +245,7 @@ const FlexcraftHomepage = () => {
   <div style={{ position: 'relative', paddingBottom: '56.25%' }}> {/* 16:9 aspect ratio container */}
     <iframe
       loading="lazy"
-      src="https://app.storylane.io/demo/p6lmcjgg4zbx?embed=inline"
+      src="https://app.storylane.io/demo/bnxkkkyc0v42?embed=inline"
       name="sl-embed"
       allow="fullscreen"
       allowFullScreen
