@@ -11,7 +11,28 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.3.5"
+    "next": "15.3.5",
+     "@livekit/components-react": "^2.0.0",
+    "@livekit/components-styles": "^1.0.9",
+    "@monaco-editor/react": "^4.7.0",
+    "@octokit/rest": "^20.0.2",
+    "@supabase/supabase-js": "^2.39.7",
+    "@types/react-big-calendar": "^1.16.1",
+    "@xyflow/react": "^12.7.1",
+    "axios": "^1.8.4",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.7.4",
+    "lucide-react": "^0.344.0",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-big-calendar": "^1.18.0",
+    "react-figma": "^0.0.0",
+    "react-helmet-async": "^2.0.5",
+    "react-intersection-observer": "^9.16.0",
+    "react-resizable": "^3.0.5",
+    "react-router-dom": "^6.22.2",
+    "reactflow": "^11.11.4",
+    "socket.io-client": "^4.7.4",
+    "zustand": "^4.5.1"
   },
   "devDependencies": {
     "typescript": "^5",
@@ -19,6 +40,13 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.0.2",
+    "autoprefixer": "^10.4.18",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.35"
   }
 }
