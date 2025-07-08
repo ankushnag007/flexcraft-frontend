@@ -22,7 +22,7 @@ import DesignArchitecute from '../app/DesignArchitecture';
 import Careers from '../app/Careers'
 
 function Home() {
-  const isAuthenticated = false; // Replace with your actual auth logic
+  const isAuthenticated = true; // Replace with your actual auth logic
 
   return (
     <Router>
@@ -43,11 +43,11 @@ function Home() {
           ) : (
             <>
               {/* Default authenticated route now goes to Flexcraft-AI */}
-              <Route path="/" element={<Navigate to="/designArchitecture" replace />} />
+              <Route path="/projects" element={<ProjectManagement />} />
+              <Route path="/" element={<Navigate to="/projects" replace />} />
               <Route path="/ai-agent" element={<AIAgent />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/email" element={<EmailApp />} />
-              <Route path="/projects" element={<ProjectManagement />} />
               <Route path="/api-testing" element={<ApiTesting />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/github" element={<GitHubIntegration />} />
