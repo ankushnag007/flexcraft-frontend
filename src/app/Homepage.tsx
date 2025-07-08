@@ -13,6 +13,7 @@ import {
 
 import Placeholder from '../Assets/images/team.png'
 import logo from '../Assets/images/logo.png'
+import Image from 'next/image';
 
 const FlexcraftHomepage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -101,7 +102,7 @@ const FlexcraftHomepage = () => {
       <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white">
         <div className="mb-4">
           <div className="rounded-full flex items-center justify-center animate-pulse">
-            <img src={logo} className='h-6 w-auto' alt="Flexcraft Logo" />
+            <Image src={logo} className='h-6 w-auto' alt="Flexcraft Logo" />
           </div>
         </div>
         <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
@@ -117,7 +118,7 @@ const FlexcraftHomepage = () => {
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
           <div className="flex items-center">
             <div className="flex items-center justify-center">
-              <img src={logo} className='h-6 w-auto' alt="Flexcraft Logo" />
+              <Image src={logo} className='h-6 w-auto' alt="Flexcraft Logo" />
             </div>
             {/* <span className="ml-2 text-xl font-bold text-gray-900">flexcraft</span> */}
             

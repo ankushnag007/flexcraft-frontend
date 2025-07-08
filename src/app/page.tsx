@@ -22,7 +22,7 @@ import DesignArchitecute from '../app/DesignArchitecture';
 import Careers from '../app/Careers'
 
 function Home() {
-  const isAuthenticated = true; // Replace with your actual auth logic
+  const isAuthenticated = false; // Replace with your actual auth logic
 
   return (
     <Router>
