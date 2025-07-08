@@ -1,0 +1,26 @@
+:root {
+  /* Font sizes similar to Jira */
+  --font-size-small: 12px;
+  --font-size-medium: 14px;
+  --font-size-large: 16px;
+  --font-size-xlarge: 20px;
+  --font-size-xxlarge: 24px;
+
+  /* Line heights similar to Jira */
+  --line-height-small: 16px;
+  --line-height-medium: 20px;
+  --line-height-large: 24px;
+  --line-height-xlarge: 28px;
+  --line-height-xxlarge: 32px;
+}
+
+body {
+  font-family: var(--font-charlie), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: var(--font-size-medium);
+  line-height: var(--line-height-medium);
+  color: #172B4D; /* Jira's default text color */
+}
+
+code, pre {
+  font-family: var(--font-atlassian-mono), monospace;
+}

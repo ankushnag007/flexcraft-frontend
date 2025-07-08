@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+import Sidebar from "../app/components/Sidebar"
+// Jira-like font alternatives
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const robotoMono = Roboto_Mono({
   subsets: ["latin"],
+  variable: "--font-roboto-mono",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -99,9 +103,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = true;
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" className={`${inter.variable} ${robotoMono.variable}`}>
+      <body className="font-sans antialiased bg-white text-gray-900">
         {children}
       </body>
     </html>

@@ -8,10 +8,10 @@ import {
   UserCheck, UserX, RefreshCw, Coffee, Bell, Folder,
   Code2, FileText, Video, CalendarSearch
 } from 'lucide-react';
-import logo from '../Assets/images/logo.png';
-import user from '../Assets/images/user.jpg';
-import Reports from './Reports';
-import Projects from './Projects';
+import logo from '../../../Assets/images/logo.png';
+import user from '../../../Assets/images/user.jpg';
+import Reports from '../projectManagement/reports/Reports';
+import Projects from '../projectManagement/projects/Projects';
 import Image from 'next/image';
 
 const FlexCraftDashboard = () => {
@@ -490,7 +490,7 @@ const FlexCraftDashboard = () => {
       <div className="bg-white rounded-lg w-full max-w-md">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-              <Image src={logo} className="h-6 w-auto" />
+              <Image alt="member" src={logo} className="h-6 w-auto" />
             <h3 className="text-lg font-bold">Invite Team Member</h3>
             <button 
               onClick={() => setShowInviteModal(false)}
@@ -694,7 +694,7 @@ const FlexCraftDashboard = () => {
             <div className={`${styles.bg} p-6 rounded-xl shadow-sm`}>
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-4">
-                  <Image src={user} className='h-24 w-24 rounded-full'/>
+                  <Image alt="user" src={user} className='h-24 w-24 rounded-full'/>
                   <div>
                     <h1 className={`text-2xl font-bold ${styles.text}`}>Hello, Alex</h1>
                     <div className="flex items-center space-x-2">

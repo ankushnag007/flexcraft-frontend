@@ -11,8 +11,8 @@ import {
 // import Demo1 from '../Assets/videos/motiongraphic2.mp4';
 // import Demo2 from '../Assets/motiongraphic3.mp4';
 
-import Placeholder from '../Assets/images/team.png'
-import logo from '../Assets/images/logo.png'
+import Placeholder from '../../Assets/images/team.png'
+import logo from '../../Assets/images/logo.png'
 import Image from 'next/image';
 
 const FlexcraftHomepage = () => {
@@ -99,7 +99,7 @@ const FlexcraftHomepage = () => {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white">
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white overflow-y-hidden">
         <div className="mb-4">
           <div className="rounded-full flex items-center justify-center animate-pulse">
             <Image src={logo} className='h-6 w-auto' alt="Flexcraft Logo" />
@@ -194,7 +194,7 @@ const FlexcraftHomepage = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center over">
           <motion.h1 
             className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl"
             initial={{ y: 50, opacity: 0 }}
@@ -421,10 +421,7 @@ const FlexcraftHomepage = () => {
               </ul>
             </div>
             <div className="relative w-full h-80 bg-gray-100 overflow-hidden rounded-lg shadow-xl">
-              <VideoPlayer 
-                // videoSrc={Demo1}
-                thumbnail={Placeholder}
-              />
+           
             </div>
           </div>
         </div>
@@ -441,10 +438,7 @@ const FlexcraftHomepage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
             <div className="relative w-full h-80 bg-gray-100 overflow-hidden rounded-lg shadow-xl lg:order-first">
-              <VideoPlayer 
-                // videoSrc={Demo2}
-                thumbnail={Placeholder}
-              />
+          
             </div>
             <div className="mb-8 lg:mb-0">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">AI-Powered Development</h2>
@@ -941,286 +935,7 @@ const FlexcraftHomepage = () => {
 };
 
 // Video Player Component
-const VideoPlayer = ({ videoSrc, thumbnail }) => {
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [volume, setVolume] = useState(0);
-  const [isMuted, setIsMuted] = useState(true);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [playbackRate, setPlaybackRate] = useState(0);
-  const [showSettings, setShowSettings] = useState(false);
-  const [showControls, setShowControls] = useState(false);
-  
-  const videoRef = useRef(null);
-  const playerRef = useRef(null);
-  const controlsTimeoutRef = useRef(null);
-  
-  // Initialize video duration
-  useEffect(() => {
-    if (videoRef.current) {
-      setDuration(videoRef.current.duration);
-      
-      const handleLoadedMetadata = () => {
-        setDuration(videoRef.current.duration);
-      };
-      
-      videoRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-      
-      return () => {
-        if (videoRef.current) {
-          videoRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
-        }
-      };
-    }
-  }, []);
-  
-  // Update current time during playback
-  useEffect(() => {
-    const video = videoRef.current;
-    
-    const handleTimeUpdate = () => {
-      setCurrentTime(video.currentTime);
-      
-      // Show controls when video is playing
-      if (isPlaying) {
-        showControlsTemporarily();
-      }
-    };
-    
-    if (video) {
-      video.addEventListener('timeupdate', handleTimeUpdate);
-      return () => video.removeEventListener('timeupdate', handleTimeUpdate);
-    }
-  }, [isPlaying]);
-  
-  // Handle play/pause
-  const togglePlay = () => {
-    if (isPlaying) {
-      videoRef.current.pause();
-    } else {
-      videoRef.current.play();
-      showControlsTemporarily();
-    }
-    setIsPlaying(!isPlaying);
-  };
-  
-  // Handle volume change
-  const handleVolumeChange = (e) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
-    videoRef.current.volume = newVolume;
-    setIsMuted(newVolume === 0);
-  };
-  
-  // Toggle mute
-  const toggleMute = () => {
-    const newMuted = !isMuted;
-    setIsMuted(newMuted);
-    videoRef.current.muted = newMuted;
-  };
-  
-  // Handle time change via progress bar
-  const handleTimeChange = (e) => {
-    const newTime = parseFloat(e.target.value);
-    setCurrentTime(newTime);
-    videoRef.current.currentTime = newTime;
-  };
-  
-  // Toggle fullscreen
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      playerRef.current.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable fullscreen: ${err.message}`);
-      });
-      setIsFullscreen(true);
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-        setIsFullscreen(false);
-      }
-    }
-  };
-  
-  // Handle playback speed change
-  const changePlaybackRate = (rate) => {
-    setPlaybackRate(rate);
-    videoRef.current.playbackRate = rate;
-    setShowSettings(false);
-  };
-  
-  // Show controls temporarily
-  const showControlsTemporarily = () => {
-    setShowControls(true);
-    clearTimeout(controlsTimeoutRef.current);
-    controlsTimeoutRef.current = setTimeout(() => {
-      if (isPlaying) {
-        setShowControls(false);
-      }
-    }, 3000);
-  };
-  
-  // Format time (seconds to mm:ss)
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-  };
-  
-  // Playback rate options
-  const playbackRates = [0.5, 0.75, 1, 1.25, 1.5, 2];
-  
-  return (
-    <div 
-      ref={playerRef}
-      className="relative w-full bg-black rounded-xl "
-      onMouseMove={showControlsTemporarily}
-      onMouseLeave={() => {
-        if (isPlaying) {
-          controlsTimeoutRef.current = setTimeout(() => {
-            setShowControls(false);
-          }, 1000);
-        }
-      }}
-    >
-      {/* Video element */}
-      <video
-        ref={videoRef}
-        src={videoSrc}
-        poster={thumbnail}
-        className="w-full h-full object-cover"
-        onClick={togglePlay}
-      />
-      
-      {/* Loading overlay */}
-      {!isPlaying && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-80">
-          <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-4 cursor-pointer" onClick={togglePlay}>
-            <Play className="w-16 h-16 text-white" />
-          </div>
-        </div>
-      )}
-      
-      {/* Controls overlay */}
-      <div 
-        className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent transition-opacity duration-300 ${
-          showControls ? 'opacity-100' : 'opacity-0'
-        }`}
-      >
-        {/* Progress bar */}
-        <div className="px-4 pt-2">
-          <input
-            type="range"
-            min="0"
-            max={duration || 100}
-            value={currentTime}
-            onChange={handleTimeChange}
-            className="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-            style={{
-              background: `linear-gradient(to right, #2563eb 0%, #2563eb ${(currentTime / duration) * 100}%, #4b5563 ${(currentTime / duration) * 100}%, #4b5563 100%)`
-            }}
-          />
-        </div>
-        
-        {/* Controls bar */}
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center space-x-4">
-            {/* Play/Pause button */}
-            <button 
-              onClick={togglePlay} 
-              className="text-white hover:text-blue-300 transition-colors bg-blue-600 rounded-full p-2"
-            >
-              {isPlaying ? (
-                <Pause className="w-5 h-5" />
-              ) : (
-                <Play className="w-5 h-5" />
-              )}
-            </button>
-            
-            {/* Volume controls */}
-            <div className="flex items-center space-x-2">
-              <button onClick={toggleMute} className="text-white hover:text-blue-300 transition-colors">
-                {isMuted || volume === 0 ? (
-                  <VolumeX className="w-5 h-5" />
-                ) : volume < 0.5 ? (
-                  <Volume2 className="w-5 h-5" />
-                ) : (
-                  <Volume2 className="w-5 h-5" />
-                )}
-              </button>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={volume}
-                onChange={handleVolumeChange}
-                className="w-20 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-            
-            {/* Time display */}
-            <div className="text-white text-sm font-mono">
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            {/* Playback speed settings */}
-            <div className="relative">
-              <button 
-                onClick={() => setShowSettings(!showSettings)}
-                className="text-white hover:text-blue-300 transition-colors"
-              >
-                <Settings className="w-5 h-5" />
-              </button>
-              
-              {showSettings && (
-                <div className="absolute bottom-full right-0 mb-2 w-32 bg-gray-800 bg-opacity-90 backdrop-blur-sm rounded-lg shadow-lg z-10">
-                  <div className="px-3 py-2 text-white text-sm font-medium border-b border-gray-700">
-                    Playback Speed
-                  </div>
-                  <div className="py-1">
-                    {playbackRates.map(rate => (
-                      <button
-                        key={rate}
-                        onClick={() => changePlaybackRate(rate)}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-700 ${
-                          playbackRate === rate ? 'text-blue-400 font-medium' : 'text-white'
-                        }`}
-                      >
-                        {rate}x
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            {/* Fullscreen toggle */}
-            <button onClick={toggleFullscreen} className="text-white hover:text-blue-300 transition-colors">
-              {isFullscreen ? (
-                <Minimize className="w-5 h-5" />
-              ) : (
-                <Maximize className="w-5 h-5" />
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      {/* Title overlay */}
-      <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black to-transparent">
-        <div className="flex items-center">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 w-8 h-8 rounded-md flex items-center justify-center">
-            <span className="text-white text-lg font-bold">F</span>
-          </div>
-          <h3 className="ml-3 text-white font-medium">Flexcraft Demo Walkthrough</h3>
-        </div>
-      </div>
-    </div>
-  );
-};
+
 
 // Data arrays
 const features = [

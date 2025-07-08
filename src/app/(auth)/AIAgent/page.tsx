@@ -9,9 +9,9 @@ import {
 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { Link } from 'react-router-dom';
-import Loader from './Loader';
+import Loader from '../Loader';
 import { useNavigate } from 'react-router-dom';
-import AnimationtedLogo from '../Assets/images/animated logo.gif';
+import AnimationtedLogo from '../../../Assets/images/animated logo.gif'
 
 type Framework = 'react' | 'vue' | 'angular' | 'svelte';
 type Backend = 'node' | 'django' | 'flask' | 'spring' | 'express';

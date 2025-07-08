@@ -18,7 +18,7 @@ import {
 const Header = () => {
   const navItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { path: '/projects', icon: FolderKanban, label: 'Projects' },
+    { path: '/manageprojects', icon: FolderKanban, label: 'Projects' },
     { path: '/email', icon: MailCheckIcon, label: 'Emails' },
     { path: '/api-testing', icon: Terminal, label: 'API Testing' },
     { path: '/chat', icon: MessageSquare, label: 'Chat' },

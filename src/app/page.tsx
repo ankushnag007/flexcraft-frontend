@@ -1,32 +1,32 @@
 "use client"
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import Homepage from '../app/Homepage';
-import ProjectManagement from '../app/ProjectManagement';
-import ApiTesting from '../app/ApiTesting';
-import Chat from '../app/Chat';
-import GitHubIntegration from '../app/GitHubIntegration';
-import ProjectDeployment from '../app/ProjectDeployment';
-import Integrations from '../app/Integrations';
-import DesignArchitecture from '../app/DesignArchitecture';
-import Dashboard from '../app/Dashboard';
-import EmailApp from '../app/Email';
-import AIAgent from '../app/AIAgent';
-import Workflow from '../app/Workflow'
-import FeaturesPage from '../app/Features';
-import Pricing from '../app/Pricing';
-import Resources from '../app/Resources';
-import IntegrationsPage from '../app/Integrations';
-import DesignArchitecute from '../app/DesignArchitecture';
-import Careers from '../app/Careers'
+import Sidebar from './components/Sidebar';
+import Homepage from './(public)/Homepage';
+import ProjectManagement from './(auth)/projectManagement/page';
+import ApiTesting from './(auth)/apiworkspace/page';
+import Chat from './(auth)/chat/page';
+import GitHubIntegration from './(auth)/github/page';
+import ProjectDeployment from './(auth)/deployment/ProjectDeployment';
+import Integrations from './(auth)/integrationsapp/page';
+import DesignArchitecture from './(auth)/flowCharts/page';
+import Dashboard from './(auth)/dashboard/page';
+import EmailApp from './(auth)/email/page';
+import AIAgent from './(auth)/AIAgent/page';
+import Workflow from './(auth)/automation/page'
+import FeaturesPage from './(public)/Features';
+import Pricing from './(public)/Pricing';
+import Resources from './(public)/Resources';
+import IntegrationsPage from './(auth)/integrationsapp/page';
+import DesignArchitecute from './(auth)/flowCharts/page';
+import Careers from './(public)/Careers'
 
 function Home() {
-  const isAuthenticated = false; // Replace with your actual auth logic
+  const isAuthenticated = true; // Replace with your actual auth logic
 
   return (
     <Router>
-      <main className="flex-1 overflow-x-hidden">
+      <main className="flex-1 overflow-hidden">
         {isAuthenticated && <Sidebar />}
         <Routes>
           {!isAuthenticated ? (
@@ -43,8 +43,8 @@ function Home() {
           ) : (
             <>
               {/* Default authenticated route now goes to Flexcraft-AI */}
-              <Route path="/projects" element={<ProjectManagement />} />
-              <Route path="/" element={<Navigate to="/projects" replace />} />
+              <Route path="/manageprojects" element={<ProjectManagement />} />
+              <Route path="/" element={<Navigate to="/manageprojects" replace />} />
               <Route path="/ai-agent" element={<AIAgent />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/email" element={<EmailApp />} />
@@ -53,12 +53,12 @@ function Home() {
               <Route path="/github" element={<GitHubIntegration />} />
               <Route path="/deployment" element={<ProjectDeployment />} />
               <Route path="/integrations" element={<Integrations />} />
-              <Route path="/designArchitecture" element={<DesignArchitecute />} />
+              {/* <Route path="/designArchitecture" element={<DesignArchitecute />} /> */}
               <Route path="/workflow-automation" element={<Workflow />} />
               <Route path="/features" element={<FeaturesPage />} />
               
               {/* Redirect any unknown routes to Flexcraft-AI */}
-              <Route path="*" element={<Navigate to="/designArchitecture" replace />} />
+              {/* <Route path="*" element={<Navigate to="/designArc hitecture" replace />} /> */}
             </>
           )}
         </Routes>

@@ -48,10 +48,10 @@ import {
   X,
 } from "lucide-react";
 import logo from "../Assets/images/logo.png";
-import BugTracker from "./Bugtracker";
+// import BugTracker from "./(auth)/bugsTracker/page";
 import { render } from "react-dom";
-import MeetingScheduler from "./Meetings";
-
+import MeetingScheduler from "../meetings/page";
+import BugTracker from "../bugsTracker/page"
 interface Task {
   id: string;
   title: string;

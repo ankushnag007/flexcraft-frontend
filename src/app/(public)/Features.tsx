@@ -1,6 +1,6 @@
 import { Check, Zap, Shield, Code, Server, Users, Database, Clock } from 'lucide-react';
-import Analytics from '../Assets/images/reports.png'
-import Team from '../Assets/images/team.png'
+import Analytics from '../../Assets/images/reports.png'
+import Team from '../../Assets/images/team.png'
 
 
 const FeaturesPage = () => {

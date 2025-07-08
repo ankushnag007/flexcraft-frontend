@@ -6,7 +6,7 @@ import {
   ChevronDown, MoreVertical, User, Search, Phone, 
   Info, Lock, AtSign, Hash, Star, Pin, Inbox
 } from 'lucide-react';
-import logo from "../Assets/images/logo.png";
+import logo from "../../../Assets/images/logo.png";
 
 interface Message {
   id: string;

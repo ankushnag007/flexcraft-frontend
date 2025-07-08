@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import logo from "../Assets/images/logo.png";
+import logo from "../../../Assets/images/logo.png";
 
 import { 
   Send, Play, Plus, Minus, ChevronDown, ChevronRight, 
