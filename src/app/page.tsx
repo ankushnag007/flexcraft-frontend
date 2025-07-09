@@ -58,7 +58,7 @@ function Home() {
               <Route path="/features" element={<FeaturesPage />} />
               
               {/* Redirect any unknown routes to Flexcraft-AI */}
-              {/* <Route path="*" element={<Navigate to="/designArc hitecture" replace />} /> */}
+              <Route path="*" element={<Navigate to="/unrouted" replace />} />
             </>
           )}
         </Routes>
