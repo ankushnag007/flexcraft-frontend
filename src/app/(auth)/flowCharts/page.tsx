@@ -1,13 +1,13 @@
-import AuthGuard from '@/app/components/AuthGuard'
-import React from 'react'
+"use client"
+import React from 'react';
+import FlowChart from './flowcharts';
 
-const page = () => {
+const FlowChartPage: React.FC = () => {
   return (
-    <AuthGuard>
+    <div className="min-h-screen bg-gray-100">
+      <FlowChart />
+    </div>
+  );
+};
 
-    <div>page</div>
-    </AuthGuard>
-  )
-}
-
-export default page
+export default FlowChartPage;

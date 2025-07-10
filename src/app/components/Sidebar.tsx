@@ -28,7 +28,7 @@ const navItems = [
   { path: '/deployment', icon: UploadCloud, label: 'Deployment' },
   { path: '/integrationsapp', icon: Blocks, label: 'Integrations' },
   { path: '/automation', icon: Workflow, label: 'workflow-automation' },
-  { path: '/designArchitecture', icon: PenLine, label: 'Architect' },
+  { path: '/flowcharts', icon: PenLine, label: 'Architect' },
 ];
 
 const Header = () => {

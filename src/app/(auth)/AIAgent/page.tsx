@@ -616,7 +616,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
   };
 
   const renderCustomizationPanel = () => (
-    <div className={`w-full border-r ${themeColors.border} ${themeColors.bgSecondary} flex flex-col h-full ${showCustomizationPanel ? 'flex' : 'hidden'}`}>
+    <div className={`w-80 flex-shrink-0 border-r ${themeColors.border} ${themeColors.bgSecondary} flex flex-col h-full ${showCustomizationPanel ? 'flex' : 'hidden'}`}>
       {/* Header */}
       <div className={`h-12 p-4 border-b ${themeColors.border} flex justify-between items-center ${themeColors.bgSecondary} flex-shrink-0`}>
         <h3 className={`font-medium ${themeColors.textPrimary}`}>Customize with AI</h3>

@@ -52,6 +52,7 @@ import logo from "../Assets/images/logo.png";
 // import { render } from "react-dom";
 import BugTracker from "../bugsTracker/page"
 import AuthGuard from "@/app/components/AuthGuard";
+import Link from "next/link";
 interface Task {
   id: string;
   title: string;
@@ -1075,44 +1076,109 @@ const JiraLikeProjectManagement = () => {
         );
       case "Teams":
         return (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Teams</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="border rounded-lg p-4">
-                <h3 className="font-medium mb-2">Development</h3>
-                <ul className="space-y-2">
-                  {["John Doe", "Jane Smith", "Mike Johnson"].map((member) => (
-                    <li key={member} className="flex items-center">
-                      <div className="w-6 h-6 rounded-full bg-gray-300 mr-2"></div>
-                      <span>{member}</span>
-                    </li>
-                  ))}
-                </ul>
+          <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">Teams</h2>
+            <button className="flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium">
+              <span>View All</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Development Team Card */}
+            <div className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow duration-200">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                </div>
+                <h3 className="font-semibold text-gray-800">Development</h3>
               </div>
-              <div className="border rounded-lg p-4">
-                <h3 className="font-medium mb-2">Design</h3>
-                <ul className="space-y-2">
-                  {["Sarah Williams", "Alex Chen"].map((member) => (
-                    <li key={member} className="flex items-center">
-                      <div className="w-6 h-6 rounded-full bg-gray-300 mr-2"></div>
-                      <span>{member}</span>
-                    </li>
-                  ))}
-                </ul>
+              <ul className="space-y-3">
+                {["John Doe", "Jane Smith", "Mike Johnson"].map((member) => (
+                  <li key={member} className="flex items-center group">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center text-white font-medium text-xs mr-3">
+                      {member.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <span className="text-gray-700 group-hover:text-blue-600 transition-colors">{member}</span>
+                    <button className="ml-auto opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-600 transition-opacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                      </svg>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <button className="mt-4 w-full py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors">
+                + Add Member
+              </button>
+            </div>
+        
+            {/* Design Team Card */}
+            <div className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow duration-200">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                  </svg>
+                </div>
+                <h3 className="font-semibold text-gray-800">Design</h3>
               </div>
-              <div className="border rounded-lg p-4">
-                <h3 className="font-medium mb-2">Product</h3>
-                <ul className="space-y-2">
-                  {["Emily Davis", "Robert Brown"].map((member) => (
-                    <li key={member} className="flex items-center">
-                      <div className="w-6 h-6 rounded-full bg-gray-300 mr-2"></div>
-                      <span>{member}</span>
-                    </li>
-                  ))}
-                </ul>
+              <ul className="space-y-3">
+                {["Sarah Williams", "Alex Chen"].map((member) => (
+                  <li key={member} className="flex items-center group">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 flex items-center justify-center text-white font-medium text-xs mr-3">
+                      {member.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <span className="text-gray-700 group-hover:text-purple-600 transition-colors">{member}</span>
+                    <button className="ml-auto opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-600 transition-opacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                      </svg>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <button className="mt-4 w-full py-2 text-sm font-medium text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded-lg transition-colors">
+                + Add Member
+              </button>
+            </div>
+        
+            {/* Product Team Card */}
+            <div className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow duration-200">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center mr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <h3 className="font-semibold text-gray-800">Product</h3>
               </div>
+              <ul className="space-y-3">
+                {["Emily Davis", "Robert Brown"].map((member) => (
+                  <li key={member} className="flex items-center group">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center text-white font-medium text-xs mr-3">
+                      {member.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <span className="text-gray-700 group-hover:text-green-600 transition-colors">{member}</span>
+                    <button className="ml-auto opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-600 transition-opacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                      </svg>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <button className="mt-4 w-full py-2 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors">
+                + Add Member
+              </button>
             </div>
           </div>
+        </div>
         );
       // case "Plans":
         return (
@@ -1479,7 +1545,7 @@ const JiraLikeProjectManagement = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-white shadow-sm  top-0 z-10">
+        <header className="bg-white shadow-sm  sticky top-0 z-0">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-6">
@@ -1495,6 +1561,10 @@ const JiraLikeProjectManagement = () => {
                     <LayoutDashboard className="w-4 h-4 mr-2" />
                     Dashboards
                   </button> */}
+
+<Link href={`/manageprojects/reports/${"flexcraft-workspace"}`}>
+  View Post
+</Link>
                   <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                       activeContentTab === "Your work"
@@ -1588,9 +1658,19 @@ const JiraLikeProjectManagement = () => {
               </div>
 
               <div className="ml-4 flex items-center space-x-4">
-                <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
-                  <Search className="w-5 h-5" />
-                </button>
+                {/* <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full" onClick={toggleSearch}>
+                  <Search className="w-5 h-5" /> 
+                </button> */}
+                {/* {isSearchOpen && (
+                  <input
+                    type="text"
+                    className="ml-2 p-1 border rounded"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    autoFocus
+                  />
+                )} */}
                 <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
                   <Bell className="w-5 h-5" />
                 </button>
