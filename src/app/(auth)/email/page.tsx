@@ -6,6 +6,7 @@ import {
   ChevronLeft, ChevronRight, MailOpen, Reply, Forward, Filter, Folder
 } from 'lucide-react';
 import EmailListSkeleton from './EmailSkeleton';
+import AuthGuard from '@/app/components/AuthGuard';
 
 const EmailApp = () => {
   // State for emails
@@ -172,6 +173,7 @@ const EmailApp = () => {
   };
 
   return (
+    <AuthGuard>
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
@@ -566,6 +568,7 @@ const EmailApp = () => {
         </div>
       )}
     </div>
+    </AuthGuard>
   );
 };
 

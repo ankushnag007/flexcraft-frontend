@@ -9,6 +9,7 @@ import {
   Terminal, Globe, Clock, Layers, Bookmark, User, 
   Lock, Sliders, Zap, Hash, Bell, Star, Tag
 } from 'lucide-react';
+import AuthGuard from '@/app/components/AuthGuard';
 
 const ApiTesting = () => {
   const [method, setMethod] = useState('GET');
@@ -218,6 +219,7 @@ const ApiTesting = () => {
   };
 
   return (
+    <AuthGuard>
     <div className="flex h-screen bg-gray-50 text-blue-900">
       {/* Sidebar */}
       <div className="w-64 bg-gray-900 text-gray-200 p-4 flex flex-col border-r border-gray-700">
@@ -952,6 +954,7 @@ const ApiTesting = () => {
         </div>
       </div>
     </div>
+    </AuthGuard>
   );
 };
 

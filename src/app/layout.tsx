@@ -1,8 +1,9 @@
+
+
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
-import Sidebar from "../app/components/Sidebar"
-// Jira-like font alternatives
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -103,9 +104,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = true;
   return (
-    <html lang="en" className={`${inter.variable} ${robotoMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${robotoMono.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased bg-white text-gray-900">
         {children}
       </body>

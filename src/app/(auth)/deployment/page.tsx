@@ -28,6 +28,7 @@ import {
   Minus,
   AlertCircle
 } from 'lucide-react';
+import AuthGuard from '@/app/components/AuthGuard';
 
 const EnhancedDeploymentUI = () => {
   const [selectedTab, setSelectedTab] = useState('deployment');
@@ -84,6 +85,7 @@ const EnhancedDeploymentUI = () => {
   ];
 
   return (
+    <AuthGuard>
     <div className="min-h-screen bg-gray-50 text-gray-800">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
@@ -1583,6 +1585,7 @@ const EnhancedDeploymentUI = () => {
         </div>
       </div>
     </div>
+    </AuthGuard>
   );
 };
 

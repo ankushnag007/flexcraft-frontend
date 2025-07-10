@@ -7,6 +7,8 @@ import {
   Info, Lock, AtSign, Hash, Star, Pin, Inbox
 } from 'lucide-react';
 import logo from "../../../Assets/images/logo.png";
+import AuthGuard from '@/app/components/AuthGuard';
+import Image from 'next/image';
 
 interface Message {
   id: string;
@@ -137,11 +139,12 @@ const Chat = () => {
   const groupedMessages = groupMessagesByDate();
 
   return (
+    <AuthGuard>
     <div className="flex h-screen bg-gray-100 text-gray-900">
       {/* Sidebar */}
       <div className="w-16 md:w-60 bg-indigo-900 text-white flex flex-col">
         <div className="p-4 border-b border-indigo-800 flex items-center justify-between">
-            <img src={logo} className="h-3  w-auto" />
+            <Image src={logo} className="h-3  w-auto" alt="logo"/>
           <div className="hidden md:block font-bold text-md">  
           Workspace</div>
           <button className="p-1 hover:bg-indigo-800 rounded">
@@ -460,6 +463,7 @@ const Chat = () => {
         </div>
       )}
     </div>
+    </AuthGuard>
   );
 };
 

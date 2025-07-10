@@ -9,6 +9,7 @@ import {
   Grid, List, Box, Cloud, Cpu, Shield
 } from 'lucide-react';
 import logo from '../Assets/images/logo.png'
+import AuthGuard from '@/app/components/AuthGuard';
 const IntegrationCard = ({ icon, title, description, category, installed, popular }) => {
   const IconComponent = icon;
   return (
@@ -116,6 +117,7 @@ const IntegrationsPage = () => {
   ];
 
   return (
+    <AuthGuard>
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-baseline gap-3">  {/* Changed to items-baseline */}
@@ -309,6 +311,7 @@ const IntegrationsPage = () => {
         </div>
       )}
     </div>
+    </AuthGuard>
   );
 };
 

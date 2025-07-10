@@ -5,6 +5,7 @@ import {
   Plus, X, Check, Circle, Clock, User, Tag, GitPullRequest, 
   MoreVertical
 } from 'lucide-react';
+import AuthGuard from '@/app/components/AuthGuard';
 
 interface Bug {
   id: string;
@@ -140,6 +141,7 @@ const BugTracker: React.FC = () => {
   };
 
   return (
+    <AuthGuard>
     <div className="p-6 bg-gray-50 min-h-screen">
       {/* Header & Controls */}
       <div className="flex justify-between items-center mb-6">
@@ -392,6 +394,7 @@ const BugTracker: React.FC = () => {
         </div>
       )}
     </div>
+    </AuthGuard>
   );
 };
 

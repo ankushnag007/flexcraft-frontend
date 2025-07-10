@@ -6,6 +6,7 @@ import {
   Video, MessageSquare, Terminal, Calendar, UserPlus, Server, 
   Cloud, Bell, LayoutGrid, List
 } from 'lucide-react';
+import AuthGuard from '@/app/components/AuthGuard';
 
 type WorkflowStatus = 'active' | 'paused' | 'error' | 'draft';
 type TriggerType = 'schedule' | 'webhook' | 'manual' | 'event';
@@ -220,6 +221,7 @@ const WorkflowAutomation: React.FC = () => {
   };
 
   return (
+    <AuthGuard>
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -840,6 +842,7 @@ const WorkflowAutomation: React.FC = () => {
         </div>
       )}
     </div>
+    </AuthGuard>
   );
 };
 

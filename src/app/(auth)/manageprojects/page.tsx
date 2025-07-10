@@ -49,9 +49,9 @@ import {
 } from "lucide-react";
 import logo from "../Assets/images/logo.png";
 // import BugTracker from "./(auth)/bugsTracker/page";
-import { render } from "react-dom";
-import MeetingScheduler from "../meetings/page";
+// import { render } from "react-dom";
 import BugTracker from "../bugsTracker/page"
+import AuthGuard from "@/app/components/AuthGuard";
 interface Task {
   id: string;
   title: string;
@@ -1228,7 +1228,7 @@ const JiraLikeProjectManagement = () => {
             </div>
           </div>
         );
-      case "calendar":
+     
         return (
           <div className="bg-white p-4 rounded-lg shadow mb-6">
             <h3 className="font-medium mb-3">Calendar</h3>
@@ -1357,6 +1357,7 @@ const JiraLikeProjectManagement = () => {
 
 
   return (
+    <AuthGuard>
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
       <div className="w-16 bg-white shadow-sm flex flex-col items-center py-4">
@@ -1478,7 +1479,7 @@ const JiraLikeProjectManagement = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-white shadow-sm sticky top-0 z-10">
+        <header className="bg-white shadow-sm  top-0 z-10">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-6">
@@ -1609,8 +1610,10 @@ const JiraLikeProjectManagement = () => {
 
         {/* Content Area */}
         <div className="overflow-auto p-6 ">
+          
           <div className="flex">
             {/* Main Content */}
+            
             <div className="flex-1">{renderContent()}</div>
           </div>
         </div>
@@ -1838,6 +1841,7 @@ const JiraLikeProjectManagement = () => {
         </div>
       )}
     </div>
+    </AuthGuard>
   );
 };
 

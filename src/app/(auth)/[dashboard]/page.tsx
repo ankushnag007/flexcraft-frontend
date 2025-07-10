@@ -10,9 +10,10 @@ import {
 } from 'lucide-react';
 import logo from '../../../Assets/images/logo.png';
 import user from '../../../Assets/images/user.jpg';
-import Reports from '../projectManagement/reports/Reports';
-import Projects from '../projectManagement/projects/Projects';
+import Reports from '../manageprojects/reports/page';
+import Projects from '../manageprojects/projects/page';
 import Image from 'next/image';
+import AuthGuard from '@/app/components/AuthGuard';
 
 const FlexCraftDashboard = () => {
   const [timeOfDay, setTimeOfDay] = useState('morning');
@@ -631,6 +632,7 @@ const FlexCraftDashboard = () => {
   );
 
   return (
+    <AuthGuard>
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
       <nav className="bg-white shadow-sm">
@@ -1383,6 +1385,7 @@ const FlexCraftDashboard = () => {
       {showInviteModal && <InviteModal />}
       {showRoleModal && <RoleModal />}
     </div>
+    </AuthGuard>
   );
 };
 

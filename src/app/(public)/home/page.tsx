@@ -12,7 +12,7 @@ import {
 // import Demo2 from '../Assets/motiongraphic3.mp4';
 
 import Placeholder from '../../Assets/images/team.png'
-import logo from '../../Assets/images/logo.png'
+import logo from '../../../Assets/images/logo.png'
 import Image from 'next/image';
 
 const FlexcraftHomepage = () => {
@@ -245,7 +245,7 @@ const FlexcraftHomepage = () => {
   
   <div className="rounded-xl ">
   <div style={{ position: 'relative', paddingBottom: '56.25%' }}> {/* 16:9 aspect ratio container */}
-    <iframe
+     <iframe
       loading="lazy"
       src="https://app.storylane.io/demo/bnxkkkyc0v42?embed=inline"
       name="sl-embed"

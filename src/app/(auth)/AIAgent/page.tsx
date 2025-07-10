@@ -1,3 +1,4 @@
+
 "use client"
 import { useState, useEffect, useRef } from 'react';
 import { 
@@ -5,13 +6,14 @@ import {
   File, Folder, ChevronDown, ChevronRight, Settings, MessageSquare, 
   Send, Plus, HardDriveUpload, UploadCloud, X, Maximize, Minimize,
   Search, Terminal, Zap, Palette, Eye, Moon, Sun, Trash2, Edit, Save,
-  EyeIcon
+  Eye as EyeIcon
 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
-import { Link } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import Loader from '../Loader';
-import { useNavigate } from 'react-router-dom';
-import AnimationtedLogo from '../../../Assets/images/animated logo.gif'
+import Image from 'next/image';
+import AnimationtedLogo from '../../../Assets/images/animated logo.gif';
+import AuthGuard from '@/app/components/AuthGuard';
 
 type Framework = 'react' | 'vue' | 'angular' | 'svelte';
 type Backend = 'node' | 'django' | 'flask' | 'spring' | 'express';
@@ -143,7 +145,7 @@ export default function CodeGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
 
-  const navigate = useNavigate();
+  const router = useRouter();
   const [showLoader, setShowLoader] = useState(false);
 
   const handleDeployClick = (e: React.MouseEvent) => {
@@ -151,7 +153,7 @@ export default function CodeGenerator() {
     setShowLoader(true);
     
     setTimeout(() => {
-      navigate('/deployment');
+      router.push('/deployment');
     }, 3000);
   };
 
@@ -614,7 +616,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
   };
 
   const renderCustomizationPanel = () => (
-    <div className={`w-96 border-r ${themeColors.border} ${themeColors.bgSecondary} flex flex-col h-full ${showCustomizationPanel ? 'flex' : 'hidden'}`}>
+    <div className={`w-full border-r ${themeColors.border} ${themeColors.bgSecondary} flex flex-col h-full ${showCustomizationPanel ? 'flex' : 'hidden'}`}>
       {/* Header */}
       <div className={`h-12 p-4 border-b ${themeColors.border} flex justify-between items-center ${themeColors.bgSecondary} flex-shrink-0`}>
         <h3 className={`font-medium ${themeColors.textPrimary}`}>Customize with AI</h3>
@@ -817,16 +819,15 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
             <button className={`px-3 py-1 text-xs rounded flex items-center gap-1 ${themeColors.bgTertiary} ${themeColors.textPrimary} hover:${themeColors.bgTertiary}`}>
               <Download size={14} /> Export
             </button>
-            <Link 
+            <button 
               className={`px-3 py-1 text-xs text-white rounded flex items-center gap-1 hover:opacity-90`}
               style={{ 
                 background: `linear-gradient(to right, ${themes[theme].accent.replace('bg-', '')}, ${themes[theme].accentHover.replace('hover:', '').replace('bg-', '')})` 
               }}
-              to={''} 
               onClick={handleDeployClick}
             >
               <HardDriveUpload size={14} /> Deploy
-            </Link>
+            </button>
             <button 
               className={`p-1.5 rounded hover:${themeColors.bgTertiary} ${themeColors.textPrimary}`}
               onClick={() => setIsFullScreen(!isFullScreen)}
@@ -1062,7 +1063,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
       {showLoader && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
           <div className="text-center">
-            <img 
+            <Image 
               src={AnimationtedLogo}
               alt="Preparing deployment"
               className="w-48 h-48 mx-auto mb-4 rounded-full"
@@ -1094,6 +1095,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
   }
 
   return (
+    <AuthGuard>
     <div className={`min-h-screen ${themeColors.bgPrimary} ${themeColors.textPrimary}`}>
       <div className="max-w-20xl mx-auto h-full">
         {step !== 'result' && (
@@ -1283,13 +1285,13 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
 
                   <h3 className={`text-sm font-medium mb-3 ${themeColors.textSecondary}`}>Additional features</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8 text-blue-500">
-    <FeatureToggle id="auth" label="Authentication" icon={<Check size={16} />} />
-    <FeatureToggle id="apiDocs" label="API Documentation" icon={<Code size={16} />} />
-    <FeatureToggle id="docker" label="Docker Setup" icon={<Layers size={16} />} />
-    <FeatureToggle id="testing" label="Testing Framework" icon={<Check size={16} />} />
-    <FeatureToggle id="ciCd" label="CI/CD Pipeline" icon={<Cpu size={16} />} />
-    <FeatureToggle id="eslint" label="ESLint Setup" icon={<Code size={16} />} />
-</div>
+                    <FeatureToggle id="auth" label="Authentication" icon={<Check size={16} />} />
+                    <FeatureToggle id="apiDocs" label="API Documentation" icon={<Code size={16} />} />
+                    <FeatureToggle id="docker" label="Docker Setup" icon={<Layers size={16} />} />
+                    <FeatureToggle id="testing" label="Testing Framework" icon={<Check size={16} />} />
+                    <FeatureToggle id="ciCd" label="CI/CD Pipeline" icon={<Cpu size={16} />} />
+                    <FeatureToggle id="eslint" label="ESLint Setup" icon={<Code size={16} />} />
+                  </div>
 
                   <div className="flex justify-between">
                     <button
@@ -1339,5 +1341,6 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
         )}
       </div>
     </div>
+    </AuthGuard>
   );
-} 
+}

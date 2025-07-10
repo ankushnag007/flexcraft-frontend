@@ -18,6 +18,7 @@ import {
   Filter,
   Search
 } from 'lucide-react';
+import AuthGuard from '@/app/components/AuthGuard';
 
 interface Project {
   id: string;
@@ -143,6 +144,7 @@ const ProjectsDashboard = () => {
   };
 
   return (
+    <AuthGuard>
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -500,6 +502,7 @@ const ProjectsDashboard = () => {
         )}
       </div>
     </div>
+    </AuthGuard>
   );
 };
 

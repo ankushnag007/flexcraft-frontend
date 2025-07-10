@@ -21,6 +21,7 @@ import {
   MoreHorizontal,
   GitFork,
 } from "lucide-react";
+import AuthGuard from "@/app/components/AuthGuard";
 
 interface Repository {
   id: string;
@@ -249,6 +250,7 @@ const GitHubIntegration = () => {
   };
 
   return (
+    <AuthGuard>
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
@@ -637,6 +639,7 @@ const GitHubIntegration = () => {
         </div>
       </div>
     </div>
+    </AuthGuard>
   );
 };
 
