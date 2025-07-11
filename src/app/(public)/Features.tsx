@@ -1,6 +1,7 @@
 import { Check, Zap, Shield, Code, Server, Users, Database, Clock } from 'lucide-react';
 import Analytics from '../../Assets/images/reports.png'
 import Team from '../../Assets/images/team.png'
+import Image from 'next/image';
 
 
 const FeaturesPage = () => {
@@ -122,7 +123,7 @@ const FeaturesPage = () => {
                   </div>
                 </div>
                 <div className="md:w-1/2">
-                  <img 
+                  <Image 
                     src={Analytics} 
                     alt="Analytics dashboard" 
                     className="rounded-lg shadow-xl border border-gray-200" 
@@ -151,7 +152,7 @@ const FeaturesPage = () => {
                   </div>
                 </div>
                 <div className="md:w-1/2">
-                  <img 
+                  <Image 
                     src={Team} 
                     alt="Collaboration features" 
                     className="rounded-lg shadow-xl border border-gray-200" 
