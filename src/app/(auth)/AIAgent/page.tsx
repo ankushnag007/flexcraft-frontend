@@ -991,7 +991,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
                     fontFamily: 'Fira Code, monospace',
                     wordWrap: 'on',
                     renderLineHighlight: 'all',
-                    occurrencesHighlight: true,
+                    // occurrencesHighlight: true,
                     matchBrackets: 'always',
                     scrollbar: {
                       vertical: 'auto',
