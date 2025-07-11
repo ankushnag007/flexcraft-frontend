@@ -1299,7 +1299,7 @@ const JiraLikeProjectManagement = () => {
           <div className="bg-white p-4 rounded-lg shadow mb-6">
             <h3 className="font-medium mb-3">Calendar</h3>
             <div className="h-full bg-gray-50 rounded flex items-center justify-center text-gray-400 overflow-auto" >
-                          <div><MeetingScheduler /></div>
+                          {/* <div><MeetingScheduler /></div> */}
               
             </div>
           </div>
