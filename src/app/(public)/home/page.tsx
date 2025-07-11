@@ -217,7 +217,7 @@ const FlexcraftHomepage = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <a href="https://calendly.com/ankushnag786/30min" className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 md:py-4 md:text-lg md:px-10 transition-colors">
+            <a href="https://calendly.com/flexcraftapp/30min" className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 md:py-4 md:text-lg md:px-10 transition-colors">
               Get started for free
             </a>
             <a href="#" className="px-8 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition-colors">
@@ -657,7 +657,7 @@ const FlexcraftHomepage = () => {
             <a href="#" className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 md:py-4 md:text-lg md:px-10 transition-colors">
               Start free trial
             </a>
-            <a href="https://calendly.com/ankushnag786/30min" className="px-8 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition-colors">
+            <a href="https://calendly.com/flexcraftapp/30min" className="px-8 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition-colors">
               Request demo
             </a>
           </div>
