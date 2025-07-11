@@ -48,40 +48,40 @@ const TEMPLATES = [
     description: "Create and assign tasks automatically",
     icon: <CheckCircle className="w-5 h-5 text-blue-500" />,
     steps: [
-      { type: 'task', config: { title: "Review new request", assignee: "Team Lead" } },
-      { type: 'email', config: { to: "team@example.com", subject: "New task assigned" } }
-    ]
+      { id: 'tmpl-1-1', type: 'task' as StepType, config: { title: "Review new request", assignee: "Team Lead" } },
+      { id: 'tmpl-1-2', type: 'email' as StepType, config: { to: "team@example.com", subject: "New task assigned" } }
+    ] as WorkflowStep[]
   },
   {
     name: "API Testing",
     description: "Notify testers when API is ready",
     icon: <Terminal className="w-5 h-5 text-green-500" />,
     steps: [
-      { type: 'email', config: { to: "qa@example.com", subject: "API Ready for Testing" } },
-      { type: 'chat', config: { channel: "testing", message: "New API version available" } }
-    ]
+      { id: 'tmpl-2-1', type: 'email' as StepType, config: { to: "qa@example.com", subject: "API Ready for Testing" } },
+      { id: 'tmpl-2-2', type: 'chat' as StepType, config: { channel: "testing", message: "New API version available" } }
+    ] as WorkflowStep[]
   },
   {
     name: "Sprint Planning",
     description: "Automate meeting scheduling",
     icon: <Calendar className="w-5 h-5 text-purple-500" />,
     steps: [
-      { type: 'meeting', config: { 
+      { id: 'tmpl-3-1', type: 'meeting' as StepType, config: { 
         title: "Sprint Planning", 
         participants: ["team@example.com"], 
         duration: 60 
       }},
-      { type: 'chat', config: { channel: "general", message: "Sprint meeting scheduled" } }
-    ]
+      { id: 'tmpl-3-2', type: 'chat' as StepType, config: { channel: "general", message: "Sprint meeting scheduled" } }
+    ] as WorkflowStep[]
   },
   {
     name: "Production Deployment",
     description: "Automated deployment pipeline",
     icon: <Cloud className="w-5 h-5 text-orange-500" />,
     steps: [
-      { type: 'deployment', config: { environment: "production", notifyOn: "success" } },
-      { type: 'email', config: { to: "ops@example.com", subject: "Deployment initiated" } }
-    ]
+      { id: 'tmpl-4-1', type: 'deployment' as StepType, config: { environment: "production", notifyOn: "success" } },
+      { id: 'tmpl-4-2', type: 'email' as StepType, config: { to: "ops@example.com", subject: "Deployment initiated" } }
+    ] as WorkflowStep[]
   }
 ];
 
