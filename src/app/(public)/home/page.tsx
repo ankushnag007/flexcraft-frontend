@@ -122,13 +122,13 @@ const FlexcraftHomepage = () => {
             </div>
             {/* <span className="ml-2 text-xl font-bold text-gray-900">flexcraft</span> */}
             
-            <nav className="hidden md:ml-10 md:space-x-8 md:flex">
+            {/* <nav className="hidden md:ml-10 md:space-x-8 md:flex">
               <a href="/features" className="text-sm font-medium text-gray-500 hover:text-gray-900">Features</a>
               <a href="/pricing" className="text-sm font-medium text-gray-500 hover:text-gray-900">Pricing</a>
               <a href="/resources" className="text-sm font-medium text-gray-500 hover:text-gray-900">Resources</a>
               <a href="/integrationsPage" className="text-sm font-medium text-gray-500 hover:text-gray-900">Integrations</a>
               <a href="/careers" className="text-sm font-medium text-gray-500 hover:text-gray-900">Careers</a>
-            </nav>
+            </nav> */}
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
