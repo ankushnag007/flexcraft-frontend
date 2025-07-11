@@ -34,12 +34,12 @@ const FlexcraftHomepage = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     setShowLoginModal(false);
   };
 
-  const handleSignupSubmit = (e) => {
+  const handleSignupSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     setShowSignupModal(false);
   };
@@ -58,7 +58,7 @@ const FlexcraftHomepage = () => {
       y: 0,
       opacity: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const, // Allowed literal type for Framer Motion
         bounce: 0.4,
         duration: 0.8
       }
@@ -77,7 +77,7 @@ const FlexcraftHomepage = () => {
       opacity: 1,
       transition: { 
         duration: 0.6,
-        ease: "easeOut"
+        ease: "easeOut" as const // This is also allowed by Framer Motion
       }
     }
   };
