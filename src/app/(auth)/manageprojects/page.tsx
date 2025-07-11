@@ -1562,9 +1562,9 @@ const JiraLikeProjectManagement = () => {
                     Dashboards
                   </button> */}
 
-<Link href={`/manageprojects/reports/${"flexcraft-workspace"}`}>
+{/* <Link href={`/manageprojects/reports/${"flexcraft-workspace"}`}>
   View Post
-</Link>
+</Link> */}
                   <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                       activeContentTab === "Your work"

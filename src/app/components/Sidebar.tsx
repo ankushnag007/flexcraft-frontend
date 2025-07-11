@@ -36,9 +36,9 @@ const Header = () => {
   const [sliderStyle, setSliderStyle] = useState({ opacity: 0 });
   const navRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef(new Map<string, HTMLAnchorElement>());
-  const resizeObserverRef = useRef<ResizeObserver>();
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const lastUpdateTimeRef = useRef(0);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | null>(null);
 
   // Memoized update function with throttling
   const updateSlider = useCallback((immediate = false) => {
@@ -80,7 +80,7 @@ const Header = () => {
     updateSlider(true);
 
     // Use ResizeObserver instead of window resize for better performance
-    resizeObserverRef.current = new ResizeObserver(() => {
+    resizeObserverRef.current = new ResizeObserver((_entries) => {
       updateSlider();
     });
 
