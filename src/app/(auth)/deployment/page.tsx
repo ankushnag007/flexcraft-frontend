@@ -42,7 +42,9 @@ const EnhancedDeploymentUI = () => {
   const [useDocker, setUseDocker] = useState(false);
   const [useKubernetes, setUseKubernetes] = useState(false);
   const [infraAsCode, setInfraAsCode] = useState('terraform');
-  const [expandedSections, setExpandedSections] = useState({
+  type SectionKey = 'git' | 'build' | 'triggers' | 'cloud' | 'containers' | 'monitoring' | 'networking';
+
+  const [expandedSections, setExpandedSections] = useState<Record<SectionKey, boolean>>({
     git: true,
     build: true,
     triggers: true,
@@ -52,7 +54,7 @@ const EnhancedDeploymentUI = () => {
     networking: false
   });
 
-  const toggleSection = (section) => {
+  const toggleSection = (section: SectionKey) => {
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section]
@@ -407,7 +409,7 @@ const EnhancedDeploymentUI = () => {
                             <select
                               className="w-full bg-white border border-gray-300 rounded-md px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
                             >
-                              {regionsByProvider[provider.id].map(region => (
+                              {regionsByProvider[provider.id as keyof typeof regionsByProvider].map(region => (
                                 <option key={region} value={region}>{region}</option>
                               ))}
                             </select>
