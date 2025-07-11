@@ -10,6 +10,7 @@ import {
   Lock, Sliders, Zap, Hash, Bell, Star, Tag
 } from 'lucide-react';
 import AuthGuard from '@/app/components/AuthGuard';
+import Image from 'next/image';
 
 const ApiTesting = () => {
   const [method, setMethod] = useState('GET');
@@ -69,7 +70,13 @@ const ApiTesting = () => {
   
   const updateFormData = (index: number, field: 'key' | 'value' | 'type', value: string) => {
     const newFormData = [...formData];
-    newFormData[index][field] = value;
+    if (field === 'type') {
+      if (value === 'text' || value === 'file') {
+        newFormData[index][field] = value;
+      }
+    } else {
+      newFormData[index][field] = value;
+    }
     setFormData(newFormData);
   };
   
@@ -149,7 +156,7 @@ const ApiTesting = () => {
     setSavedRequests([...savedRequests, newRequest]);
   };
 
-  const loadRequest = (request) => {
+  const loadRequest = (request: { id?: number; name: any; method: any; url: any; headers?: any; body?: any; }) => {
     setMethod(request.method);
     setUrl(request.url);
     setRequestName(request.name);
@@ -161,23 +168,23 @@ const ApiTesting = () => {
     setParams([...params, { id: Date.now(), key: '', value: '', enabled: true }]);
   };
 
-  const updateParam = (id, field, value) => {
+  const updateParam = (id: number, field: string, value: string) => {
     setParams(params.map(param => 
       param.id === id ? { ...param, [field]: value } : param
     ));
   };
 
-  const removeParam = (id) => {
+  const removeParam = (id: number) => {
     setParams(params.filter(param => param.id !== id));
   };
 
-  const toggleParam = (id) => {
+  const toggleParam = (id: number) => {
     setParams(params.map(param => 
       param.id === id ? { ...param, enabled: !param.enabled } : param
     ));
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: number) => {
     if (status >= 200 && status < 300) return 'bg-green-100 text-green-800';
     if (status >= 300 && status < 400) return 'bg-blue-100 text-blue-800';
     if (status >= 400 && status < 500) return 'bg-yellow-100 text-yellow-800';
@@ -185,7 +192,7 @@ const ApiTesting = () => {
     return 'bg-gray-100 text-gray-800';
   };
 
-  const copyToClipboard = (text) => {
+  const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
   };
 
@@ -224,7 +231,7 @@ const ApiTesting = () => {
       {/* Sidebar */}
       <div className="w-64 bg-gray-900 text-gray-200 p-4 flex flex-col border-r border-gray-700">
         <div className="flex items-center justify-between mb-6">
-            <img src={logo} className="h-3 w-auto" /> API Client
+            <Image src={logo} className="h-3 w-auto" alt="logo" /> API Client
           <h2 className="text-lg font-bold flex items-center">
             {/* <Globe className="w-5 h-5 mr-2 text-blue-400" /> */}
           </h2>
@@ -905,7 +912,8 @@ const ApiTesting = () => {
                       {response && JSON.parse(response).headers && Object.entries(JSON.parse(response).headers).map(([key, value]) => (
                         <tr key={key} className="border-b">
                           <td className="py-2 font-mono text-sm">{key}</td>
-                          <td className="py-2 font-mono text-sm">{value}</td>
+                          <td className="py-2 font-mono text-sm">{String(value)}</td>
+                          
                         </tr>
                       ))}
                     </tbody>
