@@ -502,8 +502,8 @@ const FlexCraftDashboard = () => {
 
     return (
       <span className={`px-2 py-1 text-xs rounded-full ${color}`}>
-        {/* {role} */}
-      </span>
+      {role as string}
+    </span>
     );
   };
 
