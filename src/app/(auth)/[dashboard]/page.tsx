@@ -6,7 +6,9 @@ import {
   UserPlus, Edit, Trash, ChevronDown, ChevronUp, Search, Filter, 
   Lock, Unlock, Eye, EyeOff, Mail, Phone, Key, Plus, Minus, 
   UserCheck, UserX, RefreshCw, Coffee, Bell, Folder,
-  Code2, FileText, Video, CalendarSearch
+  Code2, FileText, Video, CalendarSearch,
+  Copy,
+  Link
 } from 'lucide-react';
 import logo from '../../../Assets/images/logo.png';
 import user from '../../../Assets/images/user.jpg';
@@ -14,6 +16,19 @@ import Reports from '../manageprojects/reports/page';
 import Projects from '../manageprojects/projects/page';
 import Image from 'next/image';
 import AuthGuard from '@/app/components/AuthGuard';
+
+// TimeDisplay component to avoid hydration error
+function TimeDisplay() {
+  const [time, setTime] = React.useState("");
+  React.useEffect(() => {
+    setTime(new Date().toLocaleTimeString());
+    const interval = setInterval(() => {
+      setTime(new Date().toLocaleTimeString());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+  return <div className="text-sm text-gray-400">{time}</div>;
+}
 
 const FlexCraftDashboard = () => {
   const [timeOfDay, setTimeOfDay] = useState('morning');
@@ -23,9 +38,9 @@ const FlexCraftDashboard = () => {
   const [activePlan, setActivePlan] = useState('pro');
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
-  const [teamMembers, setTeamMembers] = useState([]);
-  const [invitations, setInvitations] = useState([]);
-  const [roles, setRoles] = useState([]);
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [invitations, setInvitations] = useState<any[]>([]);
+  const [roles, setRoles] = useState<any[]>([]);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,16 +62,16 @@ const FlexCraftDashboard = () => {
 
   // Meeting scheduler state
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [availableSlots, setAvailableSlots] = useState([]);
-  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [availableSlots, setAvailableSlots] = useState<any[]>([]);
+  const [selectedSlot, setSelectedSlot] = useState<any>(null);
   const [meetingTitle, setMeetingTitle] = useState('');
   const [meetingDescription, setMeetingDescription] = useState('');
-  const [scheduledMeetings, setScheduledMeetings] = useState([]);
+  const [scheduledMeetings, setScheduledMeetings] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(null);
+  const [copiedLink, setCopiedLink] = useState<any>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [filteredMeetings, setFilteredMeetings] = useState([]);
+  const [filteredMeetings, setFilteredMeetings] = useState<any[]>([]);
 
   // Initialize dashboard
   useEffect(() => {
@@ -112,6 +127,8 @@ const FlexCraftDashboard = () => {
     ];
 
     setTeamMembers(mockTeamMembers);
+    // setTeamMembers("@gmail.com");  
+
     setInvitations(mockInvitations);
     setRoles(mockRoles);
 
@@ -201,17 +218,17 @@ const FlexCraftDashboard = () => {
     setSelectedSlot(null);
   };
 
-  const copyToClipboard = (text, id) => {
+  const copyToClipboard = (text: string, id: string | number) => {
     navigator.clipboard.writeText(text);
     setCopiedLink(id);
     setTimeout(() => setCopiedLink(null), 2000);
   };
 
-  const deleteMeeting = (id) => {
+  const deleteMeeting = (id: string | number) => {
     setScheduledMeetings(scheduledMeetings.filter(meeting => meeting.id !== id));
   };
 
-  const formatDateHeader = (date) => {
+  const formatDateHeader = (date: Date) => {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -226,11 +243,11 @@ const FlexCraftDashboard = () => {
     });
   };
 
-  const getDaysInMonth = (year, month) => {
+  const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate();
   };
 
-  const getFirstDayOfMonth = (year, month) => {
+  const getFirstDayOfMonth = (year: number, month: number) => {
     return new Date(year, month, 1).getDay();
   };
 
@@ -310,7 +327,7 @@ const FlexCraftDashboard = () => {
     return days;
   };
 
-  const changeMonth = (direction) => {
+  const changeMonth = (direction: string) => {
     if (direction === 'prev') {
       if (currentMonth === 0) {
         setCurrentMonth(11);
@@ -328,7 +345,7 @@ const FlexCraftDashboard = () => {
     }
   };
 
-  const getMonthName = (monthIndex) => {
+  const getMonthName = (monthIndex: number) => {
     const months = [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'
@@ -377,7 +394,7 @@ const FlexCraftDashboard = () => {
   ];
 
   // Team management functions
-  const handleInviteSubmit = (e) => {
+  const handleInviteSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     const newInvitation = {
       id: invitations.length + 1,
@@ -392,7 +409,7 @@ const FlexCraftDashboard = () => {
     setShowInviteModal(false);
   };
 
-  const handleRoleSubmit = (e) => {
+  const handleRoleSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     const newRoleEntry = {
       id: roles.length + 1,
@@ -417,7 +434,7 @@ const FlexCraftDashboard = () => {
     setShowRoleModal(false);
   };
 
-  const toggleUserStatus = (userId, currentStatus) => {
+  const toggleUserStatus = (userId: any, currentStatus: string) => {
     setTeamMembers(teamMembers.map(member => 
       member.id === userId 
         ? { ...member, status: currentStatus === 'active' ? 'suspended' : 'active' } 
@@ -425,15 +442,15 @@ const FlexCraftDashboard = () => {
     ));
   };
 
-  const resendInvitation = (invitationId) => {
+  const resendInvitation = (invitationId: any) => {
     alert(`Invitation resent to ${invitations.find(i => i.id === invitationId).email}`);
   };
 
-  const revokeInvitation = (invitationId) => {
+  const revokeInvitation = (invitationId: any) => {
     setInvitations(invitations.filter(i => i.id !== invitationId));
   };
 
-  const deleteRole = (roleId) => {
+  const deleteRole = (roleId: any) => {
     const roleInUse = teamMembers.some(member => member.role === roles.find(r => r.id === roleId).name);
     if (roleInUse) {
       alert('Cannot delete role that is currently assigned to team members');
@@ -442,7 +459,7 @@ const FlexCraftDashboard = () => {
     setRoles(roles.filter(role => role.id !== roleId));
   };
 
-  const updateUserRole = (userId, newRole) => {
+  const updateUserRole = (userId: any, newRole: string) => {
     setTeamMembers(teamMembers.map(member => 
       member.id === userId ? { ...member, role: newRole } : member
     ));
@@ -461,7 +478,7 @@ const FlexCraftDashboard = () => {
     (selectedRoleFilter === 'all' || invite.role === selectedRoleFilter)
   );
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status: any) => {
     switch (status) {
       case 'active': return <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>;
       case 'pending': return <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Pending</span>;
@@ -470,7 +487,7 @@ const FlexCraftDashboard = () => {
     }
   };
 
-  const getRoleBadge = (role) => {
+  const getRoleBadge = (role: unknown) => {
     const roleColors = {
       admin: 'bg-purple-100 text-purple-800',
       developer: 'bg-blue-100 text-blue-800',
@@ -478,8 +495,13 @@ const FlexCraftDashboard = () => {
       analyst: 'bg-yellow-100 text-yellow-800',
       contractor: 'bg-indigo-100 text-indigo-800'
     };
+
+    const color = typeof role === 'string' && role in roleColors
+      ? roleColors[role as keyof typeof roleColors]
+      : 'bg-gray-100 text-gray-800';
+
     return (
-      <span className={`px-2 py-1 text-xs rounded-full ${roleColors[role] || 'bg-gray-100 text-gray-800'}`}>
+      <span className={`px-2 py-1 text-xs rounded-full ${color}`}>
         {role}
       </span>
     );
@@ -599,7 +621,7 @@ const FlexCraftDashboard = () => {
                         type="checkbox"
                         id={key}
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        checked={newRole.permissions[key]}
+                        checked={newRole.permissions[key as keyof typeof newRole.permissions]}
                         onChange={(e) => setNewRole({
                           ...newRole,
                           permissions: {
@@ -802,9 +824,7 @@ const FlexCraftDashboard = () => {
                         <p className="font-medium">Activity {index + 1}</p>
                         <p className="text-sm text-gray-500">Description of activity</p>
                       </div>
-                      <div className="text-sm text-gray-400">
-                        {new Date().toLocaleTimeString()}
-                      </div>
+                      <TimeDisplay />
                     </div>
                   </div>
                 ))}
