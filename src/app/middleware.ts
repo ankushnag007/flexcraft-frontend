@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { verifyAuth } from './lib/auth' // Your auth logic
+// import { verifyAuth } from './lib/auth' // Your auth logic
 
 export async function middleware(request: NextRequest) {
   const isAuthenticated = false // Check cookies/tokens
