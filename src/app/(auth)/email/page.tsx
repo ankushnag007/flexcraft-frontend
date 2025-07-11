@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from 'react';
+import { useState, useEffect, SetStateAction } from 'react';
 import {
   Search, Inbox, Send, FileText, Star, Trash2, Mail, ChevronDown, Menu,
   RefreshCw, MoreVertical, Paperclip, Archive, Clock, Tag, Minus, X,
@@ -10,7 +10,20 @@ import AuthGuard from '@/app/components/AuthGuard';
 
 const EmailApp = () => {
   // State for emails
-  const [emails, setEmails] = useState([
+  type Email = {
+  id: number;
+  from: string;
+  subject: string;
+  body: string;
+  time: string;
+  read: boolean;
+  starred: boolean;
+  category: string;
+  labels: string[];
+  attachments: string[];
+};
+
+const [emails, setEmails] = useState<Email[]>([
     { id: 1, from: 'john.doe@example.com', subject: 'Weekly Team Meeting', 
       body: 'Hi team, just a reminder about our weekly sync tomorrow at 10 AM. Please prepare your updates and join on time. We\'ll be discussing the Q2 roadmap and upcoming product launches.', 
       time: '10:30 AM', read: false, starred: true, category: 'Work', labels: ['Important'], attachments: [] },
@@ -29,11 +42,11 @@ const EmailApp = () => {
   ]);
 
   // App state
-  const [selectedEmail, setSelectedEmail] = useState(null);
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
   const [currentFolder, setCurrentFolder] = useState('inbox');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedEmails, setSelectedEmails] = useState([]);
+  const [selectedEmails, setSelectedEmails] = useState<number[]>([]);
   const [newEmail, setNewEmail] = useState({
     to: '',
     subject: '',
@@ -106,25 +119,25 @@ const EmailApp = () => {
   });
 
   // Email actions
-  const markAsRead = (id) => {
+  const markAsRead = (id: number) => {
     setEmails(emails.map(email => 
       email.id === id ? { ...email, read: true } : email
     ));
   };
 
-  const toggleStar = (id) => {
+  const toggleStar = (id: number) => {
     setEmails(emails.map(email => 
       email.id === id ? { ...email, starred: !email.starred } : email
     ));
   };
 
-  const deleteEmail = (id) => {
+  const deleteEmail = (id: number) => {
     // In a real app, you might move to trash instead of deleting
     setEmails(emails.filter(email => email.id !== id));
     if (selectedEmail?.id === id) setSelectedEmail(null);
   };
 
-  const moveToFolder = (id, folder) => {
+  const moveToFolder = (id: number, folder: string) => {
     // Implement folder logic
     console.log(`Move email ${id} to ${folder}`);
   };
@@ -149,13 +162,13 @@ const EmailApp = () => {
   };
 
   // Handle email selection
-  const handleSelectEmail = (email) => {
+  const handleSelectEmail = (email: { id: number; from: string; subject: string; body: string; time: string; read: boolean; starred: boolean; category: string; labels: string[]; attachments: string[]; } | null) => {
     setSelectedEmail(email);
-    if (!email.read) markAsRead(email.id);
+    if (email && !email.read) markAsRead(email.id);
   };
 
   // Toggle email selection
-  const toggleEmailSelection = (id, checked) => {
+  const toggleEmailSelection = (id: number, checked: boolean) => {
     if (checked) {
       setSelectedEmails([...selectedEmails, id]);
     } else {
@@ -164,7 +177,7 @@ const EmailApp = () => {
   };
 
   // Select all emails
-  const selectAllEmails = (checked) => {
+  const selectAllEmails = (checked: boolean) => {
     if (checked) {
       setSelectedEmails(filteredEmails.map(email => email.id));
     } else {
