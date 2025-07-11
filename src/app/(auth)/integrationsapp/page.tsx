@@ -10,7 +10,23 @@ import {
 } from 'lucide-react';
 import logo from '../Assets/images/logo.png'
 import AuthGuard from '@/app/components/AuthGuard';
-const IntegrationCard = ({ icon, title, description, category, installed, popular }) => {
+type IntegrationCardProps = {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  category: string;
+  installed?: boolean;
+  popular?: boolean;
+};
+
+const IntegrationCard = ({
+  icon,
+  title,
+  description,
+  category,
+  installed,
+  popular,
+}: IntegrationCardProps) => {
   const IconComponent = icon;
   return (
     <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -44,7 +60,13 @@ const IntegrationCard = ({ icon, title, description, category, installed, popula
   );
 };
 
-const IntegrationCategory = ({ name, icon, openByDefault }) => {
+type IntegrationCategoryProps = {
+  name: string;
+  icon: React.ElementType;
+  openByDefault: boolean;
+};
+
+const IntegrationCategory = ({ name, icon, openByDefault }: IntegrationCategoryProps) => {
   const [isOpen, setIsOpen] = useState(openByDefault);
   const IconComponent = icon;
   
