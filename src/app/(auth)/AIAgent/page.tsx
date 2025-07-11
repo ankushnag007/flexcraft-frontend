@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { useRouter } from 'next/navigation';
-import Loader from '../Loader';
 import Image from 'next/image';
 import AnimationtedLogo from '../../../Assets/images/animated logo.gif';
 import AuthGuard from '@/app/components/AuthGuard';
