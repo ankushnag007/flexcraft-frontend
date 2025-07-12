@@ -5,16 +5,19 @@ import {
   Play, Pause, Volume2, VolumeX, Maximize, Minimize, Settings, Menu, X, 
   Loader2, Check, Github, Slack, Figma, Trello, Zap, Rocket, Cloud, Cpu, 
   Server, Code, Database, Shield, BarChart, Users, Bell, GitBranch, Layout, 
-  GitPullRequest, Terminal, Package, Monitor, Smartphone, Tablet, LifeBuoy 
+  GitPullRequest, Terminal, Package, Monitor, Smartphone, Tablet, LifeBuoy, 
+  ArrowBigRight,
+  ArrowRight
 } from 'lucide-react';
+import Image from "next/image"
 // import Demo from '../Assets/videos/motiongraphic.mp4';
 // import Demo1 from '../Assets/videos/motiongraphic2.mp4';
 // import Demo2 from '../Assets/motiongraphic3.mp4';
 
 import Placeholder from '../../Assets/images/team.png'
 import logo from '../../../Assets/images/logo.png'
-import Image from 'next/image';
-
+import arrowFrame from '../../../Assets/images/arrow-frame.svg'
+import team from '../../../Assets/images/team.png'
 const FlexcraftHomepage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -103,16 +106,18 @@ const FlexcraftHomepage = () => {
         <div className="mb-4">
           <div className="rounded-full flex items-center justify-center animate-pulse">
             <Image src={logo} className='h-6 w-auto' alt="Flexcraft Logo" />
+        {/* <p className="mt-4 text-blue-900 font-bold">Sync in with your team</p> */}
+
           </div>
         </div>
-        <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
-        <p className="mt-4 text-blue-900 font-bold">Preparing your project, please wait...</p>
+        {/* <Loader2 className="h-8 w-8 animate-spin text-blue-400" /> */}
+        {/* <p className="mt-4 text-blue-900 font-bold">Preparing your project, please wait...</p> */}
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-50">
+    <div className=" bg-gradient-to-r from-blue-600 to-blue-800 ">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
@@ -120,15 +125,7 @@ const FlexcraftHomepage = () => {
             <div className="flex items-center justify-center">
               <Image src={logo} className='h-6 w-auto' alt="Flexcraft Logo" />
             </div>
-            {/* <span className="ml-2 text-xl font-bold text-gray-900">flexcraft</span> */}
-            
-            {/* <nav className="hidden md:ml-10 md:space-x-8 md:flex">
-              <a href="/features" className="text-sm font-medium text-gray-500 hover:text-gray-900">Features</a>
-              <a href="/pricing" className="text-sm font-medium text-gray-500 hover:text-gray-900">Pricing</a>
-              <a href="/resources" className="text-sm font-medium text-gray-500 hover:text-gray-900">Resources</a>
-              <a href="/integrationsPage" className="text-sm font-medium text-gray-500 hover:text-gray-900">Integrations</a>
-              <a href="/careers" className="text-sm font-medium text-gray-500 hover:text-gray-900">Careers</a>
-            </nav> */}
+           
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
@@ -189,12 +186,12 @@ const FlexcraftHomepage = () => {
 
       {/* Hero Section */}
       <motion.div 
-        className="bg-gradient-to-r from-blue-600 to-blue-800 py-16"
+        className="py-16"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center over">
+        <div className="pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center over">
           <motion.h1 
             className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl"
             initial={{ y: 50, opacity: 0 }}
@@ -204,7 +201,7 @@ const FlexcraftHomepage = () => {
             The Complete Project Management Platform
           </motion.h1>
           <motion.p 
-            className="mt-6 text-xl text-blue-100 max-w-3xl mx-auto"
+            className="mt-6 text-white max-w-3xl mx-auto text-sm"
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
@@ -217,10 +214,10 @@ const FlexcraftHomepage = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <a href="https://calendly.com/flexcraftapp/30min" className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 md:py-4 md:text-lg md:px-10 transition-colors">
-              Get started for free
+            <a href="https://calendly.com/flexcraftapp/30min" className="px-8 py-1 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-black hover:text-white md:py-4 md:text-lg md:px-10 transition-colors">
+              Get started for free 
             </a>
-            <a href="#" className="px-8 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition-colors">
+            <a href="#" className="px-4 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition-colors">
               See all features
             </a>
           </motion.div>
@@ -236,32 +233,49 @@ const FlexcraftHomepage = () => {
   whileInView="onscreen"
   viewport={{ once: true, amount: 0.3 }}
 >
-  <div className="text-center mb-12">
-    <h2 className="text-3xl font-bold text-gray-900 mb-4">See Flexcraft in Action</h2>
-    <p className="text-lg text-gray-500 max-w-3xl mx-auto">
+  {/* <div className="text-center mb-12">
+    <h2 className="text-3xl font-bold text-white mb-4">See Flexcraft in Action</h2>
+    <p className="text-lg text-white max-w-3xl mx-auto">
       Watch our demo to see how Flexcraft can transform your development workflow.
     </p>
   </div>
-  
-  <div className="rounded-xl ">
-  <div style={{ position: 'relative', paddingBottom: '56.25%' }}> {/* 16:9 aspect ratio container */}
-     <iframe
-      loading="lazy"
-      src="https://app.storylane.io/demo/bnxkkkyc0v42?embed=inline"
-      name="sl-embed"
-      allow="fullscreen"
-      allowFullScreen
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '80%',
-        border: 'none'
-      }}
-    ></iframe>
+   */}
+    <motion.section 
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
+        variants={sectionVariants}
+        initial="offscreen"
+        whileInView="onscreen"
+        viewport={{ once: true, amount: 0.3 }}
+      >
+  <div className="rounded-xl w-full bg-white flex flex-col md:flex-row items-stretch">
+    {/* Logo: 30% */}
+    <div className="flex justify-center items-center md:basis-[30%] w-full md:w-auto p-6 relative">
+      <h1 className="text-4xl font-extrabold tracking-tight text-blue-600 sm:text-5xl lg:text-6xl relative z-10">Collaborate with teams</h1>
+      <Image src={arrowFrame} alt="Arrow Frame" className="w-20 h-20 object-contain absolute right-0 bottom-0 z-0" />
+    </div>
+    {/* Video: 70% */}
+    <div className="md:basis-[70%] w-full p-4">
+      <div style={{ position: 'relative', paddingBottom: '56.25%' }}>
+        <iframe
+          loading="lazy"
+          src="https://app.storylane.io/demo/bnxkkkyc0v42?embed=inline"
+          name="sl-embed"
+          allow="fullscreen"
+          allowFullScreen
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            border: 'none'
+          }}
+        ></iframe>
+      </div>
+    </div>
   </div>
-</div>  
+</motion.section>
+
 </motion.section>
 
       {/* Feature Highlights */}
@@ -272,7 +286,7 @@ const FlexcraftHomepage = () => {
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
       >
-        <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">Everything Your Team Needs in One Platform</h2>
+        <h2 className="text-3xl font-bold text-white mb-12 text-center">Everything Your Team Needs in One Platform</h2>
         
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -306,13 +320,13 @@ const FlexcraftHomepage = () => {
 
       {/* Platform Architecture Section */}
       <motion.section 
-        className="bg-white py-16"
+        className="bg-white pt-16"
         variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8  py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Robust & Scalable Architecture</h2>
             <p className="text-lg text-gray-500 max-w-3xl mx-auto">
@@ -352,7 +366,7 @@ const FlexcraftHomepage = () => {
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Streamlined Development Workflow</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -421,7 +435,7 @@ const FlexcraftHomepage = () => {
               </ul>
             </div>
             <div className="relative w-full h-80 bg-gray-100 overflow-hidden rounded-lg shadow-xl">
-           
+                <Image  src={team} alt="Team" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>
