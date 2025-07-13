@@ -169,15 +169,40 @@ const JiraLikeProjectManagement = () => {
     "low" | "medium" | "high" | "critical"
   >("medium");
   const [isCreatingTask, setIsCreatingTask] = useState(false);
+const [taskIdCounter, setTaskIdCounter] = useState(() => {
+  // Find the max numeric ID in the initial tasks array
+  const maxId = tasks.reduce((max, task) => Math.max(max, Number(task.id)), 0);
+  return maxId + 1;
+});
+const [newTaskStatus, setNewTaskStatus] = useState<Task["status"]>("backlog");
   const [viewMode, setViewMode] = useState<"list" | "board">("board");
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+// Drag and drop state and handlers
+const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+
+const handleDragStart = (taskId: string) => {
+  setDraggedTaskId(taskId);
+};
+
+const handleDragEnd = () => {
+  setDraggedTaskId(null);
+};
+
+const handleDrop = (newStatus: Task["status"]) => {
+  if (draggedTaskId) {
+    setTasks(tasks => tasks.map(task =>
+      task.id === draggedTaskId ? { ...task, status: newStatus } : task
+    ));
+    setDraggedTaskId(null);
+  }
+};
   const [activeContentTab, setActiveContentTab] = useState("Your work");
   
   const handleAddTask = () => {
     if (!newTaskTitle.trim()) return;
 
     const newTask: Task = {
-      id: Date.now().toString(),
+      id: taskIdCounter.toString(),
       title: newTaskTitle,
       description: newTaskDescription,
       status: "backlog",
@@ -265,7 +290,7 @@ const JiraLikeProjectManagement = () => {
             <input
               type="text"
               placeholder="Search tasks..."
-              className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
+              className="pl-10 pr-4 py-2 border rounded-lg   focus:border-blue-500 w-full"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -286,7 +311,7 @@ const JiraLikeProjectManagement = () => {
           </div>
           
           <select 
-            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-auto"
+            className="px-4 py-2 border rounded-lg   focus:border-blue-500 w-full sm:w-auto"
             // value={filter}
             // onChange={(e) => setFilter(e.target.value)}
           >
@@ -395,7 +420,7 @@ const JiraLikeProjectManagement = () => {
                     <svg className="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
-                    <span className="text-sm text-gray-600">{new Date(task.dueDate).toLocaleDateString()}</span>
+                    {/* <span className="text-sm text-gray-600">{new Date(task.dueDate).toLocaleDateString()}</span> */}
                   </div>
                 </div>
                 
@@ -479,6 +504,66 @@ const JiraLikeProjectManagement = () => {
         </div>
       </div>
     </div>
+          </div>
+        );
+      case "Backlogs":
+        return (
+          <div className="bg-white p-6 rounded-lg shadow min-h-screen">
+            <h2 className="text-xl font-bold mb-4 flex items-center">
+              <ClipboardList className="w-5 h-5 mr-2 text-blue-600" />
+              Backlogs
+            </h2>
+            <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search backlog tasks..."
+                  className="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:border-blue-500"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+              <div className="grid grid-cols-12 bg-gray-100 px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <div className="col-span-4">Task</div>
+                <div className="col-span-2">Assignee</div>
+                <div className="col-span-2">Due Date</div>
+                <div className="col-span-2">Priority</div>
+                <div className="col-span-2">Type</div>
+              </div>
+              <div className="divide-y divide-gray-200">
+                {tasks.filter(t => t.status === 'backlog' && (t.title.toLowerCase().includes(searchQuery.toLowerCase()) || (t.description && t.description.toLowerCase().includes(searchQuery.toLowerCase())))).length === 0 ? (
+                  <div className="text-center py-8">
+                    <ClipboardList className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">No backlog tasks found</h3>
+                    <p className="mt-1 text-sm text-gray-500">Try changing your search query</p>
+                  </div>
+                ) : (
+                  tasks.filter(t => t.status === 'backlog' && (t.title.toLowerCase().includes(searchQuery.toLowerCase()) || (t.description && t.description.toLowerCase().includes(searchQuery.toLowerCase())))).map(task => (
+                    <div key={task.id} className="grid grid-cols-12 px-4 py-4 hover:bg-gray-50 transition-colors">
+                      <div className="col-span-4">
+                        <div className="font-medium text-gray-900">{task.title}</div>
+                        <div className="text-sm text-gray-500 mt-1 line-clamp-1">{task.description}</div>
+                      </div>
+                      <div className="col-span-2 flex items-center">
+                        <span className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded text-xs">{task.assignee}</span>
+                      </div>
+                      <div className="col-span-2 flex items-center">
+                        <span className="text-sm text-gray-600">{new Date(task.dueDate).toLocaleDateString()}</span>
+                      </div>
+                      <div className="col-span-2 flex items-center">
+                        <span className={`px-2 py-1 rounded-full text-xs ${getPriorityColor(task.priority)}`}>{task.priority}</span>
+                      </div>
+                      <div className="col-span-2 flex items-center">
+                        <span className={`px-2 py-1 rounded-full text-xs ${getTypeColor(task.type)}`}>{task.type}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
         );
       case "Tasks":
@@ -581,7 +666,11 @@ const JiraLikeProjectManagement = () => {
             {viewMode === "board" && (
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 {/* Backlog Column */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div
+                    className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={() => handleDrop('backlog')}
+                  >
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="font-semibold text-gray-700">Backlog</h2>
                     <div className="flex items-center">
@@ -591,7 +680,8 @@ const JiraLikeProjectManagement = () => {
                             .length
                         }
                       </span>
-                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                      
+                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" onClick={() => { setIsCreatingTask(true); setNewTaskStatus('backlog'); }} />
                     </div>
                   </div>
                   {filteredTasks
@@ -599,7 +689,10 @@ const JiraLikeProjectManagement = () => {
                     .map((task) => (
                       <div
                         key={task.id}
-                        className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer"
+                        className={`bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer ${draggedTaskId === task.id ? 'opacity-50' : ''}`}
+                        draggable
+                        onDragStart={() => handleDragStart(task.id)}
+                        onDragEnd={handleDragEnd}
                         onClick={() => openTaskDetails(task)}
                       >
                         <div className="flex justify-between items-start">
@@ -643,7 +736,11 @@ const JiraLikeProjectManagement = () => {
 
                 {/* Other columns (To Do, In Progress, Review, Done) */}
                 {/* To Do Column */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div
+                    className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={() => handleDrop('todo')}
+                  >
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="font-semibold text-gray-700">To Do</h2>
                     <div className="flex items-center">
@@ -653,7 +750,7 @@ const JiraLikeProjectManagement = () => {
                             .length
                         }
                       </span>
-                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" onClick={() => { setIsCreatingTask(true); setNewTaskStatus('todo'); }} />
                     </div>
                   </div>
                   {filteredTasks
@@ -661,7 +758,10 @@ const JiraLikeProjectManagement = () => {
                     .map((task) => (
                       <div
                         key={task.id}
-                        className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer"
+                        className={`bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer ${draggedTaskId === task.id ? 'opacity-50' : ''}`}
+                        draggable
+                        onDragStart={() => handleDragStart(task.id)}
+                        onDragEnd={handleDragEnd}
                         onClick={() => openTaskDetails(task)}
                       >
                         <div className="flex justify-between items-start">
@@ -704,7 +804,11 @@ const JiraLikeProjectManagement = () => {
                 </div>
 
                 {/* In Progress Column */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div
+                    className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={() => handleDrop('in-progress')}
+                  >
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="font-semibold text-gray-700">In Progress</h2>
                     <div className="flex items-center">
@@ -715,7 +819,7 @@ const JiraLikeProjectManagement = () => {
                           ).length
                         }
                       </span>
-                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" onClick={() => { setIsCreatingTask(true); setNewTaskStatus('in-progress'); }} />
                     </div>
                   </div>
                   {filteredTasks
@@ -723,7 +827,10 @@ const JiraLikeProjectManagement = () => {
                     .map((task) => (
                       <div
                         key={task.id}
-                        className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer"
+                        className={`bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer ${draggedTaskId === task.id ? 'opacity-50' : ''}`}
+                        draggable
+                        onDragStart={() => handleDragStart(task.id)}
+                        onDragEnd={handleDragEnd}
                         onClick={() => openTaskDetails(task)}
                       >
                         <div className="flex justify-between items-start">
@@ -766,7 +873,11 @@ const JiraLikeProjectManagement = () => {
                 </div>
 
                 {/* Review Column */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div
+                    className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={() => handleDrop('review')}
+                  >
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="font-semibold text-gray-700">Review</h2>
                     <div className="flex items-center">
@@ -776,7 +887,7 @@ const JiraLikeProjectManagement = () => {
                             .length
                         }
                       </span>
-                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" onClick={() => { setIsCreatingTask(true); setNewTaskStatus('review'); }} />
                     </div>
                   </div>
                   {filteredTasks
@@ -784,7 +895,10 @@ const JiraLikeProjectManagement = () => {
                     .map((task) => (
                       <div
                         key={task.id}
-                        className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer"
+                        className={`bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer ${draggedTaskId === task.id ? 'opacity-50' : ''}`}
+                        draggable
+                        onDragStart={() => handleDragStart(task.id)}
+                        onDragEnd={handleDragEnd}
                         onClick={() => openTaskDetails(task)}
                       >
                         <div className="flex justify-between items-start">
@@ -827,7 +941,11 @@ const JiraLikeProjectManagement = () => {
                 </div>
 
                 {/* Done Column */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div
+                    className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={() => handleDrop('done')}
+                  >
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="font-semibold text-gray-700">Done</h2>
                     <div className="flex items-center">
@@ -837,7 +955,7 @@ const JiraLikeProjectManagement = () => {
                             .length
                         }
                       </span>
-                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" onClick={() => { setIsCreatingTask(true); setNewTaskStatus('done'); }} />
                     </div>
                   </div>
                   {filteredTasks
@@ -845,7 +963,10 @@ const JiraLikeProjectManagement = () => {
                     .map((task) => (
                       <div
                         key={task.id}
-                        className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer"
+                        className={`bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer ${draggedTaskId === task.id ? 'opacity-50' : ''}`}
+                        draggable
+                        onDragStart={() => handleDragStart(task.id)}
+                        onDragEnd={handleDragEnd}
                         onClick={() => openTaskDetails(task)}
                       >
                         <div className="flex justify-between items-start">
@@ -1587,6 +1708,17 @@ const JiraLikeProjectManagement = () => {
                     <Folder className="w-4 h-4 mr-2" />
                     Tasks
                   </button>
+                  <button
+            className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+              activeContentTab === "Backlogs"
+                ? "bg-blue-50 text-blue-600"
+                : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+            }`}
+            onClick={() => setActiveContentTab("Backlogs")}
+          >
+            <ClipboardList className="w-4 h-4 mr-2" />
+            Backlogs
+          </button>
                   {/* <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                       activeContentTab === "Filters"
@@ -1643,7 +1775,7 @@ const JiraLikeProjectManagement = () => {
                     <BugIcon className="w-4 h-4 mr-2" />
                     Bugs
                   </button>
-                  <button
+                  {/* <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                       activeContentTab === "Backlogs"
                         ? "bg-blue-50 text-blue-500"
@@ -1653,7 +1785,7 @@ const JiraLikeProjectManagement = () => {
                   >
                     <LucideToggleLeft className="w-4 h-4 mr-2" />
                     Backlogs
-                  </button>
+                  </button> */}
                 </nav>
               </div>
 
@@ -1694,14 +1826,17 @@ const JiraLikeProjectManagement = () => {
           <div className="flex">
             {/* Main Content */}
             
-            <div className="flex-1">{renderContent()}</div>
+            <div className={`flex-1 transition-opacity duration-200 ${isCreatingTask ? "opacity-40 pointer-events-none" : ""}`}>{renderContent()}</div>
           </div>
         </div>
       </div>
 
       {/* Task Creation Modal */}
       {isCreatingTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div
+        className="fixed inset-0 flex items-center justify-center z-50"
+        style={{ background: 'rgba(0,0,0,0.05)' }}
+      >
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-medium mb-4">Create New Task</h3>
             <div className="space-y-4">
@@ -1712,7 +1847,7 @@ const JiraLikeProjectManagement = () => {
                 <input
                   type="text"
                   placeholder="Task title"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none  "
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
                   autoFocus
@@ -1725,7 +1860,7 @@ const JiraLikeProjectManagement = () => {
                 </label>
                 <textarea
                   placeholder="Task description"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none "
                   value={newTaskDescription}
                   onChange={(e) => setNewTaskDescription(e.target.value)}
                   rows={3}
@@ -1738,7 +1873,7 @@ const JiraLikeProjectManagement = () => {
                     Type
                   </label>
                   <select
-                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none "
                     value={newTaskType}
                     onChange={(e) => setNewTaskType(e.target.value as any)}
                   >
@@ -1754,7 +1889,7 @@ const JiraLikeProjectManagement = () => {
                     Priority
                   </label>
                   <select
-                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none  "
                     value={newTaskPriority}
                     onChange={(e) => setNewTaskPriority(e.target.value as any)}
                   >

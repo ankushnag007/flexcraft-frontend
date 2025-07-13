@@ -52,28 +52,39 @@ const Header = () => {
 
   const updateSlider = useCallback((immediate = false) => {
     if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current)
+      cancelAnimationFrame(animationFrameRef.current);
     }
-
+  
     animationFrameRef.current = requestAnimationFrame(() => {
-      const currentPath = navItems.find(item => pathname.startsWith(item.path))?.path || activeTab
-      if (!currentPath) return
-
-      const tabElement = itemsRef.current.get(currentPath)
-      if (!tabElement || !navRef.current || !sliderRef.current) return
-
-      const navRect = navRef.current.getBoundingClientRect()
-      const tabRect = tabElement.getBoundingClientRect()
-      
-      const left = tabRect.left - navRect.left
-      const width = tabRect.width
-
-      sliderRef.current.style.transform = `translateX(${left}px) scaleX(${width / 100})`
-      sliderRef.current.style.width = '100px'
-      sliderRef.current.style.transition = immediate ? 'none' : 
-        'transform 250ms cubic-bezier(0.4, 0, 0.2, 1)'
-    })
-  }, [pathname, activeTab])
+      const currentPath = navItems.find(item => pathname.startsWith(item.path))?.path || activeTab;
+      if (!currentPath) return;
+  
+      const tabElement = itemsRef.current.get(currentPath);
+      if (!tabElement || !navRef.current || !sliderRef.current) return;
+  
+      const navRect = navRef.current.getBoundingClientRect();
+      const tabRect = tabElement.getBoundingClientRect();
+  
+      const left = tabRect.left - navRect.left;
+      const width = tabRect.width;
+  
+      if (immediate) {
+        sliderRef.current.style.transition = 'none';
+        sliderRef.current.style.transform = `translateX(${left}px)`;
+        sliderRef.current.style.width = `${width}px`;
+      } else {
+        // First frame - set the transition
+        sliderRef.current.style.transition = 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)';
+        
+        // Next frame - apply the transform
+        requestAnimationFrame(() => {
+          sliderRef.current.style.transform = `translateX(${left}px)`;
+          sliderRef.current.style.width = `${width}px`;
+        });
+      }
+    });
+  }, [pathname, activeTab]);
+  
 
   useEffect(() => {
     const initialTab = navItems.find(item => pathname.startsWith(item.path))
@@ -81,6 +92,7 @@ const Header = () => {
       setActiveTab(initialTab.path)
       // Set initial tour step to match current path
       const initialStep = navItems.findIndex(item => item.path === initialTab.path)
+      
       setCurrentTourStep(initialStep >= 0 ? initialStep : 0)
     }
 
@@ -89,8 +101,15 @@ const Header = () => {
       setTimeout(() => setShowTour(true), 1500)
     }
 
-    updateSlider(true)
-    resizeObserverRef.current = new ResizeObserver(() => updateSlider())
+    resizeObserverRef.current = new ResizeObserver(() => {
+      // Debounce the resize updates
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      animationFrameRef.current = requestAnimationFrame(() => {
+        updateSlider();
+      });
+    });
 
     if (navRef.current) {
       resizeObserverRef.current.observe(navRef.current)
@@ -230,15 +249,16 @@ const Header = () => {
                 ref={navRef}
                 className="flex space-x-1 relative"
               >
-                <div 
-                  ref={sliderRef}
-                  className="absolute bg-blue-100 rounded-md h-8 top-1/2 -translate-y-1/2 origin-left"
-                  style={{
-                    pointerEvents: 'none',
-                    willChange: 'transform',
-                  }}
-                />
-                
+            <div 
+  ref={sliderRef}
+  className="absolute bg-blue-100 rounded-md h-8 top-1/2 -translate-y-1/2 origin-left"
+  style={{
+    pointerEvents: 'none',
+    willChange: 'transform',
+    transition: 'all 250ms ease', // Set default transition here
+    left: 0 // Initial position
+  }}
+/>
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
@@ -247,7 +267,7 @@ const Header = () => {
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors relative z-10 ${
                       pathname.startsWith(item.path)
                         ? 'text-blue-600 font-medium' 
-                        : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                        : 'text-gray-500 hover:bg-gray-100  hover:bg-gray-100  hover:text-gray-700'
                     }`}
                     onMouseEnter={() => setActiveTab(item.path)}
                     onMouseLeave={() => setActiveTab(navItems.find(i => pathname.startsWith(i.path))?.path || null)}

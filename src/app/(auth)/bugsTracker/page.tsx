@@ -156,7 +156,7 @@ const BugTracker: React.FC = () => {
             <input
               type="text"
               placeholder="Search bugs..."
-              className="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="pl-10 pr-4 py-2 border rounded-md focus:outline-none  "
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -322,7 +322,7 @@ const BugTracker: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Brief description of the bug"
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border rounded-md focus:outline-none  "
                   value={newBug.title}
                   onChange={(e) => setNewBug({...newBug, title: e.target.value})}
                   autoFocus
@@ -333,7 +333,7 @@ const BugTracker: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea
                   placeholder="Steps to reproduce, expected vs actual behavior..."
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border rounded-md focus:outline-none  "
                   rows={4}
                   value={newBug.description}
                   onChange={(e) => setNewBug({...newBug, description: e.target.value})}
@@ -343,7 +343,7 @@ const BugTracker: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
                 <select
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border rounded-md focus:outline-none  "
                   value={newBug.priority}
                   onChange={(e) => setNewBug({...newBug, priority: e.target.value as any})}
                 >

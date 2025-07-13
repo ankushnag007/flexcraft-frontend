@@ -532,7 +532,7 @@ const FlexCraftDashboard = () => {
                 <input
                   type="email"
                   id="email"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none   focus:border-blue-500"
                   placeholder="user@example.com"
                   value={newInvite.email}
                   onChange={(e) => setNewInvite({...newInvite, email: e.target.value})}
@@ -546,7 +546,7 @@ const FlexCraftDashboard = () => {
                 </label>
                 <select
                   id="role"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none   focus:border-blue-500"
                   value={newInvite.role}
                   onChange={(e) => setNewInvite({...newInvite, role: e.target.value})}
                 >
@@ -594,7 +594,7 @@ const FlexCraftDashboard = () => {
                 <input
                   type="text"
                   id="roleName"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none   focus:border-blue-500"
                   placeholder="e.g., Content Manager"
                   value={newRole.name}
                   onChange={(e) => setNewRole({...newRole, name: e.target.value})}
@@ -912,7 +912,7 @@ const FlexCraftDashboard = () => {
                   <input
                     type="text"
                     placeholder="Search team members..."
-                    className="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none   focus:border-blue-500"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -921,7 +921,7 @@ const FlexCraftDashboard = () => {
                   <div className="flex items-center">
                     <Filter className="h-4 w-4 text-gray-500 mr-2" />
                     <select
-                      className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="border rounded-lg px-3 py-2 focus:outline-none   focus:border-blue-500"
                       value={selectedRoleFilter}
                       onChange={(e) => setSelectedRoleFilter(e.target.value)}
                     >
@@ -941,16 +941,16 @@ const FlexCraftDashboard = () => {
 
             {/* Team Members Table */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="p-4 border-b">
+              <div className="p-4  shadow-sm">
                 <h2 className="font-semibold flex items-center">
                   <Users className="h-5 w-5 mr-2 text-blue-600" />
                   Team Members ({filteredTeamMembers.length})
                 </h2>
               </div>
-              <div className="divide-y">
+              <div className="">
                 {filteredTeamMembers.length > 0 ? (
                   filteredTeamMembers.map(member => (
-                    <div key={member.id} className="p-4 hover:bg-gray-50">
+                    <div key={member.id} className="p-4 hover:bg-gray-50 shadow-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
@@ -995,7 +995,7 @@ const FlexCraftDashboard = () => {
                                 <select
                                   value={member.role}
                                   onChange={(e) => updateUserRole(member.id, e.target.value)}
-                                  className="border rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                  className="border rounded-lg px-2 py-1 text-sm focus:outline-none   focus:border-blue-500"
                                 >
                                   {roles.map(role => (
                                     <option key={role.id} value={role.name}>{role.name}</option>
@@ -1060,16 +1060,16 @@ const FlexCraftDashboard = () => {
 
             {/* Pending Invitations */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="p-4 border-b">
+              <div className="p-4 ">
                 <h2 className="font-semibold flex items-center">
                   <Mail className="h-5 w-5 mr-2 text-yellow-600" />
                   Pending Invitations ({filteredInvitations.length})
                 </h2>
               </div>
-              <div className="divide-y">
+              <div className="shadow-sm">
                 {filteredInvitations.length > 0 ? (
                   filteredInvitations.map(invite => (
-                    <div key={invite.id} className="p-4 hover:bg-gray-50">
+                    <div key={invite.id} className="p-4 hover:bg-gray-50 shadow-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
@@ -1115,15 +1115,15 @@ const FlexCraftDashboard = () => {
 
             {/* Roles and Permissions */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="p-4 border-b">
+              <div className="p-4">
                 <h2 className="font-semibold flex items-center">
                   <Lock className="h-5 w-5 mr-2 text-purple-600" />
                   Roles and Permissions ({roles.length})
                 </h2>
               </div>
-              <div className="divide-y">
+              <div className="">
                 {roles.map(role => (
-                  <div key={role.id} className="p-4 hover:bg-gray-50">
+                  <div key={role.id} className="p-4 hover:bg-gray-50 shadow-sm">
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="font-bold">{role.name}</div>
@@ -1203,7 +1203,7 @@ const FlexCraftDashboard = () => {
                         type="date"
                         value={selectedDate.toISOString().split('T')[0]}
                         onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full p-2 border rounded-lg   focus:border-blue-500"
                         min={new Date().toISOString().split('T')[0]}
                       />
                     </div>
@@ -1257,7 +1257,7 @@ const FlexCraftDashboard = () => {
                           value={meetingTitle}
                           onChange={(e) => setMeetingTitle(e.target.value)}
                           placeholder="Team Sync, Client Meeting, etc."
-                          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className="w-full p-2 border rounded-lg   focus:border-blue-500"
                         />
                       </div>
                       <div>
@@ -1266,7 +1266,7 @@ const FlexCraftDashboard = () => {
                           value={meetingDescription}
                           onChange={(e) => setMeetingDescription(e.target.value)}
                           placeholder="Meeting agenda or notes"
-                          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-24"
+                          className="w-full p-2 border rounded-lg   focus:border-blue-500 h-24"
                         />
                       </div>
                       <div className="pt-2">
@@ -1399,6 +1399,67 @@ const FlexCraftDashboard = () => {
 
         {activeTab === 'reports' && <Reports />}
         {activeTab === 'projects' && <Projects />}
+        {activeTab === 'settings' && (
+          <div className="space-y-8">
+            {/* Roles and Permissions in Settings */}
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+              <div className="p-4 shadow-sm">
+                <h2 className="font-semibold flex items-center">
+                  <Lock className="h-5 w-5 mr-2 text-purple-600" />
+                  Roles and Permissions ({roles.length})
+                </h2>
+              </div>
+              <div className="">
+                {roles.map(role => (
+                  <div key={role.id} className="p-4 hover:bg-gray-50 shadow-sm">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="font-bold">{role.name}</div>
+                        <div className="text-sm text-gray-500">{role.description}</div>
+                        <div className="mt-2 text-sm">
+                          <span className="font-medium">{role.memberCount}</span> members assigned
+                        </div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button className="p-2 text-gray-500 hover:text-blue-600">
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button 
+                          onClick={() => deleteRole(role.id)}
+                          className="p-2 text-gray-500 hover:text-red-600"
+                        >
+                          <Trash className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mt-4 pl-2">
+                      <div className="text-sm font-medium mb-2">Permissions:</div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {Object.entries({
+                          projectCreate: 'Create Projects',
+                          projectDelete: 'Delete Projects',
+                          userManage: 'Manage Users',
+                          billingManage: 'Manage Billing',
+                          apiManage: 'Manage API',
+                          settingsManage: 'Manage Settings'
+                        }).map(([key, label]) => (
+                          <div key={key} className="flex items-center">
+                            {role.permissions[key] ? (
+                              <Check className="h-4 w-4 text-green-500 mr-2" />
+                            ) : (
+                              <X className="h-4 w-4 text-red-500 mr-2" />
+                            )}
+                            <span className="text-sm">{label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Modals */}

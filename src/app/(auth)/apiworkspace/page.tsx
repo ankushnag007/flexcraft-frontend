@@ -227,14 +227,12 @@ const ApiTesting = () => {
 
   return (
     <AuthGuard>
-    <div className="flex h-screen bg-gray-50 text-blue-900">
+    <div className="flex h-screen bg-gray-50 text-blue-900 overflow-y-auto  scrollbar-width-thin scrollbar-bg-gray-100">
       {/* Sidebar */}
       <div className="w-64 bg-gray-900 text-gray-200 p-4 flex flex-col border-r border-gray-700">
         <div className="flex items-center justify-between mb-6">
-            <Image src={logo} className="h-3 w-auto" alt="logo" /> API Client
-          <h2 className="text-lg font-bold flex items-center">
-            {/* <Globe className="w-5 h-5 mr-2 text-blue-400" /> */}
-          </h2>
+          API Client
+          
           <button className="p-1 rounded hover:bg-gray-700">
             <Settings className="w-5 h-5" />
           </button>
@@ -353,11 +351,11 @@ const ApiTesting = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Request Bar */}
         <div className="bg-white border-b p-4">
-          <div className="flex items-center">
+          <div className="flex items-stretch gap-0">
             <select
               value={method}
               onChange={(e) => setMethod(e.target.value)}
-              className="px-3 py-2 border rounded-l-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="h-10 px-3 shadow-sm rounded-l-lg bg-gray-100 focus:outline-none"
             >
               <option value="GET" className="text-green-600">GET</option>
               <option value="POST" className="text-yellow-600">POST</option>
@@ -366,16 +364,16 @@ const ApiTesting = () => {
               <option value="PATCH" className="text-purple-600">PATCH</option>
             </select>
             <input
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="Enter request URL"
-              className="flex-1 px-3 py-2 border-t border-b focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              onClick={handleSend}
-              className="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
+                type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="Enter request URL"
+                className="flex-1 h-10 px-3 shadow-sm rounded-none border-t border-b border-gray-200 focus:outline-none"
+              />
+              <button
+                onClick={handleSend}
+                className="h-10 px-5 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 flex items-center focus:outline-none transition-colors duration-150"
+              >
               <Play className="w-4 h-4 mr-2" />
               Send
             </button>
@@ -384,11 +382,11 @@ const ApiTesting = () => {
               value={requestName}
               onChange={(e) => setRequestName(e.target.value)}
               placeholder="Request name"
-              className="ml-4 px-3 py-2 border rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="ml-4 px-3 py-2 border rounded-lg w-64 focus:outline-none  "
             />
             <button
               onClick={handleSaveRequest}
-              className="ml-2 px-3 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="ml-2 px-3 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 flex items-center focus:outline-none shadow-sm "
             >
               <Save className="w-4 h-4 mr-2" />
               Save
@@ -481,7 +479,7 @@ const ApiTesting = () => {
                                 type="text"
                                 value={param.key}
                                 onChange={(e) => updateParam(param.id, 'key', e.target.value)}
-                                className="w-full px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1  rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                               />
                             </div>
                           </td>
@@ -490,7 +488,7 @@ const ApiTesting = () => {
                               type="text"
                               value={param.value}
                               onChange={(e) => updateParam(param.id, 'value', e.target.value)}
-                              className="w-full px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              className="w-full px-2 py-1    rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                             />
                           </td>
                           <td className="px-3 py-2 text-center">
@@ -523,7 +521,7 @@ const ApiTesting = () => {
                 <textarea
                   value={headers}
                   onChange={(e) => setHeaders(e.target.value)}
-                  className="w-full h-64 p-3 border rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full h-64 p-3 border rounded-lg font-mono text-sm focus:outline-none  "
                   spellCheck="false"
                 />
               </div>
@@ -531,16 +529,22 @@ const ApiTesting = () => {
 
             {activeTab === 'body' && (
               <div>
-                <div className="flex mb-2">
-                  <button className={`px-3 py-1 rounded-l ${activeTab === 'body' ? 'bg-gray-200' : 'bg-gray-100'}`}>
-                    raw
-                  </button>
-                  <button className={`px-3 py-1 border-l border-r ${activeTab === 'body' ? 'bg-gray-100' : 'bg-gray-200'}`}>
-                    form-data
-                  </button>
-                  <button className={`px-3 py-1 rounded-r ${activeTab === 'body' ? 'bg-gray-100' : 'bg-gray-200'}`}>
-                    binary
-                  </button>
+                <div className="flex mb-4">
+                  <div className="inline-flex rounded-lg shadow-sm border border-gray-200 bg-white overflow-hidden">
+                    <button
+                      className={`px-4 py-1 font-medium focus:outline-none transition-colors duration-150 ${responseView === 'body' ? 'bg-blue-50 text-blue-600' : 'bg-white text-gray-700 hover:bg-gray-50'} rounded-l-lg`}
+                      onClick={() => prettifyJson()}
+                      style={{ borderRight: '1px solid #e5e7eb' }}
+                    >
+                      Pretty
+                    </button>
+                    <button
+                      className={`px-4 py-1 font-medium focus:outline-none transition-colors duration-150 ${responseView === 'body' ? 'bg-white text-gray-700 hover:bg-gray-50' : 'bg-blue-50 text-blue-600'} rounded-r-lg`}
+                      onClick={() => minifyJson()}
+                    >
+                      Raw
+                    </button>
+                  </div>
                 </div>
                 <div className="flex items-center mb-2">
                   <select className="px-3 py-1 border rounded-l bg-gray-100">
@@ -563,7 +567,7 @@ const ApiTesting = () => {
                 <textarea
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
-                  className="w-full h-64 p-3 border rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full h-64 p-3 border rounded-lg font-mono text-sm focus:outline-none  "
                   spellCheck="false"
                 />
               </div>
@@ -587,7 +591,7 @@ const ApiTesting = () => {
                   <select
                     value={authType}
                     onChange={(e) => setAuthType(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none  "
                   >
                     <option value="none">No Auth</option>
                     <option value="bearer">Bearer Token</option>
@@ -604,7 +608,7 @@ const ApiTesting = () => {
                       type={showAuth ? "text" : "password"}
                       value={bearerToken}
                       onChange={(e) => setBearerToken(e.target.value)}
-                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none  "
                       placeholder="Enter your bearer token"
                     />
                   </div>
@@ -616,7 +620,7 @@ const ApiTesting = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border rounded-lg focus:outline-none  "
                         placeholder="Enter username"
                       />
                     </div>
@@ -624,7 +628,7 @@ const ApiTesting = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                       <input
                         type={showAuth ? "text" : "password"}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border rounded-lg focus:outline-none  "
                         placeholder="Enter password"
                       />
                     </div>
@@ -637,7 +641,7 @@ const ApiTesting = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Key</label>
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border rounded-lg focus:outline-none  "
                         placeholder="Enter key"
                       />
                     </div>
@@ -645,13 +649,13 @@ const ApiTesting = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Value</label>
                       <input
                         type={showAuth ? "text" : "password"}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border rounded-lg focus:outline-none  "
                         placeholder="Enter value"
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Add to</label>
-                      <select className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      <select className="w-full px-3 py-2 border rounded-lg focus:outline-none  ">
                         <option>Header</option>
                         <option>Query Params</option>
                       </select>
@@ -780,13 +784,13 @@ const ApiTesting = () => {
             <textarea
               value={curlImport}
               onChange={(e) => setCurlImport(e.target.value)}
-              className="flex-1 p-3 border rounded-l-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 p-3 border rounded-l-lg font-mono text-sm focus:outline-none  "
               placeholder="Paste cURL command here"
               rows={3}
             />
             <button
               onClick={importCurl}
-              className="px-4 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600 focus:outline-none  "
             >
               Import
             </button>

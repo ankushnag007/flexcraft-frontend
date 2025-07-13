@@ -699,7 +699,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
             type="text"
             value={currentPrompt}
             onChange={(e) => setCurrentPrompt(e.target.value)}
-            className={`w-full border ${themeColors.border} rounded-lg pl-4 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
+            className={`w-full border ${themeColors.border} rounded-lg pl-4 pr-10 py-3 text-sm focus:outline-none   ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
             placeholder="How would you like to modify your code?"
             disabled={isProcessing}
           />
@@ -1268,7 +1268,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
                         type="text"
                         value={projectName}
                         onChange={(e) => setProjectName(e.target.value)}
-                        className={`w-full px-4 py-2 border ${themeColors.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
+                        className={`w-full px-4 py-2 border ${themeColors.border} rounded-lg focus:outline-none   ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
                       />
                     </div>
                     <div>
@@ -1276,7 +1276,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
                       <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className={`w-full px-4 py-2 border ${themeColors.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
+                        className={`w-full px-4 py-2 border ${themeColors.border} rounded-lg focus:outline-none   ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
                         rows={2}
                       />
                     </div>

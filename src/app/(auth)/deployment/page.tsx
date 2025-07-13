@@ -96,14 +96,14 @@ const EnhancedDeploymentUI = () => {
         </div>
         <div className="flex items-center space-x-4">
           <div className="project-selector">
-            <select className="bg-gray-100 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select className="bg-gray-100 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  ">
               <option>my-nextjs-app</option>
               <option>my-react-app</option>
               <option>my-astro-site</option>
               <option>my-microservice</option>
             </select>
           </div>
-          <button className="px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <button className="px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none  ">
             New Project
           </button>
         </div>
@@ -219,7 +219,7 @@ const EnhancedDeploymentUI = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Git Branch</label>
                       <select
-                        className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                         value={branch}
                         onChange={(e) => setBranch(e.target.value)}
                       >
@@ -252,7 +252,7 @@ const EnhancedDeploymentUI = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Framework Preset</label>
                       <select 
-                        className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                         value={framework} 
                         onChange={(e) => setFramework(e.target.value)}
                       >
@@ -271,7 +271,7 @@ const EnhancedDeploymentUI = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Build Command</label>
                       <input
                         type="text"
-                        className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none   disabled:bg-gray-100 disabled:text-gray-500"
                         value={framework === 'nextjs' ? 'next build' : framework === 'react' ? 'npm run build' : framework === 'nestjs' ? 'npm run build' : ''}
                         disabled={framework !== 'custom'}
                       />
@@ -281,7 +281,7 @@ const EnhancedDeploymentUI = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Output Directory</label>
                       <input
                         type="text"
-                        className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none   disabled:bg-gray-100 disabled:text-gray-500"
                         value={framework === 'nextjs' ? '.next' : framework === 'react' ? 'build' : framework === 'nestjs' ? 'dist' : ''}
                         disabled={framework !== 'custom'}
                       />
@@ -290,7 +290,7 @@ const EnhancedDeploymentUI = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Node Version</label>
                       <select
-                        className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                         defaultValue="18"
                       >
                         <option value="16">Node 16</option>
@@ -369,13 +369,13 @@ const EnhancedDeploymentUI = () => {
               </div>
 
               <div className="flex space-x-3 pt-4">
-                <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none  ">
                   Save Changes
                 </button>
-                <button className="px-4 py-2 bg-white border border-gray-300 text-sm font-medium rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button className="px-4 py-2 bg-white border border-gray-300 text-sm font-medium rounded-md hover:bg-gray-50 focus:outline-none  ">
                   Deploy Manually
                 </button>
-                <button className="px-4 py-2 bg-white border border-gray-300 text-sm font-medium rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button className="px-4 py-2 bg-white border border-gray-300 text-sm font-medium rounded-md hover:bg-gray-50 focus:outline-none  ">
                   View Deployment Logs
                 </button>
               </div>
@@ -427,7 +427,7 @@ const EnhancedDeploymentUI = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Instance Size</label>
                         <select
-                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                           defaultValue="medium"
                         >
                           <option value="small">Small (1 vCPU, 2GB RAM)</option>
@@ -520,7 +520,7 @@ const EnhancedDeploymentUI = () => {
                 )}
                 
                 <div className="flex justify-end">
-                  <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none  ">
                     Save Cloud Configuration
                   </button>
                 </div>
@@ -568,7 +568,7 @@ const EnhancedDeploymentUI = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-1">Dockerfile Path</label>
                         <input
                           type="text"
-                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                           defaultValue="./Dockerfile"
                         />
                       </div>
@@ -577,7 +577,7 @@ const EnhancedDeploymentUI = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-1">Container Port</label>
                         <input
                           type="number"
-                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                           defaultValue="3000"
                         />
                       </div>
@@ -589,12 +589,12 @@ const EnhancedDeploymentUI = () => {
                             <input
                               type="text"
                               placeholder="Name"
-                              className="flex-1 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="flex-1 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                             />
                             <input
                               type="text"
                               placeholder="Value"
-                              className="flex-1 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="flex-1 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                             />
                             <button className="px-2 py-1 bg-gray-100 border border-gray-300 rounded-md text-sm hover:bg-gray-200">
                               Add
@@ -617,7 +617,7 @@ const EnhancedDeploymentUI = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-1">Cluster Name</label>
                         <input
                           type="text"
-                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                           placeholder="my-cluster"
                         />
                       </div>
@@ -628,7 +628,7 @@ const EnhancedDeploymentUI = () => {
                           type="number"
                           min="1"
                           max="10"
-                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                           defaultValue="2"
                         />
                       </div>
@@ -636,7 +636,7 @@ const EnhancedDeploymentUI = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Node Size</label>
                         <select
-                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                           defaultValue="medium"
                         >
                           <option value="small">Small (2 vCPU, 4GB RAM)</option>
@@ -648,7 +648,7 @@ const EnhancedDeploymentUI = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Kubernetes Manifest</label>
                         <textarea
-                          className="w-full h-32 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full h-32 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono focus:outline-none  "
                           placeholder="Paste your Kubernetes YAML here..."
                         ></textarea>
                       </div>
@@ -657,7 +657,7 @@ const EnhancedDeploymentUI = () => {
                 )}
                 
                 <div className="flex justify-end">
-                  <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none  ">
                     Save Container Configuration
                   </button>
                 </div>
@@ -716,7 +716,7 @@ const EnhancedDeploymentUI = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Terraform Version</label>
                         <select
-                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                           defaultValue="1.5"
                         >
                           <option value="1.5">1.5.x</option>
@@ -728,7 +728,7 @@ const EnhancedDeploymentUI = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Backend Storage</label>
                         <select
-                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                           defaultValue="remote"
                         >
                           <option value="remote">Terraform Cloud</option>
@@ -742,7 +742,7 @@ const EnhancedDeploymentUI = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Terraform Files</label>
                         <textarea
-                          className="w-full h-64 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full h-64 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono focus:outline-none  "
                           placeholder={`provider "aws" {\n  region = "us-east-1"\n}\n\nresource "aws_instance" "example" {\n  ami           = "ami-0c55b159cbfafe1f0"\n  instance_type = "t2.micro"\n}`}
                         ></textarea>
                       </div>
@@ -754,7 +754,7 @@ const EnhancedDeploymentUI = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Pulumi Language</label>
                         <select
-                                                    className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                     defaultValue="typescript"
                                                   >
                                                     <option value="typescript">TypeScript</option>
@@ -769,7 +769,7 @@ const EnhancedDeploymentUI = () => {
                                                   <label className="block text-sm font-medium text-gray-700 mb-1">Pulumi Stack</label>
                                                   <input
                                                     type="text"
-                                                    className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                     placeholder="dev"
                                                   />
                                                 </div>
@@ -777,7 +777,7 @@ const EnhancedDeploymentUI = () => {
                                                 <div>
                                                   <label className="block text-sm font-medium text-gray-700 mb-1">Pulumi Program</label>
                                                   <textarea
-                                                    className="w-full h-64 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full h-64 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono focus:outline-none  "
                                                     placeholder={`import * as aws from "@pulumi/aws";\nimport * as pulumi from "@pulumi/pulumi";\n\n// Create an AWS resource (S3 Bucket)\nconst bucket = new aws.s3.Bucket("my-bucket");\n\nexport const bucketName = bucket.id;`}
                                                   ></textarea>
                                                 </div>
@@ -789,7 +789,7 @@ const EnhancedDeploymentUI = () => {
                                                 <div>
                                                   <label className="block text-sm font-medium text-gray-700 mb-1">CDK Language</label>
                                                   <select
-                                                    className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                     defaultValue="typescript"
                                                   >
                                                     <option value="typescript">TypeScript</option>
@@ -803,7 +803,7 @@ const EnhancedDeploymentUI = () => {
                                                 <div>
                                                   <label className="block text-sm font-medium text-gray-700 mb-1">CDK Version</label>
                                                   <select
-                                                    className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                     defaultValue="2.0"
                                                   >
                                                     <option value="2.0">2.x</option>
@@ -814,7 +814,7 @@ const EnhancedDeploymentUI = () => {
                                                 <div>
                                                   <label className="block text-sm font-medium text-gray-700 mb-1">CDK Stack</label>
                                                   <textarea
-                                                    className="w-full h-64 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full h-64 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono focus:outline-none  "
                                                     placeholder={`import * as cdk from 'aws-cdk-lib';\nimport { Construct } from 'constructs';\n\nexport class MyStack extends cdk.Stack {\n  constructor(scope: Construct, id: string, props?: cdk.StackProps) {\n    super(scope, id, props);\n\n    // Define resources here\n  }\n}`}
                                                   ></textarea>
                                                 </div>
@@ -823,7 +823,7 @@ const EnhancedDeploymentUI = () => {
                                           </div>
                                           
                                           <div className="flex justify-end">
-                                            <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none  ">
                                               Generate IaC Configuration
                                             </button>
                                           </div>
@@ -870,7 +870,7 @@ const EnhancedDeploymentUI = () => {
                                           <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Function Regions</label>
                                             <select
-                                              className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                              className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                               defaultValue="auto"
                                             >
                                               <option value="auto">Automatic (Recommended)</option>
@@ -884,7 +884,7 @@ const EnhancedDeploymentUI = () => {
                                           <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Maximum Execution Duration</label>
                                             <select
-                                              className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                              className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                               defaultValue="10"
                                             >
                                               <option value="5">5 seconds</option>
@@ -898,7 +898,7 @@ const EnhancedDeploymentUI = () => {
                                           <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Memory Allocation</label>
                                             <select
-                                              className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                              className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                               defaultValue="1024"
                                             >
                                               <option value="128">128MB</option>
@@ -917,12 +917,12 @@ const EnhancedDeploymentUI = () => {
                                                 <input
                                                   type="text"
                                                   placeholder="Key"
-                                                  className="flex-1 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                  className="flex-1 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                 />
                                                 <input
                                                   type="text"
                                                   placeholder="Value"
-                                                  className="flex-1 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                  className="flex-1 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                 />
                                                 <button className="px-2 py-1 bg-gray-100 border border-gray-300 rounded-md text-sm hover:bg-gray-200">
                                                   Add
@@ -935,7 +935,7 @@ const EnhancedDeploymentUI = () => {
                                           </div>
                           
                                           <div>
-                                            <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none  ">
                                               Save Function Settings
                                             </button>
                                           </div>
@@ -1012,7 +1012,7 @@ const EnhancedDeploymentUI = () => {
                                               <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">CDN Configuration</label>
                                                 <select
-                                                  className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                  className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                   defaultValue="auto"
                                                 >
                                                   <option value="auto">Automatic CDN</option>
@@ -1025,7 +1025,7 @@ const EnhancedDeploymentUI = () => {
                                               <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">CORS Policy</label>
                                                 <textarea
-                                                  className="w-full h-24 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                  className="w-full h-24 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono focus:outline-none  "
                                                   placeholder={`{\n  "origin": ["https://example.com"],\n  "methods": ["GET", "POST"],\n  "allowedHeaders": ["Content-Type"]\n}`}
                                                 ></textarea>
                                               </div>
@@ -1033,7 +1033,7 @@ const EnhancedDeploymentUI = () => {
                                           </div>
                                           
                                           <div className="flex justify-end">
-                                            <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none  ">
                                               Save Network Settings
                                             </button>
                                           </div>
@@ -1081,7 +1081,7 @@ const EnhancedDeploymentUI = () => {
                                               <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Database Version</label>
                                                 <select
-                                                  className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                  className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                   defaultValue="14"
                                                 >
                                                   <option value="15">PostgreSQL 15</option>
@@ -1093,7 +1093,7 @@ const EnhancedDeploymentUI = () => {
                                               <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Instance Size</label>
                                                 <select
-                                                  className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                  className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                   defaultValue="medium"
                                                 >
                                                   <option value="small">Small (1 vCPU, 2GB RAM, 10GB Storage)</option>
@@ -1109,7 +1109,7 @@ const EnhancedDeploymentUI = () => {
                                                     <label className="block text-xs font-medium text-gray-500 mb-1">Database Name</label>
                                                     <input
                                                       type="text"
-                                                      className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                      className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                       defaultValue="mydb"
                                                     />
                                                   </div>
@@ -1117,7 +1117,7 @@ const EnhancedDeploymentUI = () => {
                                                     <label className="block text-xs font-medium text-gray-500 mb-1">Username</label>
                                                     <input
                                                       type="text"
-                                                      className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                      className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                       defaultValue="admin"
                                                     />
                                                   </div>
@@ -1167,7 +1167,7 @@ const EnhancedDeploymentUI = () => {
                                           </div>
                                           
                                           <div className="flex justify-end">
-                                            <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none  ">
                                               Save Database Configuration
                                             </button>
                                           </div>
@@ -1298,7 +1298,7 @@ const EnhancedDeploymentUI = () => {
                                               <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Custom Security Headers</label>
                                                 <textarea
-                                                  className="w-full h-24 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                  className="w-full h-24 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm font-mono focus:outline-none  "
                                                   placeholder={`X-Frame-Options: DENY\nX-Content-Type-Options: nosniff\nReferrer-Policy: strict-origin-when-cross-origin`}
                                                 ></textarea>
                                               </div>
@@ -1326,7 +1326,7 @@ const EnhancedDeploymentUI = () => {
                                                     <input
                                                       type="text"
                                                       placeholder="IP Address (e.g., 192.168.1.1 or 192.168.1.0/24)"
-                                                      className="flex-1 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                      className="flex-1 bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                     />
                                                     <button className="px-2 py-1 bg-gray-100 border border-gray-300 rounded-md text-sm hover:bg-gray-200">
                                                       Add
@@ -1341,7 +1341,7 @@ const EnhancedDeploymentUI = () => {
                                           </div>
                                           
                                           <div className="flex justify-end">
-                                            <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none  ">
                                               Save Security Settings
                                             </button>
                                           </div>
@@ -1412,7 +1412,7 @@ const EnhancedDeploymentUI = () => {
                                                   <div>
                                                     <label className="block text-xs font-medium text-gray-500 mb-1">CPU Usage</label>
                                                     <select
-                                                      className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                      className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                       defaultValue="80"
                                                     >
                                                       <option value="70">70%</option>
@@ -1424,7 +1424,7 @@ const EnhancedDeploymentUI = () => {
                                                   <div>
                                                     <label className="block text-xs font-medium text-gray-500 mb-1">Memory Usage</label>
                                                     <select
-                                                      className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                      className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                       defaultValue="80"
                                                     >
                                                       <option value="70">70%</option>
@@ -1436,7 +1436,7 @@ const EnhancedDeploymentUI = () => {
                                                   <div>
                                                     <label className="block text-xs font-medium text-gray-500 mb-1">Response Time</label>
                                                     <select
-                                                      className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                      className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                                                       defaultValue="500"
                                                     >
                                                       <option value="300">300ms</option>
@@ -1498,7 +1498,7 @@ const EnhancedDeploymentUI = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Log Retention</label>
                       <select
-                        className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none  "
                         defaultValue="30"
                       >
                         <option value="7">7 days</option>
@@ -1553,7 +1553,7 @@ const EnhancedDeploymentUI = () => {
                 </div>
                 
                 <div className="flex justify-end">
-                  <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none  ">
                     Save Monitoring Settings
                   </button>
                 </div>
