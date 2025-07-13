@@ -210,24 +210,24 @@ const EmployeePerformanceReport = () => {
 
   return (
     <AuthGuard>
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-[var(--theme-background)] p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-xl md:txl font-bold text-blue-500">Performance Dashboard</h1>
-            <p className="text-gray-600 text-sm">John Doe • Senior Software Engineer</p>
+            <h1 className="text-xl md:txl font-bold text-[var(--theme-accent)]">Performance Dashboard</h1>
+            <p className="text-[var(--theme-text)] text-sm">John Doe • Senior Software Engineer</p>
           </div>
           
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
   {/* Time Range Tabs */}
-  <div className="flex border-b border-gray-200">
+  <div className="flex border-b border-[var(--theme-primary)]">
     <button
       onClick={() => setTimeRange('monthly')}
       className={`flex items-center px-4 py-3 text-sm font-medium -mb-px border-b-2 ${
         timeRange === 'monthly'
-          ? 'border-blue-500 text-blue-600'
-          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          ? 'border-[var(--theme-accent)] text-[var(--theme-accent)]'
+          : 'border-transparent text-[var(--theme-text)] hover:text-[var(--theme-text)] hover:border-[var(--theme-background)]'
       }`}
     >
       <Calendar className="w-4 h-4 mr-2" />
@@ -237,8 +237,8 @@ const EmployeePerformanceReport = () => {
       onClick={() => setTimeRange('quarterly')}
       className={`flex items-center px-4 py-3 text-sm font-medium -mb-px border-b-2 ${
         timeRange === 'quarterly'
-          ? 'border-blue-500 text-blue-600'
-          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          ? 'border-[var(--theme-accent)] text-[var(--theme-accent)]'
+          : 'border-transparent text-[var(--theme-text)] hover:text-[var(--theme-text)] hover:border-[var(--theme-background)]'
       }`}
     >
       <CalendarDays className="w-4 h-4 mr-2" />
@@ -248,8 +248,8 @@ const EmployeePerformanceReport = () => {
       onClick={() => setTimeRange('yearly')}
       className={`flex items-center px-4 py-3 text-sm font-medium -mb-px border-b-2 ${
         timeRange === 'yearly'
-          ? 'border-blue-500 text-blue-600'
-          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          ? 'border-[var(--theme-accent)] text-[var(--theme-accent)]'
+          : 'border-transparent text-[var(--theme-text)] hover:text-[var(--theme-text)] hover:border-[var(--theme-background)]'
       }`}
     >
       <CalendarCheck2 className="w-4 h-4 mr-2" />
@@ -258,11 +258,11 @@ const EmployeePerformanceReport = () => {
   </div>
 
   {/* Productivity Trend Indicator */}
-  <div className="flex items-center bg-blue-50 rounded-lg px-4 py-2 border border-blue-100">
-    <TrendingUpIcon className="w-5 h-5 text-blue-600 mr-2" />
+  <div className="flex items-center bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)] rounded-lg px-4 py-2 border border-[var(--theme-primary)]">
+    <TrendingUpIcon className="w-5 h-5 text-[var(--theme-accent)] mr-2" />
     <div>
-      <p className="text-xs font-medium text-blue-800">Productivity Trend</p>
-      <p className="text-sm font-semibold text-blue-900">
+      <p className="text-xs font-medium text-[var(--theme-text)]">Productivity Trend</p>
+      <p className="text-sm font-semibold text-[var(--theme-primary)]">
         {performanceData.productivityTrend}% {performanceData.productivityTrend > 0 ? '↑' : '↓'}
       </p>
     </div>
@@ -277,8 +277,8 @@ const EmployeePerformanceReport = () => {
               onClick={() => setActiveTab('summary')}
               className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center ${
                 activeTab === 'summary' 
-                  ? 'bg-blue-100 text-blue-700' 
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-[color-mix(in_srgb,var(--theme-accent)_30%,var(--theme-background)_70%)] text-[var(--theme-accent)]' 
+                  : 'text-[var(--theme-text)] hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]'
               }`}
             >
               <PieChartIcon className="w-4 h-4 mr-2" />
@@ -288,8 +288,8 @@ const EmployeePerformanceReport = () => {
               onClick={() => setActiveTab('projects')}
               className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center ${
                 activeTab === 'projects' 
-                  ? 'bg-blue-100 text-blue-700' 
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-[color-mix(in_srgb,var(--theme-accent)_30%,var(--theme-background)_70%)] text-[var(--theme-accent)]' 
+                  : 'text-[var(--theme-text)] hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]'
               }`}
             >
               <HardHat className="w-4 h-4 mr-2" />
@@ -299,8 +299,8 @@ const EmployeePerformanceReport = () => {
               onClick={() => setActiveTab('tasks')}
               className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center ${
                 activeTab === 'tasks' 
-                  ? 'bg-blue-100 text-blue-700' 
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-[color-mix(in_srgb,var(--theme-accent)_30%,var(--theme-background)_70%)] text-[var(--theme-accent)]' 
+                  : 'text-[var(--theme-text)] hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]'
               }`}
             >
               <CheckCircle2 className="w-4 h-4 mr-2" />
@@ -310,8 +310,8 @@ const EmployeePerformanceReport = () => {
               onClick={() => setActiveTab('skills')}
               className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center ${
                 activeTab === 'skills' 
-                  ? 'bg-blue-100 text-blue-700' 
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-[color-mix(in_srgb,var(--theme-accent)_30%,var(--theme-background)_70%)] text-[var(--theme-accent)]' 
+                  : 'text-[var(--theme-text)] hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]'
               }`}
             >
               <Code className="w-4 h-4 mr-2" />
@@ -321,8 +321,8 @@ const EmployeePerformanceReport = () => {
               onClick={() => setActiveTab('reviews')}
               className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center ${
                 activeTab === 'reviews' 
-                  ? 'bg-blue-100 text-blue-700' 
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-[color-mix(in_srgb,var(--theme-accent)_30%,var(--theme-background)_70%)] text-[var(--theme-accent)]' 
+                  : 'text-[var(--theme-text)] hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]'
               }`}
             >
               <FileText className="w-4 h-4 mr-2" />
@@ -335,21 +335,21 @@ const EmployeePerformanceReport = () => {
         {activeTab === 'summary' && (
           <div className="space-y-6">
             {/* Overall Performance Card */}
-            <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h2 className="text-xl font-bold  text-blue-500 mb-6">Overall Performance</h2>
+            <div className="bg-[var(--theme-background)] rounded-xl shadow-sm border p-6">
+              <h2 className="text-xl font-bold text-[var(--theme-accent)] mb-6">Overall Performance</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Overall Score */}
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-5">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Overall Score</p>
+                      <p className="text-sm font-medium text-[var(--theme-text)]">Overall Score</p>
                       <div className="flex items-end mt-2">
                         <span className="text-3xl font-bold text-gray-800">{performanceData.overallScore}</span>
-                        <span className="text-lg text-gray-500 ml-1">/100</span>
+                        <span className="text-lg text-[var(--theme-text)] ml-1">/100</span>
                       </div>
                     </div>
                     <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center ${
-                      performanceData.overallScore >= 80 ? 'bg-green-100 text-green-800' :
+                      performanceData.overallScore >= 80 ? 'bg-green-100 text-[color-mix(in_srgb,var(--theme-accent)_70%,var(--theme-primary)_30%)]' :
                       performanceData.overallScore >= 60 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
                     }`}>
                       {performanceData.overallScore >= 80 ? 'Excellent' : 
@@ -360,7 +360,7 @@ const EmployeePerformanceReport = () => {
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
                         className={`h-2 rounded-full ${
-                          performanceData.overallScore >= 80 ? 'bg-green-500' :
+                          performanceData.overallScore >= 80 ? 'bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]0' :
                           performanceData.overallScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
                         }`}
                         style={{ width: `${performanceData.overallScore}%` }}
@@ -373,7 +373,7 @@ const EmployeePerformanceReport = () => {
                 <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-5">
                   <div className="flex justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Project Completion</p>
+                      <p className="text-sm font-medium text-[var(--theme-text)]">Project Completion</p>
                       <div className="flex items-end mt-2">
                         <span className="text-3xl font-bold text-gray-800">
                           {Math.round(
@@ -381,11 +381,11 @@ const EmployeePerformanceReport = () => {
                             performanceData.projects.length
                           )}
                         </span>
-                        <span className="text-lg text-gray-500 ml-1">% avg</span>
+                        <span className="text-lg text-[var(--theme-text)] ml-1">% avg</span>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-600">Completed</p>
+                      <p className="text-sm text-[var(--theme-text)]">Completed</p>
                       <span className="text-xl font-bold text-gray-800">
                         {performanceData.projects.filter(p => p.completion === 100).length}/{performanceData.projects.length}
                       </span>
@@ -394,11 +394,11 @@ const EmployeePerformanceReport = () => {
                   <div className="mt-4 flex space-x-2">
                     {performanceData.projects.map((project, index) => (
                       <div key={index} className="flex-1">
-                        <div className="text-xs text-gray-500 mb-1 truncate">{project.name}</div>
+                        <div className="text-xs text-[var(--theme-text)] mb-1 truncate">{project.name}</div>
                         <div className="w-full bg-gray-200 rounded-full h-1.5">
                           <div 
                             className={`h-1.5 rounded-full ${
-                              project.completion >= 70 ? 'bg-green-500' :
+                              project.completion >= 70 ? 'bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]0' :
                               project.completion >= 40 ? 'bg-yellow-500' : 'bg-red-500'
                             }`}
                             style={{ width: `${project.completion}%` }}
@@ -413,21 +413,21 @@ const EmployeePerformanceReport = () => {
                 <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-lg p-5">
                   <div className="flex justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Task Efficiency</p>
+                      <p className="text-sm font-medium text-[var(--theme-text)]">Task Efficiency</p>
                       <div className="flex items-end mt-2">
                         <span className="text-3xl font-bold text-gray-800">{efficiencyPercentage}</span>
-                        <span className="text-lg text-gray-500 ml-1">%</span>
+                        <span className="text-lg text-[var(--theme-text)] ml-1">%</span>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-600">Completed</p>
+                      <p className="text-sm text-[var(--theme-text)]">Completed</p>
                       <span className="text-xl font-bold text-gray-800">
                         {performanceData.tasks.filter(t => t.status === 'completed').length}/{performanceData.tasks.length}
                       </span>
                     </div>
                   </div>
                   <div className="mt-4">
-                    <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <div className="flex justify-between text-xs text-[var(--theme-text)] mb-1">
                       <span>On Time</span>
                       <span>
                         {performanceData.projects.filter(p => p.deadlineMet).length}/{performanceData.projects.length}
@@ -436,7 +436,7 @@ const EmployeePerformanceReport = () => {
                     <div className="w-full bg-gray-200 rounded-full h-1.5">
                       <div 
                         className={`h-1.5 rounded-full ${
-                          efficiencyPercentage >= 70 ? 'bg-green-500' :
+                          efficiencyPercentage >= 70 ? 'bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]0' :
                           efficiencyPercentage >= 40 ? 'bg-yellow-500' : 'bg-red-500'
                         }`}
                         style={{ width: `${efficiencyPercentage}%` }}
@@ -450,28 +450,28 @@ const EmployeePerformanceReport = () => {
             {/* Projects & Tasks Overview */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Projects Overview */}
-              <div className="bg-white rounded-xl shadow-sm border p-6">
-                <h2 className="text-xl font-semibold mb-4 text-blue-500">Projects Overview</h2>
+              <div className="bg-[var(--theme-background)] rounded-xl shadow-sm border p-6">
+                <h2 className="text-xl font-semibold text-[var(--theme-accent)] mb-4">Projects Overview</h2>
                 <div className="space-y-4">
                   {performanceData.projects.map((project) => (
                     <div key={project.id} className="border-b pb-4 last:border-b-0 last:pb-0">
                       <div className="flex justify-between items-center">
                         <h3 className="font-medium">{project.name}</h3>
                         <span className={`text-xs px-2 py-1 rounded-full flex items-center ${
-                          project.deadlineMet ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          project.deadlineMet ? 'bg-green-100 text-[color-mix(in_srgb,var(--theme-accent)_70%,var(--theme-primary)_30%)]' : 'bg-red-100 text-red-800'
                         }`}>
                           {project.deadlineMet ? 'On Time' : 'Delayed'}
                         </span>
                       </div>
                       <div className="mt-2">
-                        <div className="flex justify-between text-sm text-gray-600 mb-1">
+                        <div className="flex justify-between text-sm text-[var(--theme-text)] mb-1">
                           <span>Completion</span>
                           <span>{project.completion}%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div 
                             className={`h-2 rounded-full ${
-                              project.completion >= 70 ? 'bg-green-500' :
+                              project.completion >= 70 ? 'bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]0' :
                               project.completion >= 40 ? 'bg-yellow-500' : 'bg-red-500'
                             }`}
                             style={{ width: `${project.completion}%` }}
@@ -479,16 +479,16 @@ const EmployeePerformanceReport = () => {
                         </div>
                       </div>
                       <div className="grid grid-cols-3 gap-2 mt-2 text-sm">
-                        <div className="flex items-center text-gray-600">
-                          <Users className="w-4 h-4 mr-1 text-gray-500" />
+                        <div className="flex items-center text-[var(--theme-text)]">
+                          <Users className="w-4 h-4 mr-1 text-[var(--theme-text)]" />
                           <span>{project.teamMembers} team</span>
                         </div>
-                        <div className="flex items-center text-gray-600">
+                        <div className="flex items-center text-[var(--theme-text)]">
                           <Star className="w-4 h-4 mr-1 text-yellow-500" />
                           <span>{project.rating.toFixed(1)}</span>
                         </div>
-                        <div className="flex items-center text-gray-600">
-                          <Calendar className="w-4 h-4 mr-1 text-gray-500" />
+                        <div className="flex items-center text-[var(--theme-text)]">
+                          <Calendar className="w-4 h-4 mr-1 text-[var(--theme-text)]" />
                           <span>{new Date(project.deadline).toLocaleDateString()}</span>
                         </div>
                       </div>
@@ -498,24 +498,24 @@ const EmployeePerformanceReport = () => {
               </div>
 
               {/* Tasks Overview */}
-              <div className="bg-white rounded-xl shadow-sm border p-6">
-                <h2 className="text-xl font-semibold text-blue-500 mb-4">Tasks Overview</h2>
+              <div className="bg-[var(--theme-background)] rounded-xl shadow-sm border p-6">
+                <h2 className="text-xl font-semibold text-[var(--theme-accent)] mb-4">Tasks Overview</h2>
                 <div className="space-y-4">
                   {performanceData.tasks.map((task) => (
                     <div key={task.id} className="border-b pb-4 last:border-b-0 last:pb-0">
                       <div className="flex justify-between items-center">
                         <h3 className="font-medium">{task.name}</h3>
                         <span className={`text-xs px-2 py-1 rounded-full ${
-                          task.status === 'completed' ? 'bg-green-100 text-green-800' :
-                          task.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                          task.status === 'completed' ? 'bg-green-100 text-[color-mix(in_srgb,var(--theme-accent)_70%,var(--theme-primary)_30%)]' :
+                          task.status === 'in-progress' ? 'bg-[color-mix(in_srgb,var(--theme-accent)_30%,var(--theme-background)_70%)] text-blue-800' :
                           'bg-red-100 text-red-800'
                         }`}>
                           {task.status.replace('-', ' ')}
                         </span>
                       </div>
-                      <div className="mt-1 text-sm text-gray-600">{task.project}</div>
+                      <div className="mt-1 text-sm text-[var(--theme-text)]">{task.project}</div>
                       <div className="mt-2">
-                        <div className="flex justify-between text-sm text-gray-600 mb-1">
+                        <div className="flex justify-between text-sm text-[var(--theme-text)] mb-1">
                           <span>Progress</span>
                           <span>
                             {Math.round((task.hoursSpent / task.estimatedHours) * 100)}%
@@ -525,7 +525,7 @@ const EmployeePerformanceReport = () => {
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div 
                             className={`h-2 rounded-full ${
-                              (task.hoursSpent / task.estimatedHours) <= 1 ? 'bg-green-500' : 'bg-red-500'
+                              (task.hoursSpent / task.estimatedHours) <= 1 ? 'bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]0' : 'bg-red-500'
                             }`}
                             style={{ 
                               width: `${Math.min(100, (task.hoursSpent / task.estimatedHours) * 100)}%` 
@@ -533,9 +533,9 @@ const EmployeePerformanceReport = () => {
                           ></div>
                         </div>
                       </div>
-                      <div className="mt-2 flex items-center text-sm text-gray-600">
+                      <div className="mt-2 flex items-center text-sm text-[var(--theme-text)]">
                         <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
-                          task.complexity === 'low' ? 'bg-green-500' :
+                          task.complexity === 'low' ? 'bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]0' :
                           task.complexity === 'medium' ? 'bg-yellow-500' : 'bg-red-500'
                         }`}></span>
                         {task.complexity} complexity
@@ -550,23 +550,23 @@ const EmployeePerformanceReport = () => {
 
         {/* Projects Tab */}
         {activeTab === 'projects' && (
-          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+          <div className="bg-[var(--theme-background)] rounded-xl shadow-sm border overflow-hidden">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-6">Project Performance</h2>
+              <h2 className="text-xl font-semibold text-[var(--theme-accent)] mb-6">Project Performance</h2>
               <div className="space-y-4">
                 {performanceData.projects.map((project) => (
                   <div key={project.id} className="border rounded-lg overflow-hidden">
                     <div 
-                      className="p-4 cursor-pointer flex justify-between items-center hover:bg-gray-50"
+                      className="p-4 cursor-pointer flex justify-between items-center hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]"
                       onClick={() => toggleProjectExpand(project.id)}
                     >
                       <div className="flex items-center">
-                        <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3">
-                          <HardHat className="w-5 h-5 text-blue-600" />
+                        <div className="w-10 h-10 rounded-full bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)] flex items-center justify-center mr-3">
+                          <HardHat className="w-5 h-5 text-[var(--theme-accent)]" />
                         </div>
                         <div>
                           <h3 className="font-medium">{project.name}</h3>
-                          <div className="flex items-center text-sm text-gray-600 mt-1">
+                          <div className="flex items-center text-sm text-[var(--theme-text)] mt-1">
                             <span className="flex items-center mr-3">
                               <Users className="w-3 h-3 mr-1" /> {project.teamMembers} members
                             </span>
@@ -578,12 +578,12 @@ const EmployeePerformanceReport = () => {
                       </div>
                       <div className="flex items-center">
                         <div className="mr-4">
-                          <div className="text-sm text-gray-600 mb-1">Completion</div>
+                          <div className="text-sm text-[var(--theme-text)] mb-1">Completion</div>
                           <div className="flex items-center">
                             <div className="w-16 bg-gray-200 rounded-full h-1.5 mr-2">
                               <div 
                                 className={`h-1.5 rounded-full ${
-                                  project.completion >= 70 ? 'bg-green-500' :
+                                  project.completion >= 70 ? 'bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]0' :
                                   project.completion >= 40 ? 'bg-yellow-500' : 'bg-red-500'
                                 }`}
                                 style={{ width: `${project.completion}%` }}
@@ -593,9 +593,9 @@ const EmployeePerformanceReport = () => {
                           </div>
                         </div>
                         {expandedProject === project.id ? (
-                          <ChevronUp className="w-5 h-5 text-gray-500" />
+                          <ChevronUp className="w-5 h-5 text-[var(--theme-text)]" />
                         ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-500" />
+                          <ChevronDown className="w-5 h-5 text-[var(--theme-text)]" />
                         )}
                       </div>
                     </div>
@@ -603,8 +603,8 @@ const EmployeePerformanceReport = () => {
                     {expandedProject === project.id && (
                       <div className="border-t p-4 bg-gray-50">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="bg-white p-3 rounded-lg border">
-                            <div className="text-sm text-gray-600 mb-2">Contribution</div>
+                          <div className="bg-[var(--theme-background)] p-3 rounded-lg border">
+                            <div className="text-sm text-[var(--theme-text)] mb-2">Contribution</div>
                             <div className="flex items-center">
                               <div className="w-full bg-gray-200 rounded-full h-2 mr-2">
                                 <div 
@@ -616,8 +616,8 @@ const EmployeePerformanceReport = () => {
                             </div>
                           </div>
                           
-                          <div className="bg-white p-3 rounded-lg border">
-                            <div className="text-sm text-gray-600 mb-2">Rating</div>
+                          <div className="bg-[var(--theme-background)] p-3 rounded-lg border">
+                            <div className="text-sm text-[var(--theme-text)] mb-2">Rating</div>
                             <div className="flex items-center">
                               {[...Array(5)].map((_, i) => (
                                 <Star
@@ -629,8 +629,8 @@ const EmployeePerformanceReport = () => {
                             </div>
                           </div>
                           
-                          <div className="bg-white p-3 rounded-lg border">
-                            <div className="text-sm text-gray-600 mb-2">Status</div>
+                          <div className="bg-[var(--theme-background)] p-3 rounded-lg border">
+                            <div className="text-sm text-[var(--theme-text)] mb-2">Status</div>
                             <div className="flex items-center">
                               {project.deadlineMet ? (
                                 <>
@@ -653,15 +653,15 @@ const EmployeePerformanceReport = () => {
                             {performanceData.tasks
                               .filter(task => task.project === project.name)
                               .map(task => (
-                                <div key={task.id} className="flex items-center justify-between bg-white p-2 rounded border">
+                                <div key={task.id} className="flex items-center justify-between bg-[var(--theme-background)] p-2 rounded border">
                                   <div className="flex items-center">
                                     <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
-                                      task.status === 'completed' ? 'bg-green-500' :
-                                      task.status === 'in-progress' ? 'bg-blue-500' : 'bg-red-500'
+                                      task.status === 'completed' ? 'bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]0' :
+                                      task.status === 'in-progress' ? 'bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]0' : 'bg-red-500'
                                     }`}></span>
                                     <span className="text-sm">{task.name}</span>
                                   </div>
-                                  <div className="text-xs text-gray-500">
+                                  <div className="text-xs text-[var(--theme-text)]">
                                     {task.hoursSpent}h/{task.estimatedHours}h
                                   </div>
                                 </div>
@@ -679,15 +679,15 @@ const EmployeePerformanceReport = () => {
 
         {/* Tasks Tab */}
         {activeTab === 'tasks' && (
-          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+          <div className="bg-[var(--theme-background)] rounded-xl shadow-sm border overflow-hidden">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-6">Task Performance</h2>
+              <h2 className="text-xl font-semibold text-[var(--theme-accent)] mb-6">Task Performance</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg border border-green-100">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-green-800">Completed</p>
+                      <p className="text-sm font-medium text-[color-mix(in_srgb,var(--theme-accent)_70%,var(--theme-primary)_30%)]">Completed</p>
                       <p className="text-2xl font-bold text-green-900 mt-1">
                         {performanceData.tasks.filter(t => t.status === 'completed').length}
                       </p>
@@ -725,27 +725,27 @@ const EmployeePerformanceReport = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Complexity</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time Spent</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Efficiency</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--theme-text)] uppercase tracking-wider">Task</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--theme-text)] uppercase tracking-wider">Project</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--theme-text)] uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--theme-text)] uppercase tracking-wider">Complexity</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--theme-text)] uppercase tracking-wider">Time Spent</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--theme-text)] uppercase tracking-wider">Efficiency</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-[var(--theme-background)] divide-y divide-gray-200">
                     {performanceData.tasks.map((task) => (
-                      <tr key={task.id} className="hover:bg-gray-50">
+                      <tr key={task.id} className="hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="font-medium">{task.name}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-600">{task.project}</div>
+                          <div className="text-sm text-[var(--theme-text)]">{task.project}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            task.status === 'completed' ? 'bg-green-100 text-green-800' :
-                            task.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                            task.status === 'completed' ? 'bg-green-100 text-[color-mix(in_srgb,var(--theme-accent)_70%,var(--theme-primary)_30%)]' :
+                            task.status === 'in-progress' ? 'bg-[color-mix(in_srgb,var(--theme-accent)_30%,var(--theme-background)_70%)] text-blue-800' :
                             'bg-red-100 text-red-800'
                           }`}>
                             {task.status.replace('-', ' ')}
@@ -753,7 +753,7 @@ const EmployeePerformanceReport = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            task.complexity === 'low' ? 'bg-green-100 text-green-800' :
+                            task.complexity === 'low' ? 'bg-green-100 text-[color-mix(in_srgb,var(--theme-accent)_70%,var(--theme-primary)_30%)]' :
                             task.complexity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                             'bg-red-100 text-red-800'
                           }`}>
@@ -770,7 +770,7 @@ const EmployeePerformanceReport = () => {
                             <div className="w-16 bg-gray-200 rounded-full h-1.5 mr-2">
                               <div 
                                 className={`h-1.5 rounded-full ${
-                                  (task.hoursSpent / task.estimatedHours) <= 1 ? 'bg-green-500' : 'bg-red-500'
+                                  (task.hoursSpent / task.estimatedHours) <= 1 ? 'bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]0' : 'bg-red-500'
                                 }`}
                                 style={{ 
                                   width: `${Math.min(100, (task.hoursSpent / task.estimatedHours) * 100)}%` 
@@ -794,8 +794,8 @@ const EmployeePerformanceReport = () => {
         {/* Skills Tab */}
         {activeTab === 'skills' && (
           <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h2 className="text-xl font-semibold mb-6">Skills Assessment</h2>
+            <div className="bg-[var(--theme-background)] rounded-xl shadow-sm border p-6">
+              <h2 className="text-xl font-semibold text-[var(--theme-accent)] mb-6">Skills Assessment</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100">
@@ -835,7 +835,7 @@ const EmployeePerformanceReport = () => {
                 <div className="bg-gradient-to-r from-green-50 to-teal-50 p-4 rounded-lg border border-green-100">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-green-800">Soft Skills</p>
+                      <p className="text-sm font-medium text-[color-mix(in_srgb,var(--theme-accent)_70%,var(--theme-primary)_30%)]">Soft Skills</p>
                       <p className="text-2xl font-bold text-green-900 mt-1">
                         {Math.round(
                           performanceData.skills
@@ -869,14 +869,14 @@ const EmployeePerformanceReport = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {performanceData.skills.map((skill) => (
-                  <div key={skill.name} className="bg-white rounded-lg border p-5 hover:shadow-sm transition-shadow">
+                  <div key={skill.name} className="bg-[var(--theme-background)] rounded-lg border p-5 hover:shadow-sm transition-shadow">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center">
                         {getSkillIcon(skill.category)}
                         <h3 className="text-lg font-medium">{skill.name}</h3>
                       </div>
                       <span className={`text-xs px-2 py-1 rounded-full ${
-                        skill.improvement >= 10 ? 'bg-green-100 text-green-800' :
+                        skill.improvement >= 10 ? 'bg-green-100 text-[color-mix(in_srgb,var(--theme-accent)_70%,var(--theme-primary)_30%)]' :
                         skill.improvement >= 5 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
                       }`}>
                         {skill.improvement > 0 ? '+' : ''}{skill.improvement}%
@@ -884,14 +884,14 @@ const EmployeePerformanceReport = () => {
                     </div>
                     
                     <div className="mb-4">
-                      <div className="flex justify-between text-sm text-gray-600 mb-2">
+                      <div className="flex justify-between text-sm text-[var(--theme-text)] mb-2">
                         <span>Current Level</span>
                         <span className="font-medium">{skill.level}%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2.5">
                         <div 
                           className={`h-2.5 rounded-full ${
-                            skill.level >= 80 ? 'bg-green-500' :
+                            skill.level >= 80 ? 'bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]0' :
                             skill.level >= 60 ? 'bg-yellow-500' : 'bg-red-500'
                           }`}
                           style={{ width: `${skill.level}%` }}
@@ -900,14 +900,14 @@ const EmployeePerformanceReport = () => {
                     </div>
                     
                     <div>
-                      <div className="flex justify-between text-sm text-gray-600 mb-2">
+                      <div className="flex justify-between text-sm text-[var(--theme-text)] mb-2">
                         <span>Improvement Trend</span>
                         <span className="font-medium">+{skill.improvement}%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2.5">
                         <div 
                           className={`h-2.5 rounded-full ${
-                            skill.improvement >= 10 ? 'bg-green-500' :
+                            skill.improvement >= 10 ? 'bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]0' :
                             skill.improvement >= 5 ? 'bg-yellow-500' : 'bg-red-500'
                           }`}
                           style={{ width: `${Math.min(100, skill.improvement)}%` }}
@@ -916,7 +916,7 @@ const EmployeePerformanceReport = () => {
                     </div>
                     
                     <div className="mt-4 pt-4 border-t">
-                      <div className="flex justify-between text-xs text-gray-500">
+                      <div className="flex justify-between text-xs text-[var(--theme-text)]">
                         <span>Category: {skill.category}</span>
                         <span>
                           {skill.level >= 80 ? 'Expert' :
@@ -935,8 +935,8 @@ const EmployeePerformanceReport = () => {
         {/* Peer Reviews Tab */}
         {activeTab === 'reviews' && (
           <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h2 className="text-xl font-semibold mb-6">Peer Feedback</h2>
+            <div className="bg-[var(--theme-background)] rounded-xl shadow-sm border p-6">
+              <h2 className="text-xl font-semibold text-[var(--theme-accent)] mb-6">Peer Feedback</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100">
@@ -950,7 +950,7 @@ const EmployeePerformanceReport = () => {
                             performanceData.peerReviews.length
                           ).toFixed(1)}
                         </span>
-                        <span className="text-lg text-blue-700 ml-1">/5</span>
+                        <span className="text-lg text-[var(--theme-text)] ml-1">/5</span>
                       </div>
                     </div>
                     <Star className="w-8 h-8 text-blue-400 opacity-70 fill-blue-400" />
@@ -960,7 +960,7 @@ const EmployeePerformanceReport = () => {
                 <div className="bg-gradient-to-r from-green-50 to-teal-50 p-4 rounded-lg border border-green-100">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-green-800">Positive Feedback</p>
+                      <p className="text-sm font-medium text-[color-mix(in_srgb,var(--theme-accent)_70%,var(--theme-primary)_30%)]">Positive Feedback</p>
                       <p className="text-2xl font-bold text-green-900 mt-1">
                         {performanceData.peerReviews.filter(r => r.rating >= 4).length}
                       </p>
@@ -988,7 +988,7 @@ const EmployeePerformanceReport = () => {
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <h3 className="font-medium">{review.reviewer}</h3>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-[var(--theme-text)]">
                           {new Date(review.date).toLocaleDateString()}
                         </p>
                       </div>

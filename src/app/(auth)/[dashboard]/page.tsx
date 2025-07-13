@@ -16,6 +16,7 @@ import Reports from '../manageprojects/reports/page';
 import Projects from '../manageprojects/projects/page';
 import Image from 'next/image';
 import AuthGuard from '@/app/components/AuthGuard';
+import { themes, defaultTheme, Theme } from '@/app/themes';
 
 // TimeDisplay component to avoid hydration error
 function TimeDisplay() {
@@ -31,6 +32,33 @@ function TimeDisplay() {
 }
 
 const FlexCraftDashboard = () => {
+  // THEME STATE
+  const [selectedTheme, setSelectedTheme] = React.useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('flexcraftTheme');
+      if (stored) {
+        const found = themes.find(t => t.name === stored);
+        if (found) return found;
+      }
+    }
+    return defaultTheme;
+  });
+
+  // Apply theme to :root as CSS variables
+  React.useEffect(() => {
+    const root = document.documentElement;
+    Object.entries(selectedTheme).forEach(([key, value]) => {
+      if (key !== 'name') root.style.setProperty(`--theme-${key}`, value);
+    });
+    localStorage.setItem('flexcraftTheme', selectedTheme.name);
+  }, [selectedTheme]);
+
+  // Theme change handler
+  const handleThemeChange = (themeName: string) => {
+    const theme = themes.find(t => t.name === themeName);
+    if (theme) setSelectedTheme(theme);
+  };
+
   const [timeOfDay, setTimeOfDay] = useState('morning');
   const [currentTime, setCurrentTime] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -714,6 +742,20 @@ const FlexCraftDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'profile' && (
           <div className="space-y-8">
+            {/* Global Theme Picker */}
+            {/* <div className="flex items-center justify-end mb-4">
+              <label className="mr-2 text-sm font-medium text-gray-700">Theme:</label>
+              <select
+                className="border rounded px-3 py-1 text-sm"
+                value={selectedTheme.name}
+                onChange={e => handleThemeChange(e.target.value)}
+              >
+                {themes.map(theme => (
+                  <option key={theme.name} value={theme.name}>{theme.name}</option>
+                ))}
+              </select>
+            </div> */}
+
             {/* Dashboard Header */}
             <div className={`${styles.bg} p-6 rounded-xl shadow-sm`}>
               <div className="flex justify-between items-center">
@@ -750,6 +792,286 @@ const FlexCraftDashboard = () => {
               </div>
             </div>
 
+            {/* Profile Details Section */}
+            <div className="bg-white rounded-xl shadow p-6 flex flex-col md:flex-row gap-8 items-start">
+              <div className="flex-1 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold">Profile Details</h2>
+                    <p className="text-gray-500 text-sm">Manage your personal information</p>
+                  </div>
+                  <button className="flex items-center text-blue-600 hover:text-blue-800 px-3 py-1 rounded transition-colors">
+                    <Edit className="h-4 w-4 mr-1" /> Edit
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  <div>
+                    <label className="text-xs text-gray-500">Full Name</label>
+                    <div className="font-medium">Alex Johnson</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Email</label>
+                    <div className="flex items-center">
+                      <span className="font-medium">alex.johnson@example.com</span>
+                      <button className="ml-2 text-blue-500 hover:underline text-xs">Edit</button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Role</label>
+                    <div className="font-medium">Super Admin</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Joined</label>
+                    <div className="font-medium">Jan 10, 2022</div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold">More Info</h2>
+                    <p className="text-gray-500 text-sm">Budget & Team Overview</p>
+                  </div>
+                  <button className="flex items-center text-blue-600 hover:text-blue-800 px-3 py-1 rounded transition-colors">
+                    <Edit className="h-4 w-4 mr-1" /> Edit
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  <div>
+                    <label className="text-xs text-gray-500">Annual Budget</label>
+                    <div className="font-medium">$120,000</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Spent</label>
+                    <div className="font-medium">$78,500</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Team Size</label>
+                    <div className="font-medium">12 Members</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Active Projects</label>
+                    <div className="font-medium">5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Security & Access */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h2 className="text-lg font-semibold mb-2">Security & Access</h2>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Two-Factor Authentication</span>
+                    <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">Enabled</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Last Login</span>
+                    <span className="text-gray-800">2025-07-13 17:45 (Delhi, India)</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">API Keys</span>
+                    <button className="text-blue-600 hover:underline text-xs">Manage Keys</button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Recent Security Events</span>
+                    <button className="text-blue-600 hover:underline text-xs">View Log</button>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold mb-2">Organization Management</h2>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Organization Name</span>
+                    <span className="font-medium">Flexcraft Inc.</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Org ID</span>
+                    <span className="font-mono text-xs">fc-00123</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Invite Code</span>
+                    <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">JOIN-2025</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Manage Users</span>
+                    <button className="text-blue-600 hover:underline text-xs">Go to User Management</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Billing Overview */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8">
+              <h2 className="text-lg font-semibold mb-2">Billing & Subscription</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs text-gray-500">Current Plan</label>
+                  <div className="font-medium">Pro Annual</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">Renewal Date</label>
+                  <div className="font-medium">2026-01-01</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">Payment Method</label>
+                  <div className="font-medium">Visa **** 1234</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">Invoices</label>
+                  <button className="text-blue-600 hover:underline text-xs">Download Latest</button>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">Billing Contact</label>
+                  <div className="font-medium">billing@flexcraft.com</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Recent Admin Actions */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8">
+              <h2 className="text-lg font-semibold mb-2">Recent Admin Actions</h2>
+              <ul className="divide-y">
+                <li className="py-2 flex items-center justify-between">
+                  <span className="text-gray-700">Invited user <b>samuel@company.com</b></span>
+                  <span className="text-xs text-gray-500">2 hours ago</span>
+                </li>
+                <li className="py-2 flex items-center justify-between">
+                  <span className="text-gray-700">Changed role for <b>jane@example.com</b> to Developer</span>
+                  <span className="text-xs text-gray-500">Yesterday</span>
+                </li>
+                <li className="py-2 flex items-center justify-between">
+                  <span className="text-gray-700">Updated billing info</span>
+                  <span className="text-xs text-gray-500">3 days ago</span>
+                </li>
+                <li className="py-2 flex items-center justify-between">
+                  <span className="text-gray-700">Revoked API key</span>
+                  <span className="text-xs text-gray-500">Last week</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Super Admin: System Health & Status */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8">
+              <h2 className="text-lg font-semibold mb-2">System Health & Status</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">API</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">Online</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Database</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">Online</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Storage</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">Online</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Worker</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-yellow-100 text-yellow-700">Degraded</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Uptime</span>
+                  <span className="font-medium">99.98%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Last Outage</span>
+                  <span className="font-medium">2025-07-10 09:13</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Notifications & Preferences */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8">
+              <h2 className="text-lg font-semibold mb-2">Notifications & Preferences</h2>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Email Notifications</span>
+                  <input type="checkbox" checked readOnly className="form-checkbox h-4 w-4 text-blue-600" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">SMS Alerts</span>
+                  <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Critical System Alerts</span>
+                  <input type="checkbox" checked readOnly className="form-checkbox h-4 w-4 text-blue-600" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Maintenance Announcements</span>
+                  <input type="checkbox" checked readOnly className="form-checkbox h-4 w-4 text-blue-600" />
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Integrations & Connected Apps */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8">
+              <h2 className="text-lg font-semibold mb-2">Integrations & Connected Apps</h2>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Slack</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">Connected</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">GitHub</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">Connected</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Zapier</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-gray-200 text-gray-500">Not Connected</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Add Integration</span>
+                  <button className="text-blue-600 hover:underline text-xs">Connect New App</button>
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Usage Analytics */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8">
+              <h2 className="text-lg font-semibold mb-2">Usage Analytics</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="text-xs text-gray-500">Active Users (30d)</label>
+                  <div className="font-medium">87</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">API Calls (30d)</label>
+                  <div className="font-medium">14,230</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">Storage Used</label>
+                  <div className="font-medium">32 GB</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">Most Active Team</label>
+                  <div className="font-medium">Frontend Devs</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Support & Help */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8">
+              <h2 className="text-lg font-semibold mb-2">Support & Help</h2>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Contact Support</span>
+                  <button className="text-blue-600 hover:underline text-xs">Start Chat</button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Documentation</span>
+                  <a href="#" className="text-blue-600 hover:underline text-xs">View Docs</a>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">API Reference</span>
+                  <a href="#" className="text-blue-600 hover:underline text-xs">API Docs</a>
+                </div>
+              </div>
+            </div>
+
             {/* Usage Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {usageMetrics.map((metric, index) => (
@@ -769,7 +1091,7 @@ const FlexCraftDashboard = () => {
             </div>
 
             {/* Current Plan */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            {/* <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className="p-6">
                 <h2 className="text-lg font-semibold mb-4">Your Current Plan</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -806,10 +1128,10 @@ const FlexCraftDashboard = () => {
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Recent Activity */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            {/* <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className="p-6 border-b">
                 <h2 className="text-lg font-semibold">Recent Activity</h2>
               </div>
@@ -829,10 +1151,13 @@ const FlexCraftDashboard = () => {
                   </div>
                 ))}
               </div>
+            </div> */}
+            <div>
+              
             </div>
 
             {/* Video Tutorial */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            {/* <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className="p-6 border-b">
                 <div className="flex justify-between items-center">
                   <h2 className="text-lg font-semibold">Getting Started</h2>
@@ -877,7 +1202,7 @@ const FlexCraftDashboard = () => {
                   <p className="text-sm text-gray-500 mt-1">Learn how to get started with our platform</p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         )}
 

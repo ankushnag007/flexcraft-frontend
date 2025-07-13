@@ -20,6 +20,7 @@ import {
   HelpCircle
 } from 'lucide-react'
 import AuthGuard from './AuthGuard'
+import { themes, defaultTheme, Theme } from '@/app/themes'
 
 const navItems = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -241,7 +242,7 @@ const Header = () => {
 
   return (
     <AuthGuard>
-      <header className="bg-white shadow-sm sticky top-0 z-10 w-full">
+      <header className="bg-[var(--theme-background)] shadow-sm sticky top-0 z-10 w-full">
         <div className="w-full px-4">
           <div className="flex items-center justify-between h-16 w-full">
             <div className="flex items-center overflow-hidden whitespace-nowrap relative">
@@ -251,7 +252,7 @@ const Header = () => {
               >
             <div 
   ref={sliderRef}
-  className="absolute bg-blue-100 rounded-md h-8 top-1/2 -translate-y-1/2 origin-left"
+  className="absolute bg-[color-mix(in_srgb,var(--theme-accent)_30%,var(--theme-background)_70%)] rounded-md h-8 top-1/2 -translate-y-1/2 origin-left"
   style={{
     pointerEvents: 'none',
     willChange: 'transform',
@@ -266,8 +267,8 @@ const Header = () => {
                     ref={(el) => handleTabRef(el, item.path)}
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors relative z-10 ${
                       pathname.startsWith(item.path)
-                        ? 'text-blue-600 font-medium' 
-                        : 'text-gray-500 hover:bg-gray-100  hover:bg-gray-100  hover:text-gray-700'
+                        ? 'text-[var(--theme-accent)] font-medium' 
+                        : 'text-[var(--theme-text)] hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]  hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]  hover:text-[var(--theme-text)]'
                     }`}
                     onMouseEnter={() => setActiveTab(item.path)}
                     onMouseLeave={() => setActiveTab(navItems.find(i => pathname.startsWith(i.path))?.path || null)}
@@ -284,7 +285,7 @@ const Header = () => {
               {!hasCompletedTour && (
                 <button
                   onClick={() => setShowTour(!showTour)}
-                  className="p-2 text-gray-500 hover:text-blue-600 transition-colors"
+                  className="p-2 text-[var(--theme-text)] hover:text-[var(--theme-accent)] transition-colors"
                   aria-label="Show navigation tour"
                 >
                   <HelpCircle size={18} />
@@ -298,7 +299,7 @@ const Header = () => {
       {showTour && (
         <div
           ref={tourTooltipRef}
-          className="fixed z-50 bg-white p-6 rounded-lg shadow-xl w-80"
+          className="fixed z-50 bg-[var(--theme-background)] p-6 rounded-lg shadow-xl w-80"
           style={{
             transition: 'all 0.3s ease',
             pointerEvents: 'auto',
@@ -311,7 +312,7 @@ const Header = () => {
             </h3>
             <button 
               onClick={handleCompleteTour}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-[var(--theme-text)] hover:text-[var(--theme-text)]"
             >
               <X size={20} />
             </button>
@@ -326,7 +327,7 @@ const Header = () => {
               {currentTourStep > 0 && (
                 <button
                   onClick={handlePrevTourStep}
-                  className="flex items-center text-blue-600 hover:text-blue-800 mr-4"
+                  className="flex items-center text-[var(--theme-accent)] hover:text-[var(--theme-accent)] mr-4"
                 >
                   <ArrowLeft size={16} className="mr-1" />
                   Previous
@@ -336,7 +337,7 @@ const Header = () => {
             
             <button
               onClick={handleNextTourStep}
-              className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              className="flex items-center bg-[var(--theme-accent)] text-[var(--theme-primary)] px-4 py-2 rounded-md hover:bg-[color-mix(in_srgb,var(--theme-accent)_80%,var(--theme-background)_20%)] transition-colors"
             >
               {currentTourStep === navItems.length - 1 ? 'Finish' : 'Next'}
               {currentTourStep < navItems.length - 1 && (
@@ -345,9 +346,16 @@ const Header = () => {
             </button>
           </div>
           
-          <div className="mt-4 text-center text-sm text-gray-500">
+          <div className="mt-4 text-center text-sm text-[var(--theme-text)]">
             Step {currentTourStep + 1} of {navItems.length}
           </div>
+        </div>
+      )}
+
+      {/* Chrome-style Theme Picker at Sidebar Bottom (only on Dashboard) */}
+      {activeTab === '/dashboard' && (
+        <div className="w-full px-4 pb-4 mt-6 flex flex-col items-center">
+          <ThemePicker />
         </div>
       )}
 
@@ -372,5 +380,68 @@ const Header = () => {
     </AuthGuard>
   )
 }
+
+// ThemePicker component for sidebar
+const ThemePicker = () => {
+  const [selectedTheme, setSelectedTheme] = React.useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('flexcraftTheme');
+      if (stored) {
+        const found = themes.find(t => t.name === stored);
+        if (found) return found;
+      }
+    }
+    return defaultTheme;
+  });
+
+  React.useEffect(() => {
+    const root = document.documentElement;
+    Object.entries(selectedTheme).forEach(([key, value]) => {
+      if (key !== 'name') root.style.setProperty(`--theme-${key}`, value);
+    });
+    localStorage.setItem('flexcraftTheme', selectedTheme.name);
+  }, [selectedTheme]);
+
+  const handleThemeChange = (themeName: string) => {
+    const theme = themes.find(t => t.name === themeName);
+    if (theme) setSelectedTheme(theme);
+  };
+
+  return (
+    <div className="w-full flex flex-col items-center">
+      <label className="mb-1 text-xs font-medium text-[var(--theme-text)]">Theme</label>
+      <div className="relative w-full">
+        <select
+          className="w-full border border-[var(--theme-primary)] rounded px-3 py-1 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={selectedTheme.name}
+          onChange={e => handleThemeChange(e.target.value)}
+        >
+          {themes.map(theme => (
+            <option key={theme.name} value={theme.name}>{theme.name}</option>
+          ))}
+        </select>
+        <div className="absolute right-2 top-2 flex items-center pointer-events-none">
+          {/* Chrome-style color dot for selected theme */}
+          <span
+            className="inline-block w-4 h-4 rounded-full border border-[var(--theme-background)]"
+            style={{ background: selectedTheme.primary }}
+          />
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2 mt-2 justify-center">
+        {themes.map(theme => (
+          <button
+            key={theme.name}
+            className={`w-6 h-6 rounded-full border-2 transition-all duration-150 ${selectedTheme.name === theme.name ? 'border-[var(--theme-accent)] scale-110' : 'border-[var(--theme-primary)]'}`}
+            style={{ background: theme.primary }}
+            title={theme.name}
+            onClick={() => handleThemeChange(theme.name)}
+            aria-label={`Switch to ${theme.name} theme`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export default Header
