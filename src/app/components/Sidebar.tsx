@@ -84,7 +84,7 @@ const Header = () => {
         requestAnimationFrame(() => {
           // Check again in case the element was unmounted
           if (sliderRef.current) {
-            sliderRef.current.style.transform = `translateX(${left}px)`;
+            // sliderRef.current.style.transform = `translateX(${left}px)`;
             sliderRef.current.style.width = `${width}px`;
           }
         });
