@@ -78,13 +78,13 @@ const Header = () => {
         sliderElement.style.width = `${width}px`;
       } else {
         // First frame - set the transition
-        // sliderElement.style.transition = 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)';
+        sliderElement.style.transition = 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)';
         
         // Next frame - apply the transform
         requestAnimationFrame(() => {
           // Check again in case the element was unmounted
           if (sliderRef.current) {
-            // sliderRef.current.style.transform = `translateX(${left}px)`;
+            sliderRef.current.style.transform = `translateX(${left}px)`;
             sliderRef.current.style.width = `${width}px`;
           }
         });
