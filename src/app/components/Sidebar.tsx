@@ -53,53 +53,47 @@ const Header = () => {
 
   const updateSlider = useCallback((immediate = false) => {
     if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
+      cancelAnimationFrame(animationFrameRef.current)
     }
-  
+
     animationFrameRef.current = requestAnimationFrame(() => {
-      const currentPath = navItems.find(item => pathname.startsWith(item.path))?.path || activeTab;
-      if (!currentPath) return;
-  
-      const tabElement = itemsRef.current.get(currentPath);
-      if (!tabElement || !navRef.current || !sliderRef.current) return;
-  
-      const navRect = navRef.current.getBoundingClientRect();
-      const tabRect = tabElement.getBoundingClientRect();
-  
-      const left = tabRect.left - navRect.left;
-      const width = tabRect.width;
-  
-      // Store sliderRef.current in a variable to avoid repeated null checks
-      const sliderElement = sliderRef.current;
-      
+      const currentPath = navItems.find(item => pathname.startsWith(item.path))?.path || activeTab
+      if (!currentPath) return
+
+      const tabElement = itemsRef.current.get(currentPath)
+      if (!tabElement || !navRef.current || !sliderRef.current) return
+
+      const navRect = navRef.current.getBoundingClientRect()
+      const tabRect = tabElement.getBoundingClientRect()
+
+      const left = tabRect.left - navRect.left
+      const width = tabRect.width
+
+      const slider = sliderRef.current
+      if (!slider) return
+
       if (immediate) {
-        sliderElement.style.transition = 'none';
-        sliderElement.style.transform = `translateX(${left}px)`;
-        sliderElement.style.width = `${width}px`;
+        slider.style.transition = 'none'
+        slider.style.transform = `translateX(${left}px)`
+        slider.style.width = `${width}px`
       } else {
-        // First frame - set the transition
-        sliderElement.style.transition = 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)';
+        slider.style.transition = 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)'
         
-        // Next frame - apply the transform
         requestAnimationFrame(() => {
-          // Check again in case the element was unmounted
           if (sliderRef.current) {
-            sliderRef.current.style.transform = `translateX(${left}px)`;
-            sliderRef.current.style.width = `${width}px`;
+            sliderRef.current.style.transform = `translateX(${left}px)`
+            sliderRef.current.style.width = `${width}px`
           }
-        });
+        })
       }
-    });
-  }, [pathname, activeTab]);
-  
+    })
+  }, [pathname, activeTab])
 
   useEffect(() => {
     const initialTab = navItems.find(item => pathname.startsWith(item.path))
     if (initialTab) {
       setActiveTab(initialTab.path)
-      // Set initial tour step to match current path
       const initialStep = navItems.findIndex(item => item.path === initialTab.path)
-      
       setCurrentTourStep(initialStep >= 0 ? initialStep : 0)
     }
 
@@ -109,14 +103,13 @@ const Header = () => {
     }
 
     resizeObserverRef.current = new ResizeObserver(() => {
-      // Debounce the resize updates
       if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+        cancelAnimationFrame(animationFrameRef.current)
       }
       animationFrameRef.current = requestAnimationFrame(() => {
-        updateSlider();
-      });
-    });
+        updateSlider()
+      })
+    })
 
     if (navRef.current) {
       resizeObserverRef.current.observe(navRef.current)
@@ -256,16 +249,16 @@ const Header = () => {
                 ref={navRef}
                 className="flex space-x-1 relative"
               >
-            <div 
-  ref={sliderRef}
-  className="absolute bg-[color-mix(in_srgb,var(--theme-accent)_30%,var(--theme-background)_70%)] rounded-md h-8 top-1/2 -translate-y-1/2 origin-left"
-  style={{
-    pointerEvents: 'none',
-    willChange: 'transform',
-    transition: 'all 250ms ease', // Set default transition here
-    left: 0 // Initial position
-  }}
-/>
+                <div 
+                  ref={sliderRef}
+                  className="absolute bg-[color-mix(in_srgb,var(--theme-accent)_30%,var(--theme-background)_70%)] rounded-md h-8 top-1/2 -translate-y-1/2 origin-left"
+                  style={{
+                    pointerEvents: 'none',
+                    willChange: 'transform',
+                    transition: 'all 250ms ease',
+                    left: 0
+                  }}
+                />
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
@@ -274,7 +267,7 @@ const Header = () => {
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors relative z-10 ${
                       pathname.startsWith(item.path)
                         ? 'text-[var(--theme-accent)] font-medium' 
-                        : 'text-[var(--theme-text)] hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]  hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)]  hover:text-[var(--theme-text)]'
+                        : 'text-[var(--theme-text)] hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)] hover:text-[var(--theme-text)]'
                     }`}
                     onMouseEnter={() => setActiveTab(item.path)}
                     onMouseLeave={() => setActiveTab(navItems.find(i => pathname.startsWith(i.path))?.path || null)}
@@ -358,7 +351,6 @@ const Header = () => {
         </div>
       )}
 
-      {/* Chrome-style Theme Picker at Sidebar Bottom (only on Dashboard) */}
       {activeTab === '/dashboard' && (
         <div className="w-full px-4 pb-4 mt-6 flex flex-col items-center">
           <ThemePicker />
@@ -387,31 +379,30 @@ const Header = () => {
   )
 }
 
-// ThemePicker component for sidebar
 const ThemePicker = () => {
   const [selectedTheme, setSelectedTheme] = React.useState<Theme>(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('flexcraftTheme');
+      const stored = localStorage.getItem('flexcraftTheme')
       if (stored) {
-        const found = themes.find(t => t.name === stored);
-        if (found) return found;
+        const found = themes.find(t => t.name === stored)
+        if (found) return found
       }
     }
-    return defaultTheme;
-  });
+    return defaultTheme
+  })
 
   React.useEffect(() => {
-    const root = document.documentElement;
+    const root = document.documentElement
     Object.entries(selectedTheme).forEach(([key, value]) => {
-      if (key !== 'name') root.style.setProperty(`--theme-${key}`, value);
-    });
-    localStorage.setItem('flexcraftTheme', selectedTheme.name);
-  }, [selectedTheme]);
+      if (key !== 'name') root.style.setProperty(`--theme-${key}`, value)
+    })
+    localStorage.setItem('flexcraftTheme', selectedTheme.name)
+  }, [selectedTheme])
 
   const handleThemeChange = (themeName: string) => {
-    const theme = themes.find(t => t.name === themeName);
-    if (theme) setSelectedTheme(theme);
-  };
+    const theme = themes.find(t => t.name === themeName)
+    if (theme) setSelectedTheme(theme)
+  }
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -427,7 +418,6 @@ const ThemePicker = () => {
           ))}
         </select>
         <div className="absolute right-2 top-2 flex items-center pointer-events-none">
-          {/* Chrome-style color dot for selected theme */}
           <span
             className="inline-block w-4 h-4 rounded-full border border-[var(--theme-background)]"
             style={{ background: selectedTheme.primary }}
@@ -447,7 +437,7 @@ const ThemePicker = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
 export default Header
