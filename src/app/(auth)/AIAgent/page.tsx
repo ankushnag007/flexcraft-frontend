@@ -808,7 +808,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
                   color: 'white'
                 }}
               >
-                <Palette size={14} /> Theme
+                {/* <Palette size={14} /> Theme */}
               </button>
               {showThemeSelector ? renderThemeSelector() : null}
             </div>

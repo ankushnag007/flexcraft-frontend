@@ -1460,24 +1460,159 @@ const handleDrop = (newStatus: Task["status"]) => {
       case "goals":
         return (
           <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <h3 className="font-medium mb-3">Project Goals</h3>
-            <div className="space-y-3">
-              <div className="flex items-start">
-                <input type="checkbox" className="mt-1 mr-2" />
-                <div>
-                  <p>Launch new website design</p>
-                  <p className="text-xs text-gray-500">Due: 2024-04-15</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <input type="checkbox" className="mt-1 mr-2" />
-                <div>
-                  <p>Implement payment gateway</p>
-                  <p className="text-xs text-gray-500">Due: 2024-04-30</p>
-                </div>
+          <h3 className="font-medium mb-3">Project Goals</h3>
+          <div className="space-y-3">
+            <div className="flex items-start">
+              <input type="checkbox" className="mt-1 mr-2" />
+              <div>
+                <p>Launch new website design</p>
+                <p className="text-xs text-gray-500">Due: 2024-04-15</p>
               </div>
             </div>
+            <div className="flex items-start">
+              <input type="checkbox" className="mt-1 mr-2" />
+              <div>
+                <p>Implement payment gateway</p>
+                <p className="text-xs text-gray-500">Due: 2024-04-30</p>
+              </div>
+            </div>
+            {/* Additional goals */}
+            <div className="flex items-start">
+              <input type="checkbox" className="mt-1 mr-2" />
+              <div>
+                <p>Reach 1,000 active users</p>
+                <p className="text-xs text-gray-500">Due: 2024-05-15</p>
+              </div>
+              
+            </div>
+            <div className="flex items-start">
+              <input type="checkbox" className="mt-1 mr-2" />
+              <div>
+                <p>Integrate analytics dashboard</p>
+                <p className="text-xs text-gray-500">Due: 2024-05-31</p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <input type="checkbox" className="mt-1 mr-2" />
+              <div>
+                <p>Automate deployment pipeline</p>
+                <p className="text-xs text-gray-500">Due: 2024-06-10</p>
+              </div>
+            </div>
+            <div className="pt-12"></div>
+            <div className=" bg-white p-4 rounded-lg shadow mb-6">
+  <div className="flex items-center justify-between mb-3">
+    <h3 className="font-medium">Project Goals</h3>
+    <button
+      className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm flex items-center"
+      // onClick={handleAddGoal}
+      title="Add new goal"
+    >
+      <span className="mr-1">+</span> Add Goal
+    </button>
+  </div>
+  <div className="space-y-4">
+    {/* Example Goal Item */}
+    {[
+      {
+        title: "Launch new website design",
+        due: "2024-04-15",
+        progress: 80,
+        assignee: "John Doe",
+        avatar: "/avatars/john.png",
+      },
+      {
+        title: "Implement payment gateway",
+        due: "2024-04-30",
+        progress: 50,
+        assignee: "Jane Smith",
+        avatar: "/avatars/jane.png",
+      },
+      {
+        title: "Reach 1,000 active users",
+        due: "2024-05-15",
+        progress: 20,
+        assignee: "Alex Chen",
+        avatar: "/avatars/alex.png",
+      },
+      {
+        title: "Integrate analytics dashboard",
+        due: "2024-05-31",
+        progress: 60,
+        assignee: "Sarah Lee",
+        avatar: "/avatars/sarah.png",
+      },
+      {
+        title: "Automate deployment pipeline",
+        due: "2024-06-10",
+        progress: 10,
+        assignee: "Dev Team",
+        avatar: "/avatars/devteam.png",
+      },
+    ].map((goal, idx) => (
+      <div
+        key={goal.title}
+        className="flex items-start bg-gray-50 rounded p-3 shadow-sm"
+      >
+        <input type="checkbox" className="mt-1 mr-3" />
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <img
+                src={goal.avatar}
+                alt={goal.assignee}
+                className="w-6 h-6 rounded-full mr-2 border"
+              />
+              <p className="font-medium">{goal.title}</p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                className="text-xs px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
+                // onClick={() => handleEditGoal(idx)}
+                title="Edit"
+              >
+                Edit
+              </button>
+              <button
+                className="text-xs px-2 py-1 rounded bg-red-100 text-red-600 hover:bg-red-200"
+                // onClick={() => handleDeleteGoal(idx)}
+                title="Delete"
+              >
+                Delete
+              </button>
+            </div>
           </div>
+          <div className="flex items-center mt-1">
+            <span className="text-xs text-gray-500 mr-4">
+              Due: <input
+                type="date"
+                value={goal.due}
+                className="text-xs border rounded px-1 py-0.5"
+                readOnly
+              />
+            </span>
+            <span className="text-xs text-gray-500 mr-2">
+              Assignee: {goal.assignee}
+            </span>
+          </div>
+          <div className="w-full h-2 bg-gray-200 rounded mt-2">
+            <div
+              className="h-2 rounded bg-blue-500"
+              style={{ width: `${goal.progress}%` }}
+            ></div>
+          </div>
+          <div className="text-xs text-gray-400 mt-1">
+            Progress: {goal.progress}%
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div> 
+</div>
+          </div>
+
+        
         );
       case "issues":
         return (
