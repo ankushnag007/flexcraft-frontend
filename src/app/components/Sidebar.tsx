@@ -37,6 +37,25 @@ const navItems = [
 ]
 
 const Header = () => {
+   const [selectedTheme, setSelectedTheme] = React.useState<Theme>(() => {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('flexcraftTheme');
+        if (stored) {
+          const found = themes.find(t => t.name === stored);
+          if (found) return found;
+        }
+      }
+      return defaultTheme;
+    });
+
+      React.useEffect(() => {
+        const root = document.documentElement;
+        Object.entries(selectedTheme).forEach(([key, value]) => {
+          if (key !== 'name') root.style.setProperty(`--theme-${key}`, value);
+        });
+        localStorage.setItem('flexcraftTheme', selectedTheme.name);
+      }, [selectedTheme]);
+
   const pathname = usePathname()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<string | null>(null)
@@ -352,7 +371,7 @@ const Header = () => {
       )}
 
       {activeTab === '/dashboard' && (
-        <div className="w-full px-4 pb-4 mt-6 flex flex-col items-center">
+        <div className="w-full px-4 pb-4 bg-[var(--theme-background)] flex flex-col items-center">
           <ThemePicker />
         </div>
       )}
@@ -405,10 +424,10 @@ const ThemePicker = () => {
   }
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <label className="mb-1 text-xs font-medium text-[var(--theme-text)]">Theme</label>
-      <div className="relative w-full">
-        <select
+    <div className="w-full flex flex-col items-center var(--theme-background)" >
+      {/* <label className="mb-1 text-xs font-medium text-[var(--theme-text)]">Theme</label> */}
+      <div className="relative w-full var(--theme-background)">
+        {/* <select
           className="w-full border border-[var(--theme-primary)] rounded px-3 py-1 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={selectedTheme.name}
           onChange={e => handleThemeChange(e.target.value)}
@@ -416,10 +435,11 @@ const ThemePicker = () => {
           {themes.map(theme => (
             <option key={theme.name} value={theme.name}>{theme.name}</option>
           ))}
-        </select>
-        <div className="absolute right-2 top-2 flex items-center pointer-events-none">
+        </select> */}
+        <div className="absolute right-2 top-2 flex items-center pointer-events-none bg-gray-200 p-1 rounded-lg" >
+          <label className="font-bold  text-sm font-sm font-sm p-2 " style={{color: selectedTheme.primary}}>Selected theme </label>
           <span
-            className="inline-block w-4 h-4 rounded-full border border-[var(--theme-background)]"
+            className="inline-block w-8 h-8 rounded-full border shadow-md"
             style={{ background: selectedTheme.primary }}
           />
         </div>
@@ -428,7 +448,7 @@ const ThemePicker = () => {
         {themes.map(theme => (
           <button
             key={theme.name}
-            className={`w-6 h-6 rounded-full border-2 transition-all duration-150 ${selectedTheme.name === theme.name ? 'border-[var(--theme-accent)] scale-110' : 'border-[var(--theme-primary)]'}`}
+            className={`shadow-lg w-6 h-6 rounded-full border-2 transition-all duration-150 ${selectedTheme.name === theme.name ? 'border-[var(--theme-accent)] scale-110' : 'border-[var(--theme-primary)]'}`}
             style={{ background: theme.primary }}
             title={theme.name}
             onClick={() => handleThemeChange(theme.name)}

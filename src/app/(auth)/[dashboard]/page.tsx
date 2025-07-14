@@ -8,7 +8,14 @@ import {
   UserCheck, UserX, RefreshCw, Coffee, Bell, Folder,
   Code2, FileText, Video, CalendarSearch,
   Copy,
-  Link
+  Link,
+  User,
+  ArrowBigLeftDash,
+  ArrowBigLeftDashIcon,
+  ArrowBigRight,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  User2
 } from 'lucide-react';
 import logo from '../../../Assets/images/logo.png';
 import user from '../../../Assets/images/user.jpg';
@@ -17,6 +24,8 @@ import Projects from '../manageprojects/projects/page';
 import Image from 'next/image';
 import AuthGuard from '@/app/components/AuthGuard';
 import { themes, defaultTheme, Theme } from '@/app/themes';
+
+import Drawer from '../manageprojects/Drawer/page';
 
 // TimeDisplay component to avoid hydration error
 function TimeDisplay() {
@@ -681,67 +690,156 @@ const FlexCraftDashboard = () => {
     </div>
   );
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Close drawer on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isDrawerOpen) {
+        setIsDrawerOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isDrawerOpen]);
+
+  // Prevent body scroll when drawer is open
+  useEffect(() => {
+    if (isDrawerOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isDrawerOpen]);
+
   return (
     <AuthGuard>
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--theme-background)]">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <div className="hidden md:ml-10 md:flex md:space-x-8">
-                <nav className="flex space-x-8">
-                  <a href="#" className={`flex items-center space-x-1.5 ${activeTab === 'profile' ? 'text-blue-600' : 'text-gray-500'} hover:text-gray-700 transition-colors`} onClick={() => setActiveTab('profile')}>
-                    <Folder className="h-4 w-4" />
-                    <span>Profile</span>
-                  </a>
-                  <a href="#" className={`flex items-center space-x-1.5 ${activeTab === 'projects' ? 'text-blue-600' : 'text-gray-500'} hover:text-gray-700 transition-colors`} onClick={() => setActiveTab('projects')}>
-                    <Folder className="h-4 w-4" />
-                    <span>Managed Projects</span>
-                  </a>
-                  <a href="#" className={`flex items-center space-x-1.5 ${activeTab === 'team' ? 'text-blue-600' : 'text-gray-500'} hover:text-gray-700 transition-colors`} onClick={() => setActiveTab('team')}>
-                    <Users className="h-4 w-4" />
-                    <span>Team</span>
-                  </a>
-                  <a href="#" className={`flex items-center space-x-1.5 ${activeTab === 'settings' ? 'text-blue-600' : 'text-gray-500'} hover:text-gray-700 transition-colors`} onClick={() => setActiveTab('settings')}>
-                    <Settings className="h-4 w-4" />
-                    <span>Settings</span>
-                  </a>
-                  <a href="#" className={`flex items-center space-x-1.5 ${activeTab === 'reports' ? 'text-blue-600' : 'text-gray-500'} hover:text-gray-700 transition-colors`} onClick={() => setActiveTab('reports')}>
-                    <FileText className="h-4 w-4" />
-                    <span>Reports</span>
-                  </a>
-                  <a href="#" className={`flex items-center space-x-1.5 ${activeTab === 'meetings' ? 'text-blue-600' : 'text-gray-500'} hover:text-gray-700 transition-colors`} onClick={() => setActiveTab('meetings')}>
-                    <CalendarSearch className="h-4 w-4" />
-                    <span>Schedule Meetings</span>
-                  </a>
-                </nav>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-500 hover:text-gray-700">
-                <Settings className="h-5 w-5" />
-              </button>
-              <button className="p-2 text-gray-500 hover:text-gray-700 relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  3
-                </span>
-              </button>
-              <div className="flex items-center">
-                <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
-                  JD
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 rounded-lg bg-gray-700)">
+  <div className="flex justify-between items-center w-full bg-gray-200 p-2 rounded-lg">
+    {/* Left-aligned navigation */}
+    <nav className="flex space-x-4">
+      <button
+        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+          activeTab === "profile"
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-500 hover:bg-gray-100 hover:text-[var(--theme-textoption)]"
+        } cursor-pointer`}
+        onClick={() => setActiveTab("profile")}
+      >
+        <User className="w-4 h-4 mr-2" />
+        Profile
+      </button>
+      <button className={`flex items-center px-3 py-2 rounded-md text-sm font-medium text-[var(--theme-textoption)]${
+          activeTab === "projects"
+            ? "bg-blue-50 text-blue-600"
+            : "hover:bg-gray-100 hover:text-[var(--theme-textoption)]"
+        }`}
+        onClick={() => setActiveTab("projects")}>
+        <Folder className="h-4 w-4 mr-2 cursor-pointer" />
+        <span>Managed Projects</span>
+      </button>
+      <button className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+          activeTab === "team"
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+        } cursor-pointer`}
+        onClick={() => setActiveTab("team")}>
+        <Users className="h-4 w-4 mr-2" />
+        <span>Team</span>
+      </button>
+      <button className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+          activeTab === "settings"
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+        } cursor-pointer`}
+        onClick={() => setActiveTab("settings")}>
+        <Settings className="h-4 w-4 mr-2" />
+        <span>Settings</span>
+      </button>
+      <button className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+          activeTab === "reports"
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+        } cursor-pointer`}
+        onClick={() => setActiveTab("reports")}>
+        <FileText className="h-4 w-4 mr-2" />
+        <span>Reports</span>
+      </button>
+      <button className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+          activeTab === "meetings"
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+        } cursor-pointer`}
+        onClick={() => setActiveTab("meetings")}>
+        <CalendarSearch className="h-4 w-4 mr-2" />
+        <span>Schedule Meetings</span>
+      </button>
+    </nav>
+
+    {/* Right-aligned user controls */}
+    <div className="flex items-center space-x-4">
+      <button className="p-2 text-gray-500 hover:text-gray-700">
+        <Settings className="h-5 w-5" />
+      </button>
+      <button className="p-2 text-gray-500 hover:text-gray-700 relative">
+        <Bell className="h-5 w-5" />
+        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+          3
+        </span>
+      </button>
+      <div className="flex items-center cursor-pointer" onClick={() => setIsDrawerOpen(true)}>
+        <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
+          JD
         </div>
-      </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-[var(--theme-background)]" >
+      <div className="bg-[var(--theme-background)]">
+  
+
+      {/* Drawer Overlay - only shown when drawer is open */}
+    
+
+      {/* Drawer Component - slides in from right */}
+      <div 
+        className={`fixed top-0 right-0 h-full w-2/4 bg-[var(--theme-background)] shadow-xl z-50 transition-transform duration-300 ease-in-out ${
+          isDrawerOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between p-4 border-b">
+       <div className="flex items-center gap-2">
+    <h1>Hey, Ankush</h1>
+    <span>
+      <User2 className="h-5 w-5" />
+    </span>
+  </div>
+          <button
+            onClick={() => setIsDrawerOpen(false)}
+            className="p-1 rounded-full hover:bg-gray-100"
+            aria-label="Close drawer"
+          >
+            <ArrowRightIcon className="h-5 w-5" />
+          </button>
+        </div>
+        
+     <Drawer />
+      </div>
+    </div>
         {activeTab === 'profile' && (
-          <div className="space-y-8">
+          <div className="space-y-8 bg-[var(--theme-background)]">
+
             {/* Global Theme Picker */}
             {/* <div className="flex items-center justify-end mb-4">
               <label className="mr-2 text-sm font-medium text-gray-700">Theme:</label>
@@ -757,7 +855,7 @@ const FlexCraftDashboard = () => {
             </div> */}
 
             {/* Dashboard Header */}
-            <div className={`${styles.bg} p-6 rounded-xl shadow-sm`}>
+            <div className={`p-6 rounded-xl shadow-sm ${styles.bg}`} >
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-4">
                   <Image alt="user" src={user} className='h-24 w-24 rounded-full'/>
@@ -793,10 +891,10 @@ const FlexCraftDashboard = () => {
             </div>
 
             {/* Profile Details Section */}
-            <div className="bg-white rounded-xl shadow p-6 flex flex-col md:flex-row gap-8 items-start">
-              <div className="flex-1 space-y-4">
+            <div className="bg-white rounded-xl shadow p-6 flex flex-col md:flex-row gap-8 items-start" >
+              <div className="flex-1 space-y-4" >
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="text-black">
                     <h2 className="text-lg font-semibold">Profile Details</h2>
                     <p className="text-gray-500 text-sm">Manage your personal information</p>
                   </div>
@@ -826,7 +924,7 @@ const FlexCraftDashboard = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 space-y-4">
+              <div className="flex-1 space-y-4" >
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-semibold">More Info</h2>
@@ -954,7 +1052,7 @@ const FlexCraftDashboard = () => {
             </div>
 
             {/* Super Admin: System Health & Status */}
-            <div className="bg-white rounded-xl shadow p-6 mt-8">
+            <div className="bg-white rounded-xl shadow p-6 mt-8" >
               <h2 className="text-lg font-semibold mb-2">System Health & Status</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-center justify-between">
@@ -985,7 +1083,7 @@ const FlexCraftDashboard = () => {
             </div>
 
             {/* Super Admin: Notifications & Preferences */}
-            <div className="bg-white rounded-xl shadow p-6 mt-8">
+            <div className="bg-[var(--theme-background)] rounded-xl shadow p-6 mt-8" >
               <h2 className="text-lg font-semibold mb-2">Notifications & Preferences</h2>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -1082,7 +1180,7 @@ const FlexCraftDashboard = () => {
                       <p className="text-2xl font-bold mt-1">{metric.value}</p>
                       <p className="text-xs text-gray-400 mt-1">Limit: {metric.limit}</p>
                     </div>
-                    <div className={`p-3 rounded-full ${metric.color} bg-opacity-20`}>
+                    <div className={`p-3 rounded-full ${metric.color} bg-opacity-2`}>
                       <metric.icon className="h-6 w-6" />
                     </div>
                   </div>
@@ -1499,9 +1597,9 @@ const FlexCraftDashboard = () => {
         )}
 
         {activeTab === 'meetings' && (
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="rounded-lg shadow-sm p-6 bg-[var(--theme-background)]">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold flex items-center">
+              <h2 className="text-xl font-bold flex items-center text-[var(--theme-text)]">
                 <CalendarSearch className="h-5 w-5 mr-2 text-blue-600" />
                 Schedule Meetings
               </h2>
@@ -1519,7 +1617,7 @@ const FlexCraftDashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Date Picker */}
                   <div className="bg-white rounded-lg shadow-sm p-4">
-                    <h3 className="font-medium mb-3 flex items-center">
+                    <h3 className="font-medium mb-3 flex items-center text-[var(--theme-textoption)]">
                       <CalendarSearch className="h-4 w-4 mr-2 text-blue-500" />
                       Select Date
                     </h3>
@@ -1528,19 +1626,19 @@ const FlexCraftDashboard = () => {
                         type="date"
                         value={selectedDate.toISOString().split('T')[0]}
                         onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                        className="w-full p-2 border rounded-lg   focus:border-blue-500"
+                        className="w-full p-2 border rounded-lg   focus:border-blue-500 text-[var(--theme-textoption)]"
                         min={new Date().toISOString().split('T')[0]}
                       />
                     </div>
                     <div className="mt-4 text-center">
-                      <p className="text-lg font-semibold">
+                      <p className="text-lg font-semibold text-[var(--theme-textoption)]">
                         {selectedDate.toLocaleDateString([], { 
                           weekday: 'long', 
                           month: 'long', 
                           day: 'numeric' 
                         })}
                       </p>
-                      <p className="text-gray-500">
+                      <p className="text-[var(--theme-textoption)]">
                         {selectedDate.toLocaleDateString([], { year: 'numeric' })}
                       </p>
                     </div>
@@ -1548,7 +1646,7 @@ const FlexCraftDashboard = () => {
 
                   {/* Time Slots */}
                   <div className="bg-white rounded-lg shadow-sm p-4">
-                    <h3 className="font-medium mb-3 flex items-center">
+                    <h3 className="font-medium mb-3 flex items-center text-[var(--theme-textoption)]">
                       <Clock className="h-4 w-4 mr-2 text-blue-500" />
                       Available Time Slots
                     </h3>
@@ -1557,7 +1655,7 @@ const FlexCraftDashboard = () => {
                         <button
                           key={index}
                           onClick={() => setSelectedSlot(slot)}
-                          className={`p-2 border rounded-lg text-center ${
+                          className={`p-2 border rounded-lg text-center text-[var(--theme-textoption)] shadow-sm border-none ${
                             selectedSlot?.time === slot.time 
                               ? 'bg-blue-100 border-blue-500 text-blue-700' 
                               : 'hover:bg-gray-50'
@@ -1582,7 +1680,7 @@ const FlexCraftDashboard = () => {
                           value={meetingTitle}
                           onChange={(e) => setMeetingTitle(e.target.value)}
                           placeholder="Team Sync, Client Meeting, etc."
-                          className="w-full p-2 border rounded-lg   focus:border-blue-500"
+                          className="w-full p-2 border rounded-lg   focus:border-blue-500 text-[var(--theme-textoption)] shadow-sm border-none"
                         />
                       </div>
                       <div>
@@ -1591,7 +1689,7 @@ const FlexCraftDashboard = () => {
                           value={meetingDescription}
                           onChange={(e) => setMeetingDescription(e.target.value)}
                           placeholder="Meeting agenda or notes"
-                          className="w-full p-2 border rounded-lg   focus:border-blue-500 h-24"
+                          className="w-full p-2 border rounded-lg   focus:border-blue-500 h-24 text-[var(--theme-textoption)] shadow-sm border-none"
                         />
                       </div>
                       <div className="pt-2">
@@ -1638,7 +1736,7 @@ const FlexCraftDashboard = () => {
               
               <div className="grid grid-cols-7 gap-0 border border-gray-200 rounded-lg overflow-hidden">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <div key={day} className="bg-gray-100 p-2 text-center text-gray-700 font-medium">
+                  <div key={day} className="bg-gray-100 p-2 text-center font-medium text-[var(--theme-textoption)]">
                     {day}
                   </div>
                 ))}
@@ -1655,14 +1753,14 @@ const FlexCraftDashboard = () => {
               {filteredMeetings.length === 0 ? (
                 <div className="bg-gray-50 rounded-lg p-8 text-center">
                   <Video className="h-12 w-12 mx-auto text-gray-400" />
-                  <p className="mt-4 text-gray-500">No meetings scheduled for this date</p>
+                  <p className="mt-4 text-[var(--theme-textoption)]">No meetings scheduled for this date</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {filteredMeetings.map((meeting) => (
                     <div 
                       key={meeting.id} 
-                      className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                      className="border rounded-lg p-4 hover:bg-[var(--theme-background)] transition-colors"
                     >
                       <div className="flex justify-between items-start">
                         <div>
@@ -1679,7 +1777,7 @@ const FlexCraftDashboard = () => {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => copyToClipboard(meeting.link, meeting.id)}
-                            className="flex items-center px-3 py-1 bg-gray-100 rounded-lg text-sm hover:bg-gray-200"
+                            className="flex items-center px-3 py-1 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 text-[var(--theme-textoption)]"
                           >
                             {copiedLink === meeting.id ? (
                               <Check className="h-4 w-4 mr-1 text-green-500" />

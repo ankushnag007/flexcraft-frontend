@@ -1483,7 +1483,6 @@ const handleDrop = (newStatus: Task["status"]) => {
                 <p>Reach 1,000 active users</p>
                 <p className="text-xs text-gray-500">Due: 2024-05-15</p>
               </div>
-              
             </div>
             <div className="flex items-start">
               <input type="checkbox" className="mt-1 mr-2" />
@@ -1680,7 +1679,7 @@ const handleDrop = (newStatus: Task["status"]) => {
 
   return (
     <AuthGuard>
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-[var(--theme-background)]  flex">
       {/* Sidebar */}
       <div className="w-16 bg-white shadow-sm flex flex-col items-center py-4">
         {/* Planning Section */}
@@ -1826,7 +1825,7 @@ const handleDrop = (newStatus: Task["status"]) => {
                       activeContentTab === "Your work"
                         ? "bg-blue-50 text-blue-600"
                         : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                    }`}
+                    } cursor-pointer`}
                     onClick={() => setActiveContentTab("Your work")}
                   >
                     <Home className="w-4 h-4 mr-2" />
@@ -1837,7 +1836,7 @@ const handleDrop = (newStatus: Task["status"]) => {
                       activeContentTab === "Tasks"
                         ? "bg-blue-50 text-blue-600"
                         : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                    }`}
+                    } cursor-pointer`}
                     onClick={() => setActiveContentTab("Tasks")}
                   >
                     <Folder className="w-4 h-4 mr-2" />
@@ -1848,7 +1847,7 @@ const handleDrop = (newStatus: Task["status"]) => {
               activeContentTab === "Backlogs"
                 ? "bg-blue-50 text-blue-600"
                 : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-            }`}
+            } cursor-pointer`}
             onClick={() => setActiveContentTab("Backlogs")}
           >
             <ClipboardList className="w-4 h-4 mr-2" />
@@ -1871,7 +1870,7 @@ const handleDrop = (newStatus: Task["status"]) => {
                       activeContentTab === "Teams"
                         ? "bg-blue-50 text-blue-600"
                         : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                    }`}
+                    } cursor-pointer`}
                     onClick={() => setActiveContentTab("Teams")}
                   >
                     <TeamIcon className="w-4 h-4 mr-2" />
@@ -1893,7 +1892,7 @@ const handleDrop = (newStatus: Task["status"]) => {
                       activeContentTab === "Apps"
                         ? "bg-blue-50 text-blue-600"
                         : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                    }`}
+                    } cursor-pointer`}
                     onClick={() => setActiveContentTab("Apps")}
                   >
                     <Grid className="w-4 h-4 mr-2" />
@@ -1904,7 +1903,7 @@ const handleDrop = (newStatus: Task["status"]) => {
                       activeContentTab === "Bugs"
                         ? "bg-blue-50 text-red-500"
                         : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                    }`}
+                    } cursor-pointer`}
                     onClick={() => setActiveContentTab("Bugs")}
                   >
                     <BugIcon className="w-4 h-4 mr-2" />

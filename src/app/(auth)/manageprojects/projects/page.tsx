@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Users, 
   Calendar, 
@@ -38,13 +38,33 @@ interface Project {
   spent: number;
   manager: string;
 }
+import { themes, defaultTheme, Theme } from '@/app/themes';
+
 
 const ProjectsDashboard = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filter, setFilter] = useState<'all' | 'on-track' | 'at-risk' | 'delayed'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedProject, setExpandedProject] = useState<string | null>(null);
+    const [selectedTheme, setSelectedTheme] = React.useState<Theme>(() => {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('flexcraftTheme');
+        if (stored) {
+          const found = themes.find(t => t.name === stored);
+          if (found) return found;
+        }
+      }
+      return defaultTheme;
+    });
   
+    // Apply theme to :root as CSS variables
+    React.useEffect(() => {
+      const root = document.documentElement;
+      Object.entries(selectedTheme).forEach(([key, value]) => {
+        if (key !== 'name') root.style.setProperty(`--theme-${key}`, value);
+      });
+      localStorage.setItem('flexcraftTheme', selectedTheme.name);
+    }, [selectedTheme]);
   // Sample data - replace with API calls
   const [projects] = useState<Project[]>([
     {
@@ -145,13 +165,13 @@ const ProjectsDashboard = () => {
 
   return (
     <AuthGuard>
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[var(--theme-background)] p-6 var(--theme-background)">
+      <div className="max-w-7xl mx-auto var(--theme-background)">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 var(--theme-background)">
           <div>
             <h1 className="text-xl font-bold text-blue-500">Project Portfolio</h1>
-            <p className="text-gray-600 text-sm">Manage and track all   active projects</p>
+            {/* <p className="text-gray-600 text-sm">Manage and track all   active projects</p> */}
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -209,8 +229,8 @@ const ProjectsDashboard = () => {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 var(--theme-background)">
+          <div className="bg-white p-4 rounded-lg shadow-sm var(--theme-background)">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Total Projects</p>
@@ -352,7 +372,7 @@ const ProjectsDashboard = () => {
                   </div>
                 </div>
                 
-                <div className="bg-gray-50 px-6 py-3  flex justify-between items-center">
+                <div className="   px-6 py-3  flex justify-between items-center bg-[var(--theme-background)]">
                   <span className="text-xs text-gray-500">
                     Managed by {project.manager}
                   </span>
