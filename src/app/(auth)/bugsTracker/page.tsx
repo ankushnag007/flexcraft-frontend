@@ -72,6 +72,8 @@ const BugTracker: React.FC = () => {
       labels: ['upload', 'media']
     }
   ]);
+const [selectedTask, setSelectedTask] = useState<Bug | null>(null);
+
 
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
@@ -82,6 +84,8 @@ const BugTracker: React.FC = () => {
     priority: 'medium' as 'low' | 'medium' | 'high' | 'critical',
     labels: [] as string[],
   });
+
+
 
   // Filter bugs based on search query
   const filteredBugs = bugs.filter(bug =>
@@ -140,6 +144,12 @@ const BugTracker: React.FC = () => {
     }
   };
 
+  const openTaskDetails = (task: Bug) => {
+    setSelectedTask(task);
+  };
+  const closeTaskDetails = () => {
+    setSelectedTask(null);
+  };
   return (
     <AuthGuard>
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -194,7 +204,123 @@ const BugTracker: React.FC = () => {
           </button>
         </div>
       </div>
+      {selectedTask && (
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <span
+                  className={`inline-block w-3 h-3 rounded-full ${getPriorityColor(
+                    selectedTask.priority
+                  )} mr-2`}
+                ></span>
+                <span className="text-lg font-bold">{selectedTask.title}</span>
+              </div>
+              <button
+                className="text-gray-500 hover:text-gray-700"
+                onClick={closeTaskDetails}
+              >
+                ✕
+              </button>
+            </div>
 
+            <div className="grid grid-cols-3 gap-6">
+              <div className="col-span-2">
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">
+                    Description
+                  </h3>
+                  <p className="text-gray-800">
+                    {selectedTask.description || "No description provided"}
+                  </p>
+                </div>
+
+                <div className="border-t border-gray-200 pt-4">
+                  <h3 className="text-sm font-medium text-gray-500 mb-3">
+                    Activity
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex items-start">
+                      <div className="w-8 h-8 rounded-full bg-gray-300 mr-3"></div>
+                      <div>
+                        <p className="text-sm font-medium">John Doe</p>
+                        <p className="text-sm text-gray-500">
+                          Updated the status to In Progress
+                        </p>
+                        <p className="text-xs text-gray-400">2 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">
+                    Details
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center">
+                      <span className="text-gray-500 w-24">Status:</span>
+                      <span className="font-medium">{selectedTask.status}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-500 w-24">Assignee:</span>
+                      <span className="font-medium">
+                        {selectedTask.assignee}
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-500 w-24">Priority:</span>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${getPriorityColor(
+                          selectedTask.priority
+                        )}`}
+                      >
+                        {selectedTask.priority}
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-500 w-24">Due Date:</span>
+                      <span className="font-medium">
+                        {selectedTask.createdAt}
+                      </span>
+                    </div>
+                  
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">
+                    Labels
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedTask.labels?.map((label) => (
+                      <span
+                        key={label}
+                        className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded"
+                      >
+                        {label}
+                      </span>
+                    ))}
+                    {(!selectedTask.labels ||
+                      selectedTask.labels.length === 0) && (
+                      <span className="text-gray-400 text-sm">No labels</span>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">
+                    Attachments
+                  </h3>
+           
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Bugs List (Table View) */}
       {viewMode === 'list' && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -211,7 +337,7 @@ const BugTracker: React.FC = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredBugs.map((bug) => (
-                <tr key={bug.id} className="hover:bg-gray-50">
+                <tr key={bug.id} className="hover:bg-gray-50" onClick={() => openTaskDetails(bug)}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <AlertCircle className="w-5 h-5 mr-3 text-red-500" />
@@ -257,9 +383,9 @@ const BugTracker: React.FC = () => {
 
       {/* Bugs Grid (Card View) */}
       {viewMode === 'grid' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" >
           {filteredBugs.map((bug) => (
-            <div key={bug.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+            <div key={bug.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow" onClick={() => openTaskDetails(bug)}>
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-medium text-gray-900 flex items-center">
                   <AlertCircle className="w-5 h-5 mr-2 text-red-500" />
@@ -307,7 +433,7 @@ const BugTracker: React.FC = () => {
 
       {/* Create Bug Modal */}
       {isCreatingBug && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium">Report New Bug</h3>

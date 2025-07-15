@@ -103,7 +103,7 @@ const EnhancedDeploymentUI = () => {
               <option>my-microservice</option>
             </select>
           </div>
-          <button className="px-3 py-2 bg-[var(--theme-accent)] text-[var(--theme-primary)] text-sm font-medium rounded-md hover:bg-[color-mix(in_srgb,var(--theme-accent)_80%,var(--theme-background)_20%)] focus:outline-none  ">
+          <button className="px-3 py-2 bg-[var(--theme-accent)] text-white text-sm font-medium rounded-md hover:bg-[color-mix(in_srgb,var(--theme-accent)_80%,var(--theme-background)_20%)] focus:outline-none  ">
             New Project
           </button>
         </div>

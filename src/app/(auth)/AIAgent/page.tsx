@@ -801,7 +801,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
           <div className="flex gap-2">
             <div className="relative">
               <button 
-                className="px-3 py-1 text-xs rounded flex items-center gap-1"
+                className="px-3 py-1 text-xs rounded flex items-center gap-1 hover:bg-gray-400"
                 onClick={() => setShowThemeSelector(!showThemeSelector)}
                 style={{
                   backgroundColor: themes[theme].accent.replace('bg-', ''),
@@ -812,17 +812,24 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
               </button>
               {showThemeSelector ? renderThemeSelector() : null}
             </div>
-            <button className={`px-3 py-1 text-xs rounded flex items-center gap-1 ${themeColors.bgTertiary} ${themeColors.textPrimary} hover:${themeColors.bgTertiary}`}>
+            <div className="relative">
+                <button 
+                  className="px-3 py-1 text-sm rounded-md text-black bg-gray-200 hover:bg-gray-300 transition-colors flex items-center gap-1"
+                  onClick={() => setShowThemeSelector(!showThemeSelector)}
+                >
+                  <Palette size={16} /> Theme
+                </button>
+                {showThemeSelector && renderThemeSelector()}
+              </div>
+            <button className={`px-3 py-1 text-xs rounded flex items-center gap-1 hover:bg-gray-400 ${themeColors.bgTertiary} ${themeColors.textPrimary} hover:${themeColors.bgTertiary}`}>
               <Github size={14} /> Push
             </button>
-            <button className={`px-3 py-1 text-xs rounded flex items-center gap-1 ${themeColors.bgTertiary} ${themeColors.textPrimary} hover:${themeColors.bgTertiary}`}>
+            <button className={`px-3 py-1 text-xs rounded flex items-center gap-1 hover:bg-gray-400 ${themeColors.bgTertiary} ${themeColors.textPrimary} hover:${themeColors.bgTertiary}`}>
               <Download size={14} /> Export
             </button>
             <button 
-              className={`px-3 py-1 text-xs text-white rounded flex items-center gap-1 hover:opacity-90`}
-              style={{ 
-                background: `linear-gradient(to right, ${themes[theme].accent.replace('bg-', '')}, ${themes[theme].accentHover.replace('hover:', '').replace('bg-', '')})` 
-              }}
+              className={`px-3 py-1 text-xs text-white rounded flex items-center gap-1 hover:opacity-90 hover:bg-gray-400 ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
+              
               onClick={handleDeployClick}
             >
               <HardDriveUpload size={14} /> Deploy
@@ -1112,15 +1119,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
               <button className="px-3 py-1 text-sm rounded-md bg-gray-200 hover:bg-gray-300 transition-colors">
                 Examples
               </button>
-              <div className="relative">
-                <button 
-                  className="px-3 py-1 text-sm rounded-md bg-gray-200 hover:bg-gray-300 transition-colors flex items-center gap-1"
-                  onClick={() => setShowThemeSelector(!showThemeSelector)}
-                >
-                  <Palette size={16} /> Theme
-                </button>
-                {showThemeSelector && renderThemeSelector()}
-              </div>
+             
             </div>
           </header>
         )}
