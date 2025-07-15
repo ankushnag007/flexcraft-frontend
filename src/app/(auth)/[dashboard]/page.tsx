@@ -70,6 +70,7 @@ const FlexCraftDashboard = () => {
 
   const [timeOfDay, setTimeOfDay] = useState('morning');
   const [currentTime, setCurrentTime] = useState('');
+  const [currentDay, setCurrentDay] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [activePlan, setActivePlan] = useState('pro');
@@ -118,6 +119,7 @@ const FlexCraftDashboard = () => {
       const hours = now.getHours();
       
       setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      setCurrentDay(now.toLocaleString([], { weekday: 'long' }));
       
       if (hours < 12) setTimeOfDay('morning');
       else if (hours < 17) setTimeOfDay('afternoon');
@@ -736,10 +738,10 @@ const FlexCraftDashboard = () => {
         <User className="w-4 h-4 mr-2" />
         Profile
       </button>
-      <button className={`flex items-center px-3 py-2 rounded-md text-sm font-medium text-[var(--theme-textoption)]${
+      <button className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
           activeTab === "projects"
             ? "bg-blue-50 text-blue-600"
-            : "hover:bg-gray-100 hover:text-[var(--theme-textoption)]"
+            : "text-gray-500 hover:bg-gray-100 hover:text-[var(--theme-textoption)]"
         }`}
         onClick={() => setActiveTab("projects")}>
         <Folder className="h-4 w-4 mr-2 cursor-pointer" />
@@ -862,11 +864,14 @@ const FlexCraftDashboard = () => {
                   <div>
                     <h1 className={`text-2xl font-bold ${styles.text}`}>Hello, Alex</h1>
                     <div className="flex items-center space-x-2">
-                      <div className={`p-3 rounded-full ${styles.bg} shadow-inner`}>
+                      
+                      <div className={`p-3 rounded-full ${styles.bg} shadow-inner`}>home
                         {styles.icon}
                       </div>
                       <p className={`font-medium ${styles.text}`}>{styles.greeting}</p>
                       <span className="text-sm text-gray-500">• {currentTime}</span>
+                      <span className="text-sm text-gray-500 font-bold">• {currentDay}</span>
+
                     </div>
                   </div>
                 </div>
