@@ -17,14 +17,20 @@ import {
   ArrowRightIcon,
   User2
 } from 'lucide-react';
+
 import logo from '../../../Assets/images/logo.png';
+import morning from '../../../Assets/images/morning.gif';
+import noon from '../../../Assets/images/noon.gif';
+import evening from '../../../Assets/images/night.gif';
+import { useRouter } from "next/navigation";
+
 import user from '../../../Assets/images/user.jpg';
 import Reports from '../manageprojects/reports/page';
 import Projects from '../manageprojects/projects/page';
 import Image from 'next/image';
 import AuthGuard from '@/app/components/AuthGuard';
 import { themes, defaultTheme, Theme } from '@/app/themes';
-
+import axios from "axios";
 import Drawer from '../manageprojects/Drawer/page';
 
 // TimeDisplay component to avoid hydration error
@@ -40,6 +46,11 @@ function TimeDisplay() {
   return <div className="text-sm text-gray-400">{time}</div>;
 }
 
+type RouteResponse = {
+  routename: string;
+  userId: string;
+};
+
 const FlexCraftDashboard = () => {
   // THEME STATE
   const [selectedTheme, setSelectedTheme] = React.useState<Theme>(() => {
@@ -52,6 +63,22 @@ const FlexCraftDashboard = () => {
     }
     return defaultTheme;
   });
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const res = {
+      routename: 'homepage',
+      userId: '123'
+    };
+
+    const { routename } = res;
+
+    if (routename && routename !== 'dashboard') {
+      router.replace(`/${routename}`);
+    }
+  }, [router]);
+
 
   // Apply theme to :root as CSS variables
   React.useEffect(() => {
@@ -289,6 +316,17 @@ const FlexCraftDashboard = () => {
   const getFirstDayOfMonth = (year: number, month: number) => {
     return new Date(year, month, 1).getDay();
   };
+
+  const getTimeOfDayImage = () => {
+    switch(timeOfDay) {
+      case 'morning':
+        return morning;
+      case 'afternoon':
+        return noon;
+      default:
+        return evening;
+    }
+  }
 
   const renderCalendarDays = () => {
     const daysInMonth = getDaysInMonth(currentYear, currentMonth);
@@ -857,43 +895,25 @@ const FlexCraftDashboard = () => {
             </div> */}
 
             {/* Dashboard Header */}
-            <div className={`p-6 rounded-xl shadow-sm ${styles.bg}`} >
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-4">
-                  <Image alt="user" src={user} className='h-24 w-24 rounded-full'/>
-                  <div>
-                    <h1 className={`text-2xl font-bold ${styles.text}`}>Hello, Alex</h1>
-                    <div className="flex items-center space-x-2">
-                      
-                      <div className={`p-3 rounded-full ${styles.bg} shadow-inner`}>home
-                        {styles.icon}
-                      </div>
-                      <p className={`font-medium ${styles.text}`}>{styles.greeting}</p>
-                      <span className="text-sm text-gray-500">• {currentTime}</span>
-                      <span className="text-sm text-gray-500 font-bold">• {currentDay}</span>
-
-                    </div>
-                  </div>
-                </div>
-                <div className="flex space-x-3">
-                  <button className={`flex items-center px-4 py-2 rounded-lg transition-all 
-                    ${timeOfDay === 'morning' ? 'bg-amber-500 hover:bg-amber-600' : 
-                      timeOfDay === 'afternoon' ? 'bg-sky-500 hover:bg-sky-600' : 
-                      'bg-indigo-500 hover:bg-indigo-600'} 
-                    text-white shadow-md hover:shadow-lg`}>
-                    <Zap className="h-4 w-4 mr-2" />
-                    Quick Action
-                  </button>
-                  <button className={`flex items-center px-3 py-2 rounded-lg transition-all 
-                    ${timeOfDay === 'morning' ? 'bg-amber-100 hover:bg-amber-200 text-amber-700' : 
-                      timeOfDay === 'afternoon' ? 'bg-sky-100 hover:bg-sky-200 text-sky-700' : 
-                      'bg-indigo-100 hover:bg-indigo-200 text-indigo-700'}`}>
-                    <Plus className="h-4 w-4 mr-1" />
-                    New
-                  </button>
-                </div>
-              </div>
-            </div>
+            <div className={`p-6 rounded-xl shadow-sm ${styles.bg}`}>
+  <div className="flex justify-between items-center">
+    <div className="flex items-center space-x-4">
+      <Image alt="user" src={user} className='h-24 w-24 rounded-full'/>
+      <div className="flex-1">
+        <h1 className={`text-2xl font-bold ${styles.text}`}>Hello, Alex</h1>
+        <div className="flex items-center space-x-2">
+          <div className={`p-3 rounded-full ${styles.bg} shadow-inner`}>
+            {styles.icon}
+          </div>
+          <p className={`font-medium ${styles.text}`}>{styles.greeting}</p>
+          <span className="text-sm text-gray-500">• {currentTime}</span>
+          <span className="text-sm text-gray-500 font-bold">• {currentDay}</span>
+        </div>
+      </div>
+    </div>
+    <p className={`font-medium ${styles.text}`}>Your free trial ends in 14 days</p>
+  </div>
+</div>
 
             {/* Profile Details Section */}
             <div className="bg-white rounded-xl shadow p-6 flex flex-col md:flex-row gap-8 items-start" >
@@ -1542,62 +1562,7 @@ const FlexCraftDashboard = () => {
             </div>
 
             {/* Roles and Permissions */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="p-4">
-                <h2 className="font-semibold flex items-center">
-                  <Lock className="h-5 w-5 mr-2 text-purple-600" />
-                  Roles and Permissions ({roles.length})
-                </h2>
-              </div>
-              <div className="">
-                {roles.map(role => (
-                  <div key={role.id} className="p-4 hover:bg-gray-50 shadow-sm">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="font-bold">{role.name}</div>
-                        <div className="text-sm text-gray-500">{role.description}</div>
-                        <div className="mt-2 text-sm">
-                          <span className="font-medium">{role.memberCount}</span> members assigned
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <button className="p-2 text-gray-500 hover:text-blue-600">
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button 
-                          onClick={() => deleteRole(role.id)}
-                          className="p-2 text-gray-500 hover:text-red-600"
-                        >
-                          <Trash className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="mt-4 pl-2">
-                      <div className="text-sm font-medium mb-2">Permissions:</div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {Object.entries({
-                          projectCreate: 'Create Projects',
-                          projectDelete: 'Delete Projects',
-                          userManage: 'Manage Users',
-                          billingManage: 'Manage Billing',
-                          apiManage: 'Manage API',
-                          settingsManage: 'Manage Settings'
-                        }).map(([key, label]) => (
-                          <div key={key} className="flex items-center">
-                            {role.permissions[key] ? (
-                              <Check className="h-4 w-4 text-green-500 mr-2" />
-                            ) : (
-                              <X className="h-4 w-4 text-red-500 mr-2" />
-                            )}
-                            <span className="text-sm">{label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+           
           </div>
         )}
 

@@ -437,7 +437,7 @@ const ThemePicker = () => {
           ))}
         </select> */}
         <div className="absolute right-2 top-2 flex items-center pointer-events-none bg-gray-200 p-1 rounded-lg" >
-          <label className="font-bold  text-sm font-sm font-sm p-2 " style={{color: selectedTheme.primary}}>Selected theme </label>
+          <label className="font-bold  text-sm font-sm font-sm pr-2 " style={{color: selectedTheme.primary}}>Selected theme </label>
           <span
             className="inline-block w-8 h-8 rounded-full border shadow-md"
             style={{ background: selectedTheme.primary }}
