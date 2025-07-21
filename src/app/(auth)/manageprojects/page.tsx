@@ -1426,10 +1426,10 @@ const handleDrop = (newStatus: Task["status"]) => {
       return <BugTracker />; 
          case "Docs":
       return <DocEditor 
-       initialDocuments={documents}
+        //  initialDocuments={documents}
         onSave={handleSave}
         onDelete={handleDelete}
-        onUploadFile={handleUpload}/>
+        onUploadFile={handleUpload} onShareDocument={undefined} onAssignToTask={undefined}/>
       case "summary":
         return (
           <div className="bg-white p-4 rounded-lg shadow mb-6">
