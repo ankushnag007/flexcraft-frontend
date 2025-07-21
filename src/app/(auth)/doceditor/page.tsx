@@ -87,7 +87,7 @@ const DEMO_DOCUMENTS: Document[] = [
   }
 ];
 
- const DocumentEditor: React.FC<DocumentEditorProps> = ({
+ const documentEditor: React.FC<DocumentEditorProps> = ({
   initialDocuments = DEMO_DOCUMENTS,
   teamMembers = DEMO_MEMBERS,
   tasks = DEMO_TASKS,
@@ -1088,4 +1088,4 @@ const DEMO_DOCUMENTS: Document[] = [
   );
 };
 
-export default DocumentEditor;
+export default documentEditor;
