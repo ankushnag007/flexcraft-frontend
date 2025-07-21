@@ -89,7 +89,7 @@ const DEMO_DOCUMENTS: Document[] = [
   }
 ];
 
- const documentEditor: React.FC<DocumentEditorProps> = ({
+ const documentEditor = ({
   initialDocuments = DEMO_DOCUMENTS,
   teamMembers = DEMO_MEMBERS,
   tasks = DEMO_TASKS,
@@ -100,6 +100,7 @@ const DEMO_DOCUMENTS: Document[] = [
   onShareDocument,
   onAssignToTask,
   className = ''
+  
 }) => {
   // State
   const [documents, setDocuments] = useState<Document[]>(initialDocuments);
