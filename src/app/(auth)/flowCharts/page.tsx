@@ -22,6 +22,7 @@ import {
   Image as ImageIcon, Link2, Trash2, Palette,
   LayoutGrid, List, Zap, Moon, Sun
 } from 'lucide-react';
+import AuthGuard from '@/app/components/AuthGuard';
 
 // Custom Node Types
 const RectangleNode = ({ data }: { data: any }) => (
@@ -230,6 +231,7 @@ const FlowchartComponent = () => {
   };
 
   return (
+    <AuthGuard>
     <div className="flex flex-col h-full">
       <div className="flex items-center p-2 border-b bg-gray-50">
         <div className="flex space-x-2 mr-4">
@@ -335,6 +337,7 @@ const FlowchartComponent = () => {
         </ReactFlow>
       </div>
     </div>
+    </AuthGuard>
   );
 };
 
