@@ -1088,4 +1088,4 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
   );
 };
 
-export default DocumentEditor;
+// export default DocumentEditor;
