@@ -1,3 +1,4 @@
+"se client"
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Bold, Italic, Underline, Strikethrough, List, ListOrdered, 
