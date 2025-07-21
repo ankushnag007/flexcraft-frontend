@@ -89,16 +89,17 @@ const DEMO_DOCUMENTS: Document[] = [
   }
 ];
 
- const DocumentEditor = ({
+ const DocumentEditor = (
+  {
    initialDocuments = DEMO_DOCUMENTS,
   teamMembers = DEMO_MEMBERS,
   tasks = DEMO_TASKS,
   currentUser = DEMO_MEMBERS[0],
-  onSave,
-  onDelete,
-  onUploadFile,
-  onShareDocument,
-  onAssignToTask,
+  // onSave,
+  // onDelete,
+  // onUploadFile,
+  // onShareDocument,
+  // onAssignToTask,
   className = ''
   
 }) => {
@@ -178,7 +179,7 @@ const DEMO_DOCUMENTS: Document[] = [
         lastEdited: new Date().toLocaleString()
       };
 
-      const savedDoc = onSave ? await onSave(docToSave) : docToSave;
+      const savedDoc = docToSave;
 
       setDocuments(prev => {
         if (savedDoc.id && prev.some(d => d.id === savedDoc.id)) {
@@ -194,11 +195,11 @@ const DEMO_DOCUMENTS: Document[] = [
   };
 
   const deleteDocument = async (id: string) => {
-    if (!id || !onDelete) return;
+    // if (!id || !onDelete) return;
     
     setIsLoading(true);
     try {
-      await onDelete(id);
+      // await onDelete(id);
       setDocuments(prev => prev.filter(doc => doc.id !== id));
       if (currentDoc.id === id) {
         setViewMode('list');
@@ -307,7 +308,7 @@ const DEMO_DOCUMENTS: Document[] = [
     const file = e.target.files[0];
     setIsLoading(true);
     try {
-      const attachment = onUploadFile ? await onUploadFile(file) : {
+      const attachment ={
         id: Date.now().toString(),
         type: getFileType(file.name),
         url: URL.createObjectURL(file),
@@ -429,9 +430,9 @@ const DEMO_DOCUMENTS: Document[] = [
     
     setIsLoading(true);
     try {
-      if (onShareDocument) {
-        await onShareDocument(currentDoc.id, selectedMembers);
-      }
+      // if (onShareDocument) {
+      //   await onShareDocument(currentDoc.id, selectedMembers);
+      // }
       setCurrentDoc(prev => ({
         ...prev,
         sharedWith: selectedMembers
@@ -448,9 +449,9 @@ const DEMO_DOCUMENTS: Document[] = [
     
     setIsLoading(true);
     try {
-      if (onAssignToTask) {
-        await onAssignToTask(currentDoc.id, taskId);
-      }
+      // if (onAssignToTask) {
+      //   await onAssignToTask(currentDoc.id, taskId);
+      // }
       setCurrentDoc(prev => ({
         ...prev,
         assignedTo: taskId
@@ -703,7 +704,7 @@ const DEMO_DOCUMENTS: Document[] = [
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredDocuments.map(document => (
                   <div 
-                    key={document.id} 
+                    // key={document?.id} 
                     className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
                     onClick={() => openDocument(document)}
                   >
