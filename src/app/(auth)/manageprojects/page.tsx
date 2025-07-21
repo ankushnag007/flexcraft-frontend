@@ -46,11 +46,15 @@ import {
   LucideToggleLeft,
   DownloadCloud,
   X,
+  File,
 } from "lucide-react";
 import logo from "../Assets/images/logo.png";
 // import BugTracker from "./(auth)/bugsTracker/page";
 // import { render } from "react-dom";
-import BugTracker from "../bugsTracker/page"
+import BugTracker from "../bugsTracker/page";
+// DocEditor
+import DocEditor from "../doceditor/page";
+
 import AuthGuard from "@/app/components/AuthGuard";
 import Link from "next/link";
 interface Task {
@@ -72,6 +76,53 @@ interface Task {
 const JiraLikeProjectManagement = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [documents, setDocuments] = useState<Document[]>([
+    {
+      id: '1',
+      title: 'Sample Document',
+      content: '<h1>Welcome</h1><p>This is a sample document</p>',
+      lastEdited: new Date().toLocaleString(),
+      status: 'draft',
+      tags: ['sample'],
+      sharedWith: []
+    }
+  ]);
+
+  const handleSave = async (doc: Document) => {
+    // In a real app, you would call your API here
+    const savedDoc = {
+      ...doc,
+      id: doc.id || Date.now().toString(),
+      lastEdited: new Date().toLocaleString()
+    };
+
+    setDocuments(prev => 
+      doc.id 
+        ? prev.map(d => d.id === doc.id ? savedDoc : d) 
+        : [savedDoc, ...prev]
+    );
+    
+    return savedDoc;
+  };
+
+  const handleDelete = async (id: string) => {
+    setDocuments(prev => prev.filter(doc => doc.id !== id));
+  };
+
+  const handleUpload = async (file: File) => {
+    // Simulate file upload
+    return {
+      id: `file-${Date.now()}`,
+      type: file.type.startsWith('image/') ? 'image' : 
+           file.type.startsWith('video/') ? 'video' : 'file',
+      url: URL.createObjectURL(file),
+      name: file.name,
+      size: `${(file.size / 1024).toFixed(1)} KB`,
+      uploadedAt: new Date().toLocaleString()
+    };
+  };
+
+
 
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
@@ -642,9 +693,9 @@ const handleDrop = (newStatus: Task["status"]) => {
           />
           <button
             onClick={toggleSearch}
-            className="p-1 text-gray-500 hover:text-gray-700 rounded-full"
+             className=" text-gray-500 hover:text-gray-700 hover:bg-white rounded-full p-1"
           >
-        
+        <X className="w-5 h-5" />
           </button>
         </div>
       ) : (
@@ -1372,7 +1423,13 @@ const handleDrop = (newStatus: Task["status"]) => {
           </div>
         );
       case "Bugs":
-        return <BugTracker />;
+      return <BugTracker />; 
+         case "Docs":
+      return <DocEditor 
+       initialDocuments={documents}
+        onSave={handleSave}
+        onDelete={handleDelete}
+        onUploadFile={handleUpload}/>
       case "summary":
         return (
           <div className="bg-white p-4 rounded-lg shadow mb-6">
@@ -1909,17 +1966,17 @@ const handleDrop = (newStatus: Task["status"]) => {
                     <BugIcon className="w-4 h-4 mr-2" />
                     Bugs
                   </button>
-                  {/* <button
+                  <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                      activeContentTab === "Backlogs"
+                      activeContentTab === "Docs"
                         ? "bg-blue-50 text-blue-500"
                         : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                     }`}
-                    onClick={() => setActiveContentTab("Backlogs")}
+                    onClick={() => setActiveContentTab("Docs")}
                   >
-                    <LucideToggleLeft className="w-4 h-4 mr-2" />
-                    Backlogs
-                  </button> */}
+                    <File  className="w-4 h-4 mr-2" />
+                    Docs
+                  </button>
                 </nav>
               </div>
 
