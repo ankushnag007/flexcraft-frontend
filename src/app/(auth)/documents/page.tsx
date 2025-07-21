@@ -89,7 +89,7 @@ const DEMO_DOCUMENTS: Document[] = [
   }
 ];
 
- const documentEditor = ({
+ const DocumentEditor = ({
    initialDocuments = DEMO_DOCUMENTS,
   teamMembers = DEMO_MEMBERS,
   tasks = DEMO_TASKS,
@@ -1093,4 +1093,4 @@ const DEMO_DOCUMENTS: Document[] = [
   );
 };
 
-export default documentEditor;
+export default DocumentEditor;
