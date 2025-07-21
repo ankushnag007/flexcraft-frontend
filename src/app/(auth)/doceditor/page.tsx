@@ -10,6 +10,7 @@ import {
   FileCode, Type, Palette, AlignJustify, ListChecks,
   Footprints
 } from 'lucide-react';
+import AuthGuard from '@/app/components/AuthGuard';
 
 // Types
 interface User {
@@ -589,6 +590,7 @@ const DEMO_DOCUMENTS: Document[] = [
 
   // Render
   return (
+    <AuthGuard>
     <div className={`flex flex-col h-full bg-white rounded-lg shadow ${className}`}>
       {/* Toolbar */}
       <div className="border-b p-2 flex items-center justify-between">
@@ -1085,6 +1087,7 @@ const DEMO_DOCUMENTS: Document[] = [
         </div>
       )}
     </div>
+    </AuthGuard>
   );
 };
 
