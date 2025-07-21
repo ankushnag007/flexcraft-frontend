@@ -53,7 +53,7 @@ import logo from "../Assets/images/logo.png";
 // import { render } from "react-dom";
 import BugTracker from "../bugsTracker/page";
 // DocEditor
-import DocEditor from "../doceditor/page";
+import DocEditor from "../documents/page";
 
 import AuthGuard from "@/app/components/AuthGuard";
 import Link from "next/link";
