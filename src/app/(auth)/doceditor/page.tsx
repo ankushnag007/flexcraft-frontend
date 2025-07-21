@@ -53,7 +53,7 @@ interface DocumentEditorProps {
   initialDocuments?: Document[];
   teamMembers?: User[];
   tasks?: Task[];
-  currentUser: User;
+  currentUser?: User;
   onSave?: (doc: Document) => Promise<Document>;
   onDelete?: (docId: string) => Promise<void>;
   onUploadFile?: (file: File) => Promise<Attachment>;
@@ -90,7 +90,7 @@ const DEMO_DOCUMENTS: Document[] = [
 ];
 
  const documentEditor = ({
-  initialDocuments = DEMO_DOCUMENTS,
+   initialDocuments = DEMO_DOCUMENTS,
   teamMembers = DEMO_MEMBERS,
   tasks = DEMO_TASKS,
   currentUser = DEMO_MEMBERS[0],
