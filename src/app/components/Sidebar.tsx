@@ -370,11 +370,7 @@ const Header = () => {
         </div>
       )}
 
-{/* <ThemePicker />
-<div className="w-full px-4 pb-4 bg-[var(--theme-background)] flex flex-col items-center">
-</div> */}
-      {/* {activeTab === '/dashboard' && (
-      )} */}
+
 
       <style jsx global>{`
         .tour-highlight {

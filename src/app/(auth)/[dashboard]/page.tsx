@@ -328,6 +328,62 @@ const FlexCraftDashboard = () => {
     }
   }
 
+  const ThemePicker = () => {
+    const [selectedTheme, setSelectedTheme] = React.useState<Theme>(() => {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('flexcraftTheme')
+        if (stored) {
+          const found = themes.find(t => t.name === stored)
+          if (found) return found
+        }
+      }
+      return defaultTheme
+    })
+  
+    React.useEffect(() => {
+      const root = document.documentElement
+      Object.entries(selectedTheme).forEach(([key, value]) => {
+        if (key !== 'name') root.style.setProperty(`--theme-${key}`, value)
+      })
+      localStorage.setItem('flexcraftTheme', selectedTheme.name)
+    }, [selectedTheme])
+  
+    const handleThemeChange = (themeName: string) => {
+      const theme = themes.find(t => t.name === themeName)
+      if (theme) setSelectedTheme(theme)
+    }
+  
+    return (
+      <div className="w-full flex flex-col items-center var(--theme-background)" >
+        {/* <label className="mb-1 text-xs font-medium text-[var(--theme-text)]">Theme</label> */}
+        <div className="relative w-full var(--theme-background)">
+          {/* <select
+            className="w-full border border-[var(--theme-primary)] rounded px-3 py-1 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={selectedTheme.name}
+            onChange={e => handleThemeChange(e.target.value)}
+          >
+            {themes.map(theme => (
+              <option key={theme.name} value={theme.name}>{theme.name}</option>
+            ))}
+          </select> */}
+          
+        </div>
+        <div className="flex flex-wrap gap-2 mt-2 justify-center">
+          {themes.map(theme => (
+            <button
+              key={theme.name}
+              className={`shadow-lg w-6 h-6 rounded-full border-2 transition-all duration-150 ${selectedTheme.name === theme.name ? 'border-[var(--theme-accent)] scale-110' : 'border-[var(--theme-primary)]'}`}
+              style={{ background: theme.primary }}
+              title={theme.name}
+              onClick={() => handleThemeChange(theme.name)}
+              aria-label={`Switch to ${theme.name} theme`}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   const renderCalendarDays = () => {
     const daysInMonth = getDaysInMonth(currentYear, currentMonth);
     const firstDayOfMonth = getFirstDayOfMonth(currentYear, currentMonth);
@@ -854,25 +910,28 @@ const FlexCraftDashboard = () => {
 
       {/* Drawer Component - slides in from right */}
       <div 
-        className={`fixed top-0 right-0 h-full w-2/4 bg-[var(--theme-background)] shadow-xl z-50 transition-transform duration-300 ease-in-out ${
+        className={`border-l-2 shadow-2xl border-white fixed top-0 right-0 h-full w-2/4 bg-[var(--theme-background)]  z-50 transition-transform duration-300 ease-in-out ${
           isDrawerOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between p-4 border-b">
-       <div className="flex items-center gap-2">
-    <h1>Hey, Ankush</h1>
-    <span>
-      <User2 className="h-5 w-5" />
-    </span>
+      <div className="flex flex-row items-center justify-between p-4 border-b bg-[var(--theme-background)]">
+  <div className="flex items-center gap-2">
+    <ThemePicker />
   </div>
-          <button
-            onClick={() => setIsDrawerOpen(false)}
-            className="p-1 rounded-full hover:bg-gray-100"
-            aria-label="Close drawer"
-          >
-            <ArrowRightIcon className="h-5 w-5" />
-          </button>
-        </div>
+  <div className="flex items-center justify-between p-4 border-b bg-[var(--theme-background)]">
+  <div className="flex items-center gap-2">
+    <h1 className="text-lg font-medium">Hey, Ankush</h1>
+    <User2 className="h-5 w-5 text-gray-600" />
+  </div>
+  <button
+    onClick={() => setIsDrawerOpen(false)}
+    className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+    aria-label="Close drawer"
+  >
+    <ArrowRightIcon className="h-5 w-5 text-gray-600" />
+  </button>
+</div>
+</div>
         
      <Drawer />
       </div>
