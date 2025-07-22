@@ -9,9 +9,13 @@ import {
   Plus, Trash2, Download, Eye, Paperclip, Search, Users, UserPlus, 
   Tag, CheckCircle, FileText, FileInput, FileSpreadsheet, FileArchive,
   FileCode, Type, Palette, AlignJustify, ListChecks,
-  Footprints
+  Footprints,
+  Text,
+  LucideToggleRight
 } from 'lucide-react';
 import AuthGuard from '@/app/components/AuthGuard';
+import FileViewer from 'react-file-viewer'
+
 
 // Types
 interface User {
@@ -34,6 +38,7 @@ interface Attachment {
   name: string;
   size?: string;
   uploadedAt: string;
+  fileType?: string;
 }
 
 interface Document {
@@ -66,7 +71,16 @@ interface DocumentEditorProps {
 const DEMO_MEMBERS: User[] = [
   { id: '1', name: 'John Doe', email: 'john@example.com', avatar: 'https://i.pravatar.cc/150?img=1' },
   { id: '2', name: 'Jane Smith', email: 'jane@example.com', avatar: 'https://i.pravatar.cc/150?img=2' },
-  { id: '3', name: 'Mike Johnson', email: 'mike@example.com', avatar: 'https://i.pravatar.cc/150?img=3' }
+  { id: '3', name: 'Mike Johnson', email: 'mike@example.com', avatar: 'https://i.pravatar.cc/150?img=3' },
+  { id: '4', name: 'Sarah Williams', email: 'sarah@example.com', avatar: 'https://i.pravatar.cc/150?img=4' },
+  { id: '5', name: 'David Brown', email: 'david@example.com', avatar: 'https://i.pravatar.cc/150?img=5' },
+  { id: '6', name: 'Emily Davis', email: 'emily@example.com', avatar: 'https://i.pravatar.cc/150?img=6' },
+  { id: '7', name: 'Robert Wilson', email: 'robert@example.com', avatar: 'https://i.pravatar.cc/150?img=7' },
+  { id: '8', name: 'Jennifer Lee', email: 'jennifer@example.com', avatar: 'https://i.pravatar.cc/150?img=8' },
+  { id: '9', name: 'Thomas Taylor', email: 'thomas@example.com', avatar: 'https://i.pravatar.cc/150?img=9' },
+  { id: '10', name: 'Lisa Anderson', email: 'lisa@example.com', avatar: 'https://i.pravatar.cc/150?img=10' },
+  { id: '11', name: 'William Martinez', email: 'william@example.com', avatar: 'https://i.pravatar.cc/150?img=11' },
+  { id: '12', name: 'Amanda Thompson', email: 'amanda@example.com', avatar: 'https://i.pravatar.cc/150?img=12' }
 ];
 
 const DEMO_TASKS: Task[] = [
@@ -85,24 +99,60 @@ const DEMO_DOCUMENTS: Document[] = [
     status: 'draft',
     sharedWith: ['2'],
     assignedTo: '1',
-    createdBy: '1'
+    createdBy: '1',
+    attachments: [
+      {
+        id: '1',
+        type: 'pdf',
+        url: 'https://arxiv.org/pdf/2201.00626.pdf',
+        name: 'Project Brief.pdf',
+        size: '2.4 MB',
+        uploadedAt: new Date().toLocaleString(),
+        fileType: 'application/pdf'
+      },
+      {
+        id: '2',
+        type: 'doc',
+        url: 'https://file-examples.com/wp-content/uploads/2017/02/file-sample_100kB.docx',
+        name: 'Requirements.docx',
+        size: '1.8 MB',
+        uploadedAt: new Date().toLocaleString(),
+        fileType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      },
+      {
+        id: '3',
+        type: 'image',
+        url: 'https://picsum.photos/800/600',
+        name: 'Wireframe.png',
+        size: '450 KB',
+        uploadedAt: new Date().toLocaleString(),
+        fileType: 'image/png'
+      },
+      {
+        id: '4',
+        type: 'excel',
+        url: 'https://file-examples.com/wp-content/uploads/2017/02/file_example_XLSX_10.xlsx',
+        name: 'Budget.xlsx',
+        size: '3.2 MB',
+        uploadedAt: new Date().toLocaleString(),
+        fileType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      }
+    ]
   }
 ];
 
- const DocumentEditor = (
-  {
-   initialDocuments = DEMO_DOCUMENTS,
+const DocumentEditor = ({
+  initialDocuments = DEMO_DOCUMENTS,
   teamMembers = DEMO_MEMBERS,
   tasks = DEMO_TASKS,
   currentUser = DEMO_MEMBERS[0],
-  // onSave,
-  // onDelete,
-  // onUploadFile,
-  // onShareDocument,
-  // onAssignToTask,
+  onSave,
+  onDelete,
+  onUploadFile,
+  onShareDocument,
+  onAssignToTask,
   className = ''
-  
-}) => {
+}: DocumentEditorProps) => {
   // State
   const [documents, setDocuments] = useState<Document[]>(initialDocuments);
   const [currentDoc, setCurrentDoc] = useState<Document>(createNewDocument());
@@ -122,6 +172,8 @@ const DEMO_DOCUMENTS: Document[] = [
   const [textColor, setTextColor] = useState('#000000');
   const [showFontMenu, setShowFontMenu] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [activePreview, setActivePreview] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   
   // Refs
   const editorRef = useRef<HTMLDivElement>(null);
@@ -142,6 +194,25 @@ const DEMO_DOCUMENTS: Document[] = [
       createdBy: currentUser.id
     };
   }
+
+  // Cursor position helpers
+  const saveSelection = (): Range | null => {
+    if (typeof window === 'undefined' || !window.getSelection) return null;
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      return selection.getRangeAt(0);
+    }
+    return null;
+  };
+
+  const restoreSelection = (range: Range | null) => {
+    if (typeof window === 'undefined' || !range) return;
+    const selection = window.getSelection();
+    if (selection) {
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  };
 
   // Fix for tag input typing backwards
   useEffect(() => {
@@ -179,7 +250,7 @@ const DEMO_DOCUMENTS: Document[] = [
         lastEdited: new Date().toLocaleString()
       };
 
-      const savedDoc = docToSave;
+      const savedDoc = onSave ? await onSave(docToSave) : docToSave;
 
       setDocuments(prev => {
         if (savedDoc.id && prev.some(d => d.id === savedDoc.id)) {
@@ -195,11 +266,11 @@ const DEMO_DOCUMENTS: Document[] = [
   };
 
   const deleteDocument = async (id: string) => {
-    // if (!id || !onDelete) return;
+    if (!id || !onDelete) return;
     
     setIsLoading(true);
     try {
-      // await onDelete(id);
+      await onDelete(id);
       setDocuments(prev => prev.filter(doc => doc.id !== id));
       if (currentDoc.id === id) {
         setViewMode('list');
@@ -249,9 +320,32 @@ const DEMO_DOCUMENTS: Document[] = [
   };
 
   const formatText = (command: string, value?: string) => {
+    const range = saveSelection();
     document.execCommand(command, false, value);
     updateContent();
+    restoreSelection(range);
     focusEditor();
+  };
+
+  const handleListButton = (ordered: boolean) => {
+    const range = saveSelection();
+    
+    if (range) {
+      // Check if we're already in a list
+      const parentElement = range.commonAncestorContainer.parentElement;
+      const isInList = parentElement?.tagName === 'LI' || 
+                      parentElement?.parentElement?.tagName === 'LI';
+      
+      if (isInList) {
+        document.execCommand(ordered ? 'insertOrderedList' : 'insertUnorderedList');
+      } else {
+        document.execCommand(ordered ? 'insertOrderedList' : 'insertUnorderedList');
+      }
+      
+      updateContent();
+      restoreSelection(range);
+      focusEditor();
+    }
   };
 
   const insertTable = () => {
@@ -289,6 +383,36 @@ const DEMO_DOCUMENTS: Document[] = [
     }
   };
 
+  const getFileMimeType = (fileName: string): string => {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    switch(extension) {
+      case 'jpg': case 'jpeg': return 'image/jpeg';
+      case 'png': return 'image/png';
+      case 'gif': return 'image/gif';
+      case 'webp': return 'image/webp';
+      case 'mp4': return 'video/mp4';
+      case 'mov': return 'video/quicktime';
+      case 'avi': return 'video/x-msvideo';
+      case 'webm': return 'video/webm';
+      case 'pdf': return 'application/pdf';
+      case 'doc': return 'application/msword';
+      case 'docx': return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      case 'xls': return 'application/vnd.ms-excel';
+      case 'xlsx': return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+      case 'ppt': return 'application/vnd.ms-powerpoint';
+      case 'pptx': return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+      case 'zip': return 'application/zip';
+      case 'rar': return 'application/x-rar-compressed';
+      case '7z': return 'application/x-7z-compressed';
+      case 'js': return 'application/javascript';
+      case 'ts': return 'application/typescript';
+      case 'html': return 'text/html';
+      case 'css': return 'text/css';
+      case 'json': return 'application/json';
+      default: return 'application/octet-stream';
+    }
+  };
+
   const FileTypeIcon = ({ type, className = '' }: { type: Attachment['type'], className?: string }) => {
     switch(type) {
       case 'pdf': return <FileText className={className} />;
@@ -308,13 +432,14 @@ const DEMO_DOCUMENTS: Document[] = [
     const file = e.target.files[0];
     setIsLoading(true);
     try {
-      const attachment ={
+      const attachment = onUploadFile ? await onUploadFile(file) : {
         id: Date.now().toString(),
         type: getFileType(file.name),
         url: URL.createObjectURL(file),
         name: file.name,
         size: `${(file.size / 1024).toFixed(1)} KB`,
-        uploadedAt: new Date().toLocaleString()
+        uploadedAt: new Date().toLocaleString(),
+        fileType: getFileMimeType(file.name)
       };
 
       setCurrentDoc(prev => ({
@@ -338,48 +463,114 @@ const DEMO_DOCUMENTS: Document[] = [
 
   // File preview handling
   const renderFilePreview = (attachment: Attachment) => {
-    switch(attachment.type) {
-      case 'pdf':
-        return (
-          <iframe 
-            src={attachment.url} 
-            className="w-full h-[500px] border"
-            title={attachment.name}
-          />
-        );
-      case 'image':
-        return (
-          <img 
-            src={attachment.url} 
-            alt={attachment.name}
-            className="w-full max-h-96 object-contain"
-          />
-        );
-      case 'video':
-        return (
-          <video 
-            src={attachment.url}
-            className="w-full max-h-96"
-            controls
-          />
-        );
-      default:
-        return (
-          <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
-            <div className="text-center">
-              <FileTypeIcon type={attachment.type} className="w-12 h-12 mx-auto text-gray-400" />
-              <p className="mt-2 text-sm text-gray-600">Preview not available for {attachment.type} files</p>
-              <a 
-                href={attachment.url} 
-                download
-                className="mt-2 inline-flex items-center text-blue-600 hover:text-blue-800"
-              >
-                <Download className="w-4 h-4 mr-1" />
-                Download
-              </a>
+    const previewStyle = "w-full h-[500px] border rounded-lg bg-gray-50 flex items-center justify-center";
+    const downloadButton = (
+      <a 
+        href={attachment.url} 
+        download
+        className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+      >
+        <Download className="w-4 h-4 mr-2" />
+        Download
+      </a>
+    );
+
+    const onError = (e: any) => {
+      setError('Failed to load file preview');
+      console.error('Error loading file:', e);
+    };
+
+    try {
+      switch(attachment.type) {
+        case 'pdf':
+        case 'doc':
+        case 'excel':
+        case 'ppt':
+          return (
+            <div className={previewStyle}>
+              {typeof window !== 'undefined' && (
+                <FileViewer
+                  fileType={attachment.fileType || ''}
+                  filePath={attachment.url}
+                  onError={onError}
+                  errorComponent={<div className="text-red-500 p-4">{error || 'Error loading preview'}</div>}
+                  unsupportedComponent={
+                    <div className="text-center p-6">
+                      <FileTypeIcon type={attachment.type} className="w-16 h-16 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900">{attachment.name}</h3>
+                      <p className="text-sm text-gray-500 mb-4">
+                        {attachment.type === 'pdf' ? 'PDF Document' : 
+                         attachment.type === 'doc' ? 'Word Document' : 
+                         attachment.type === 'excel' ? 'Excel Spreadsheet' : 'PowerPoint Presentation'}
+                      </p>
+                      {downloadButton}
+                      {attachment.type !== 'pdf' && (
+                        <a
+                          href={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(attachment.url)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Online
+                        </a>
+                      )}
+                    </div>
+                  }
+                />
+              )}
             </div>
+          );
+
+        case 'image':
+          return (
+            <div className="text-center">
+              <img 
+                src={attachment.url} 
+                alt={attachment.name}
+                className="max-w-full max-h-[70vh] mx-auto rounded-lg shadow-sm"
+                onError={onError}
+              />
+              {downloadButton}
+            </div>
+          );
+
+        case 'video':
+          return (
+            <div className="text-center">
+              <video 
+                src={attachment.url}
+                className="max-w-full max-h-[70vh] mx-auto rounded-lg"
+                controls
+                onError={onError}
+              />
+              {downloadButton}
+            </div>
+          );
+
+        default:
+          return (
+            <div className={previewStyle}>
+              <div className="text-center p-6">
+                <FileTypeIcon type={attachment.type} className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-900">{attachment.name}</h3>
+                <p className="text-sm text-gray-500 mb-4">{attachment.type.toUpperCase()} File</p>
+                {downloadButton}
+              </div>
+            </div>
+          );
+      }
+    } catch (e) {
+      return (
+        <div className={previewStyle}>
+          <div className="text-center p-6">
+            <FileTypeIcon type={attachment.type} className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+            <h3 className="text-lg font-medium text-gray-900">{attachment.name}</h3>
+            <p className="text-sm text-gray-500 mb-4">Preview not available</p>
+            {downloadButton}
           </div>
-        );
+        </div>
+      );
     }
   };
 
@@ -430,9 +621,9 @@ const DEMO_DOCUMENTS: Document[] = [
     
     setIsLoading(true);
     try {
-      // if (onShareDocument) {
-      //   await onShareDocument(currentDoc.id, selectedMembers);
-      // }
+      if (onShareDocument) {
+        await onShareDocument(currentDoc.id, selectedMembers);
+      }
       setCurrentDoc(prev => ({
         ...prev,
         sharedWith: selectedMembers
@@ -449,9 +640,9 @@ const DEMO_DOCUMENTS: Document[] = [
     
     setIsLoading(true);
     try {
-      // if (onAssignToTask) {
-      //   await onAssignToTask(currentDoc.id, taskId);
-      // }
+      if (onAssignToTask) {
+        await onAssignToTask(currentDoc.id, taskId);
+      }
       setCurrentDoc(prev => ({
         ...prev,
         assignedTo: taskId
@@ -497,7 +688,7 @@ const DEMO_DOCUMENTS: Document[] = [
       
       <div className="relative">
         <button onClick={() => setShowFontMenu(!showFontMenu)} className="p-2 rounded hover:bg-gray-100 flex items-center">
-          <Footprints className="w-4 h-4 mr-1" />
+          <LucideToggleRight className="w-4 h-4 mr-1" />
           <span className="text-xs">{fontFamily}</span>
         </button>
         {showFontMenu && (
@@ -560,10 +751,10 @@ const DEMO_DOCUMENTS: Document[] = [
       
       <div className="border-l h-6 mx-1"></div>
       
-      <button onClick={() => formatText('insertUnorderedList')} className="p-2 rounded hover:bg-gray-100">
+      <button onClick={() => handleListButton(false)} className="p-2 rounded hover:bg-gray-100">
         <List className="w-4 h-4" />
       </button>
-      <button onClick={() => formatText('insertOrderedList')} className="p-2 rounded hover:bg-gray-100">
+      <button onClick={() => handleListButton(true)} className="p-2 rounded hover:bg-gray-100">
         <ListOrdered className="w-4 h-4" />
       </button>
       <button onClick={() => formatText('insertHorizontalRule')} className="p-2 rounded hover:bg-gray-100">
@@ -594,242 +785,247 @@ const DEMO_DOCUMENTS: Document[] = [
   // Render
   return (
     <AuthGuard>
-    <div className={`flex flex-col h-full bg-white rounded-lg shadow ${className}`}>
-      {/* Toolbar */}
-      <div className="border-b p-2 flex items-center justify-between">
-        <div className="flex items-center space-x-1">
-          {viewMode === 'list' ? (
-            <button
-              onClick={createDocument}
-              className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              New Document
-            </button>
-          ) : (
-            <>
+      <div className={`flex flex-col h-full bg-white rounded-lg shadow ${className}`}>
+        {/* Toolbar */}
+        <div className="border-b p-2 flex items-center justify-between">
+          <div className="flex items-center space-x-1">
+            {viewMode === 'list' ? (
               <button
-                onClick={() => setViewMode('list')}
-                className="p-2 rounded hover:bg-gray-100"
-                title="Back to list"
+                onClick={createDocument}
+                className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
               >
-                <ChevronDown className="w-4 h-4 transform rotate-90" />
+                <Plus className="w-4 h-4 mr-1" />
+                New Document
               </button>
-              {viewMode === 'edit' && renderToolbar()}
-            </>
-          )}
+            ) : (
+              <>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className="p-2 rounded hover:bg-gray-100"
+                  title="Back to list"
+                >
+                  <ChevronDown className="w-4 h-4 transform rotate-90" />
+                </button>
+                {viewMode === 'edit' && renderToolbar()}
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center space-x-2">
+            {viewMode === 'list' && (
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search documents..."
+                  className="pl-10 pr-4 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            )}
+
+            {viewMode === 'edit' && (
+              <>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className="px-3 py-1 text-sm border rounded-md hover:bg-gray-100 flex items-center"
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  Cancel
+                </button>
+                <button
+                  onClick={saveDocument}
+                  disabled={isLoading}
+                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center disabled:opacity-50"
+                >
+                  {isLoading ? (
+                    'Saving...'
+                  ) : (
+                    <>
+                      <SaveIcon className="w-4 h-4 mr-1" />
+                      Save
+                    </>
+                  )}
+                </button>
+              </>
+            )}
+
+            {viewMode === 'view' && (
+              <>
+                <button
+                  onClick={() => editDocument(currentDoc)}
+                  className="px-3 py-1 text-sm border rounded-md hover:bg-gray-100 flex items-center"
+                >
+                  <File className="w-4 h-4 mr-1" />
+                  Edit
+                </button>
+                <button
+                  onClick={() => deleteDocument(currentDoc.id)}
+                  disabled={isLoading}
+                  className="px-3 py-1 text-sm border rounded-md hover:bg-gray-100 flex items-center text-red-600 disabled:opacity-50"
+                >
+                  <Trash2 className="w-4 h-4 mr-1" />
+                  Delete
+                </button>
+              </>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center space-x-2">
+        {/* Main Content */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Document List View */}
           {viewMode === 'list' && (
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search documents..."
-                className="pl-10 pr-4 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            <div className="flex-1 overflow-y-auto p-6">
+              <h2 className="text-2xl font-bold mb-6">Documents</h2>
+              
+              {filteredDocuments.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  <File className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <p>{searchQuery ? 'No matching documents found' : 'No documents yet'}</p>
+                  <button
+                    onClick={createDocument}
+                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    Create New Document
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredDocuments.map(document => (
+                    <div 
+                      key={document.id} 
+                      className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                      onClick={() => openDocument(document)}
+                    >
+                      <div className="flex items-center mb-3">
+                        <File className="w-5 h-5 mr-2 text-blue-500" />
+                        <h3 className="font-medium truncate">{document.title || 'Untitled Document'}</h3>
+                      </div>
+                      <p className="text-sm text-gray-500 mb-2">
+                        Last edited: {document.lastEdited}
+                      </p>
+                      {document.attachments && document.attachments.length > 0 && (
+                        <div className="flex items-center text-sm text-gray-500">
+                          <Paperclip className="w-4 h-4 mr-1" />
+                          <span>{document.attachments.length} attachment(s)</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between items-center mt-4">
+                        <span className="text-xs px-2 py-1 bg-gray-100 rounded capitalize">
+                          {document.status}
+                        </span>
+                        <div className="flex space-x-2">
+                          {document.tags?.map((tag, i) => (
+                            <span key={i} className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      {document.assignedTo && (
+                        <div className="mt-2 flex items-center text-xs text-gray-500">
+                          <CheckCircle className="w-3 h-3 mr-1" />
+                          <span>Assigned to: {getTaskById(document.assignedTo)?.title || 'Task'}</span>
+                        </div>
+                      )}
+                      {document.sharedWith && document.sharedWith.length > 0 && (
+                        <div className="mt-2 flex items-center text-xs text-gray-500">
+                          <Users className="w-3 h-3 mr-1" />
+                          <span>Shared with {document.sharedWith.length} member(s)</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
-          {viewMode === 'edit' && (
-            <>
-              <button
-                onClick={() => setViewMode('list')}
-                className="px-3 py-1 text-sm border rounded-md hover:bg-gray-100 flex items-center"
-              >
-                <X className="w-4 h-4 mr-1" />
-                Cancel
-              </button>
-              <button
-                onClick={saveDocument}
-                disabled={isLoading}
-                className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center disabled:opacity-50"
-              >
-                {isLoading ? (
-                  'Saving...'
-                ) : (
-                  <>
-                    <SaveIcon className="w-4 h-4 mr-1" />
-                    Save
-                  </>
-                )}
-              </button>
-            </>
-          )}
-
-          {viewMode === 'view' && (
-            <>
-              <button
-                onClick={() => editDocument(currentDoc)}
-                className="px-3 py-1 text-sm border rounded-md hover:bg-gray-100 flex items-center"
-              >
-                <File className="w-4 h-4 mr-1" />
-                Edit
-              </button>
-              <button
-                onClick={() => deleteDocument(currentDoc.id)}
-                disabled={isLoading}
-                className="px-3 py-1 text-sm border rounded-md hover:bg-gray-100 flex items-center text-red-600 disabled:opacity-50"
-              >
-                <Trash2 className="w-4 h-4 mr-1" />
-                Delete
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Document List View */}
-        {viewMode === 'list' && (
-          <div className="flex-1 overflow-y-auto p-6">
-            <h2 className="text-2xl font-bold mb-6">Documents</h2>
-            
-            {filteredDocuments.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
-                <File className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>{searchQuery ? 'No matching documents found' : 'No documents yet'}</p>
-                <button
-                  onClick={createDocument}
-                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                >
-                  Create New Document
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredDocuments.map(document => (
-                  <div 
-                    // key={document?.id} 
-                    className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => openDocument(document)}
-                  >
-                    <div className="flex items-center mb-3">
-                      <File className="w-5 h-5 mr-2 text-blue-500" />
-                      <h3 className="font-medium truncate">{document.title || 'Untitled Document'}</h3>
-                    </div>
-                    <p className="text-sm text-gray-500 mb-2">
-                      Last edited: {document.lastEdited}
-                    </p>
-                    {document.attachments && document.attachments.length > 0 && (
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Paperclip className="w-4 h-4 mr-1" />
-                        <span>{document.attachments.length} attachment(s)</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between items-center mt-4">
-                      <span className="text-xs px-2 py-1 bg-gray-100 rounded capitalize">
-                        {document.status}
-                      </span>
-                      <div className="flex space-x-2">
-                        {document.tags?.map((tag, i) => (
-                          <span key={i} className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    {document.assignedTo && (
-                      <div className="mt-2 flex items-center text-xs text-gray-500">
-                        <CheckCircle className="w-3 h-3 mr-1" />
-                        <span>Assigned to: {getTaskById(document.assignedTo)?.title || 'Task'}</span>
-                      </div>
-                    )}
-                    {document.sharedWith && document.sharedWith.length > 0 && (
-                      <div className="mt-2 flex items-center text-xs text-gray-500">
-                        <Users className="w-3 h-3 mr-1" />
-                        <span>Shared with {document.sharedWith.length} member(s)</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Document Editor/Viewer */}
-        {(viewMode === 'edit' || viewMode === 'view') && (
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Document Header */}
-            <div className="border-b p-4">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  {viewMode === 'edit' && isEditingTitle ? (
+          {/* Document Editor/Viewer */}
+          {(viewMode === 'edit' || viewMode === 'view') && (
+            <div className="flex-1 overflow-y-auto flex flex-col">
+              {/* Document Header */}
+              <div className="p-4 border-b">
+                {isEditingTitle ? (
+                  <div className="flex items-center">
                     <input
                       type="text"
                       value={currentDoc.title}
                       onChange={(e) => setCurrentDoc({ ...currentDoc, title: e.target.value })}
+                      className="text-2xl font-bold flex-1 border-b focus:outline-none focus:border-blue-500"
+                      autoFocus
                       onBlur={() => setIsEditingTitle(false)}
                       onKeyDown={(e) => e.key === 'Enter' && setIsEditingTitle(false)}
-                      className="text-3xl font-bold mb-2 p-2 border-b focus:outline-none focus:border-blue-500 w-full"
-                      placeholder="Document Title"
-                      autoFocus
                     />
-                  ) : (
-                    <h1
-                      onClick={() => viewMode === 'edit' && setIsEditingTitle(true)}
-                      className={`text-3xl font-bold mb-2 ${viewMode === 'edit' ? 'cursor-text hover:bg-gray-50 p-2 rounded' : 'p-2'}`}
-                    >
-                      {currentDoc.title || 'Untitled Document'}
-                    </h1>
-                  )}
-                  <div className="text-sm text-gray-500">
-                    Last edited: {currentDoc.lastEdited}
                   </div>
-                </div>
-
-                <div className="flex space-x-2">
-                  {currentDoc.sharedWith && currentDoc.sharedWith.length > 0 && (
-                    <div className="flex -space-x-2">
-                      {currentDoc.sharedWith.slice(0, 3).map(userId => {
-                        const member = getMemberById(userId);
-                        return member ? (
-                          <div 
-                            key={member.id}
-                            className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium"
-                            title={`${member.name} (${member.email})`}
-                          >
-                            {member.avatar ? (
-                              <img src={member.avatar} alt={member.name} className="w-full h-full rounded-full" />
-                            ) : (
-                              member.name.charAt(0).toUpperCase()
-                            )}
-                          </div>
-                        ) : null;
-                      })}
-                      {currentDoc.sharedWith.length > 3 && (
-                        <div 
-                          className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium"
-                          title={`Shared with ${currentDoc.sharedWith.length} members`}
-                        >
-                          +{currentDoc.sharedWith.length - 3}
-                        </div>
-                      )}
-                    </div>
+                ) : (
+                  <h1
+                    className="text-2xl font-bold cursor-pointer hover:bg-gray-50 p-1 rounded"
+                    onClick={() => setIsEditingTitle(true)}
+                  >
+                    {currentDoc.title}
+                  </h1>
+                )}
+                
+             
+                <div className="flex items-center mt-2 text-sm text-gray-500">
+                  <span>Last edited: {currentDoc.lastEdited}</span>
+                  <span className="mx-2">•</span>
+                  <span className="capitalize">{currentDoc.status}</span>
+                     <div className='flex flex-1 items-end justify-end'>
+                     {currentDoc.sharedWith && currentDoc.sharedWith.length > 0 && (
+                  <div className="flex items-center space-x-2 m-2">
+  <span className="text-sm text-gray-600">Shared to:</span>
+  <div className="flex -space-x-2">
+    {currentDoc.sharedWith.slice(0, 3).map(userId => {
+      const member = getMemberById(userId);
+      return member ? (
+        <div 
+          key={member.id}
+          className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium"
+          title={`${member.name} (${member.email})`}
+        >
+          {member.avatar ? (
+            <img src={member.avatar} alt={member.name} className="w-full h-full rounded-full" />
+          ) : (
+            member.name.charAt(0).toUpperCase()
+          )}
+        </div>
+      ) : null;
+    })}
+    {currentDoc.sharedWith.length > 3 && (
+      <div 
+        className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium"
+        title={`Shared with ${currentDoc.sharedWith.length} members`}
+      >
+        +{currentDoc.sharedWith.length - 3}
+      </div>
+    )}
+  </div>
+</div>
                   )}
                 </div>
-              </div>
-
-              {/* Tags */}
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                {viewMode === 'edit' ? (
-                  <>
-                    {currentDoc.tags?.map(tag => (
-                      <div key={tag} className="flex items-center text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                        {tag}
+                </div>
+                
+                {/* Tags */}
+                <div className="flex flex-wrap items-center mt-3 gap-2">
+                  {currentDoc.tags?.map((tag, i) => (
+                    <div key={i} className="flex items-center bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-xs">
+                      {tag}
+                      {viewMode === 'edit' && (
                         <button 
                           onClick={() => removeTag(tag)}
-                          className="ml-1 text-blue-500 hover:text-blue-700"
+                          className="ml-1 text-blue-600 hover:text-blue-800"
                         >
                           <X className="w-3 h-3" />
                         </button>
-                      </div>
-                    ))}
+                      )}
+                    </div>
+                  ))}
+                  
+                  {viewMode === 'edit' && (
                     <div className="relative">
                       <input
                         type="text"
@@ -838,41 +1034,39 @@ const DEMO_DOCUMENTS: Document[] = [
                         onChange={(e) => setNewTag(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && addTag()}
                         placeholder="Add tag..."
-                        className="text-xs px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 w-24"
+                        className="text-xs border rounded-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                       {newTag && (
-                        <button
+                        <button 
                           onClick={addTag}
-                          className="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-500"
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800"
                         >
                           <Plus className="w-3 h-3" />
                         </button>
                       )}
                     </div>
-                  </>
-                ) : (
-                  currentDoc.tags?.map((tag, i) => (
-                    <span key={i} className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                      {tag}
-                    </span>
-                  ))
-                )}
-              </div>
-
-              {/* Task assignment */}
-              {currentDoc.assignedTo && (
-                <div className="mt-2 flex items-center text-sm">
-                  <CheckCircle className="w-4 h-4 mr-1 text-green-500" />
-                  <span>Assigned to: </span>
-                  <span className="font-medium ml-1">
-                    {getTaskById(currentDoc.assignedTo)?.title || 'Task'}
-                  </span>
+                  )}
                 </div>
-              )}
-            </div>
-
-            {/* Document Content */}
-            <div className="flex-1 overflow-auto p-6">
+                
+                {/* Document Actions */}
+                <div className="flex items-center mt-3 gap-2">
+                  {currentDoc.sharedWith && currentDoc.sharedWith.length > 0 && (
+                    <div className="flex items-center text-xs text-gray-500">
+                      <Users className="w-3 h-3 mr-1" />
+                      <span>Shared with {currentDoc.sharedWith.length} member(s)</span>
+                    </div>
+                  )}
+                  
+                  {currentDoc.assignedTo && (
+                    <div className="flex items-center text-xs text-gray-500">
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      <span>Assigned to: {getTaskById(currentDoc.assignedTo)?.title || 'Task'}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Document Content */}
               {viewMode === 'edit' ? (
                 <>
                   <div
@@ -880,216 +1074,225 @@ const DEMO_DOCUMENTS: Document[] = [
                     contentEditable
                     dangerouslySetInnerHTML={{ __html: currentDoc.content }}
                     onInput={updateContent}
-                    onBlur={updateContent}
-                    className="flex-1 focus:outline-none cursor-text min-h-[200px]"
-                    style={{ fontFamily, color: textColor }}
+                    className="flex-1 p-6 focus:outline-none"
+                    style={{ fontFamily, fontSize, color: textColor }}
                   />
-
-                  {/* Attachments */}
-                  {currentDoc.attachments && currentDoc.attachments.length > 0 && (
-                    <div className="mt-8 border-t pt-6">
-                      <h3 className="text-lg font-medium mb-4 flex items-center">
-                        <Paperclip className="w-5 h-5 mr-2" />
-                        Attachments ({currentDoc.attachments.length})
-                      </h3>
-                      <div className="grid grid-cols-1 gap-4">
-                        {currentDoc.attachments.map(attachment => (
-                          <div key={attachment.id} className="border rounded-lg overflow-hidden">
-                            <div className="p-4 bg-gray-50 border-b flex items-center">
-                              <FileTypeIcon type={attachment.type} className="w-6 h-6 mr-3 text-gray-500" />
-                              <div className="flex-1">
-                                <div className="font-medium">{attachment.name}</div>
-                                <div className="text-sm text-gray-500">
-                                  {attachment.size} • {attachment.uploadedAt}
-                                </div>
-                              </div>
-                              <button
-                                onClick={() => removeAttachment(attachment.id)}
-                                className="p-2 text-gray-500 hover:text-red-500"
-                                title="Remove"
-                              >
-                                <Trash2 className="w-5 h-5" />
-                              </button>
+                  
+                  {/* Attachments Section */}
+                  <div className="p-4 border-t">
+                    <h3 className="font-medium mb-3 flex items-center">
+                      <Paperclip className="w-4 h-4 mr-2" />
+                      Attachments ({currentDoc.attachments?.length || 0})
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      {currentDoc.attachments?.map(attachment => (
+                        <div key={attachment.id} className="border rounded-lg p-3 hover:shadow-sm transition-shadow">
+                          <div className="flex items-start">
+                            <div className="mr-3">
+                              <FileTypeIcon type={attachment.type} className="w-8 h-8 text-blue-500" />
                             </div>
-                            <div className="p-4">
-                              {renderFilePreview(attachment)}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{attachment.name}</p>
+                              <p className="text-xs text-gray-500">{attachment.size}</p>
+                              <p className="text-xs text-gray-500">{attachment.uploadedAt}</p>
                             </div>
+                            <button 
+                              onClick={() => removeAttachment(attachment.id)}
+                              className="text-gray-400 hover:text-red-500"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </div>
-                        ))}
+                          <button 
+                            onClick={() => setActivePreview(attachment.id)}
+                            className="mt-2 w-full text-xs text-blue-600 hover:text-blue-800 flex items-center justify-center"
+                          >
+                            <Eye className="w-3 h-3 mr-1" />
+                            Preview
+                          </button>
+                        </div>
+                      ))}
+                      
+                      <div 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="border-2 border-dashed rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50"
+                      >
+                        <Plus className="w-6 h-6 text-gray-400 mb-2" />
+                        <p className="text-sm text-gray-500 text-center">Add attachment</p>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </>
               ) : (
-                <>
-                  <div 
-                    className="prose max-w-none"
-                    dangerouslySetInnerHTML={{ __html: currentDoc.content }}
-                  />
-
-                  {/* View Attachments */}
-                  {currentDoc.attachments && currentDoc.attachments.length > 0 && (
-                    <div className="mt-8 border-t pt-6">
-                      <h3 className="text-lg font-medium mb-4 flex items-center">
-                        <Paperclip className="w-5 h-5 mr-2" />
-                        Attachments ({currentDoc.attachments.length})
-                      </h3>
-                      <div className="grid grid-cols-1 gap-4">
-                        {currentDoc.attachments.map(attachment => (
-                          <div key={attachment.id} className="border rounded-lg overflow-hidden">
-                            <div className="p-4 bg-gray-50 border-b flex items-center">
-                              <FileTypeIcon type={attachment.type} className="w-6 h-6 mr-3 text-gray-500" />
-                              <div className="flex-1">
-                                <div className="font-medium">{attachment.name}</div>
-                                <div className="text-sm text-gray-500">
-                                  {attachment.size} • {attachment.uploadedAt}
+                <div className="p-6">
+                  {activePreview ? (
+                    <>
+                      <button 
+                        onClick={() => setActivePreview(null)}
+                        className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
+                      >
+                        <ChevronDown className="w-4 h-4 mr-1 transform rotate-90" />
+                        Back to document
+                      </button>
+                      
+                      {currentDoc.attachments?.find(a => a.id === activePreview) && 
+                        renderFilePreview(currentDoc.attachments.find(a => a.id === activePreview)!)
+                      }
+                    </>
+                  ) : (
+                    <>
+                      <div 
+                        dangerouslySetInnerHTML={{ __html: currentDoc.content }}
+                        className="prose max-w-none"
+                      />
+                      
+                      {currentDoc.attachments && currentDoc.attachments.length > 0 && (
+                        <div className="mt-8">
+                          <h3 className="font-medium mb-3 flex items-center">
+                            <Paperclip className="w-4 h-4 mr-2" />
+                            Attachments ({currentDoc.attachments.length})
+                          </h3>
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            {currentDoc.attachments.map(attachment => (
+                              <div key={attachment.id} className="border rounded-lg p-3 hover:shadow-sm transition-shadow">
+                                <div className="flex items-start">
+                                  <div className="mr-3">
+                                    <FileTypeIcon type={attachment.type} className="w-8 h-8 text-blue-500" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium truncate">{attachment.name}</p>
+                                    <p className="text-xs text-gray-500">{attachment.size}</p>
+                                    <p className="text-xs text-gray-500">{attachment.uploadedAt}</p>
+                                  </div>
                                 </div>
+                                <button 
+                                  onClick={() => setActivePreview(attachment.id)}
+                                  className="mt-2 w-full text-xs text-blue-600 hover:text-blue-800 flex items-center justify-center"
+                                >
+                                  <Eye className="w-3 h-3 mr-1" />
+                                  Preview
+                                </button>
                               </div>
-                              <a 
-                                href={attachment.url} 
-                                download
-                                className="p-2 text-gray-500 hover:text-blue-500"
-                                title="Download"
-                              >
-                                <Download className="w-5 h-5" />
-                              </a>
-                            </div>
-                            <div className="p-4">
-                              {renderFilePreview(attachment)}
-                            </div>
+                            ))}
                           </div>
-                        ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        
+        {/* Share Dialog */}
+        {showShareDialog && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+              <div className="p-4 border-b">
+                <h3 className="font-medium">Share Document</h3>
+              </div>
+              
+              <div className="p-4">
+                <div className="relative mb-4">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search team members..."
+                    className="pl-10 pr-4 py-2 border rounded-md w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    value={memberSearchQuery}
+                    onChange={(e) => setMemberSearchQuery(e.target.value)}
+                  />
+                </div>
+                
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {filteredMembers.map(member => (
+                    <div 
+                      key={member.id} 
+                      className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
+                      onClick={() => toggleMemberSelection(member.id)}
+                    >
+                      <input 
+                        type="checkbox" 
+                        checked={selectedMembers.includes(member.id)}
+                        onChange={() => {}}
+                        className="mr-3"
+                      />
+                      <img 
+                        src={member.avatar || `https://ui-avatars.com/api/?name=${member.name}&background=random`} 
+                        alt={member.name}
+                        className="w-8 h-8 rounded-full mr-3"
+                      />
+                      <div>
+                        <p className="font-medium">{member.name}</p>
+                        <p className="text-xs text-gray-500">{member.email}</p>
                       </div>
                     </div>
-                  )}
-                </>
-              )}
+                  ))}
+                </div>
+              </div>
+              
+              <div className="p-4 border-t flex justify-end space-x-2">
+                <button
+                  onClick={toggleShareDialog}
+                  className="px-4 py-2 border rounded-md hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveSharedMembers}
+                  disabled={isLoading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {isLoading ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Task Assignment Dialog */}
+        {showTaskDialog && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+              <div className="p-4 border-b">
+                <h3 className="font-medium">Assign to Task</h3>
+              </div>
+              
+              <div className="p-4 space-y-3">
+                {tasks.map(task => (
+                  <div 
+                    key={task.id} 
+                    className={`p-3 border rounded-md cursor-pointer ${currentDoc.assignedTo === task.id ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'}`}
+                    onClick={() => assignToTask(task.id)}
+                  >
+                    <div className="flex items-center">
+                      <div className={`w-3 h-3 rounded-full mr-3 ${
+                        task.status === 'todo' ? 'bg-gray-300' :
+                        task.status === 'in-progress' ? 'bg-yellow-400' :
+                        'bg-green-500'
+                      }`}></div>
+                      <p className="font-medium">{task.title}</p>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1 capitalize">{task.status.replace('-', ' ')}</p>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="p-4 border-t flex justify-end">
+                <button
+                  onClick={toggleTaskDialog}
+                  className="px-4 py-2 border rounded-md hover:bg-gray-100"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         )}
       </div>
-
-      {/* Share Dialog */}
-      {showShareDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-full max-w-md">
-            <div className="p-4 border-b">
-              <h3 className="text-lg font-medium">Share Document</h3>
-            </div>
-            
-            <div className="p-4">
-              <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search team members..."
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={memberSearchQuery}
-                  onChange={(e) => setMemberSearchQuery(e.target.value)}
-                />
-              </div>
-              
-              <div className="max-h-64 overflow-y-auto border rounded-lg">
-                {filteredMembers.length > 0 ? (
-                  filteredMembers.map(member => (
-                    <div
-                      key={member.id}
-                      className={`flex items-center p-3 hover:bg-gray-50 cursor-pointer ${selectedMembers.includes(member.id) ? 'bg-blue-50' : ''}`}
-                      onClick={() => toggleMemberSelection(member.id)}
-                    >
-                      <div className="flex-shrink-0">
-                        <img 
-                          src={member.avatar} 
-                          alt={member.name}
-                          className="w-10 h-10 rounded-full"
-                        />
-                      </div>
-                      <div className="ml-3 flex-1">
-                        <p className="text-sm font-medium text-gray-900">{member.name}</p>
-                        <p className="text-sm text-gray-500">{member.email}</p>
-                      </div>
-                      <div className="ml-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedMembers.includes(member.id)}
-                          className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                          readOnly
-                        />
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-4 text-center text-gray-500">
-                    No members found
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <div className="p-4 border-t flex justify-end space-x-3">
-              <button
-                onClick={() => setShowShareDialog(false)}
-                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={saveSharedMembers}
-                disabled={isLoading}
-                className="px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                {isLoading ? 'Saving...' : 'Share'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Task Dialog */}
-      {showTaskDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-full max-w-md">
-            <div className="p-4 border-b">
-              <h3 className="text-lg font-medium">Assign to Task</h3>
-            </div>
-            
-            <div className="p-4">
-              <div className="max-h-64 overflow-y-auto">
-                {tasks.map(task => (
-                  <div
-                    key={task.id}
-                    className={`flex items-center p-3 hover:bg-gray-50 cursor-pointer ${currentDoc.assignedTo === task.id ? 'bg-blue-50' : ''}`}
-                    onClick={() => assignToTask(task.id)}
-                  >
-                    <div className={`w-2 h-2 rounded-full mr-3 ${
-                      task.status === 'todo' ? 'bg-gray-400' :
-                      task.status === 'in-progress' ? 'bg-yellow-400' :
-                      'bg-green-400'
-                    }`}></div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{task.title}</p>
-                      <p className="text-xs text-gray-500 capitalize">{task.status}</p>
-                    </div>
-                    {currentDoc.assignedTo === task.id && (
-                      <Check className="w-5 h-5 text-blue-500" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="p-4 border-t flex justify-end">
-              <button
-                onClick={() => setShowTaskDialog(false)}
-                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
     </AuthGuard>
   );
 };
