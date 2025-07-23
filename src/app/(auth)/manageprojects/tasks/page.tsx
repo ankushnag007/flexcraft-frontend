@@ -221,11 +221,10 @@ const [newTaskLabels, setNewTaskLabels] = useState<string[]>([]);
   };
 
   return (
-    <div className="p-6">
-      {/* Project Header */}
+    <>
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <div className="flex items-center">
+       
+     <div className="flex items-center">
             <h1 className="text-2xl font-bold text-gray-800">
               Website Redesign
             </h1>
@@ -236,8 +235,6 @@ const [newTaskLabels, setNewTaskLabels] = useState<string[]>([]);
             <span className="text-sm text-gray-600">Lead: John Doe</span>
             <span className="text-sm text-gray-600">Version: 2.0</span>
           </div>
-        </div>
-
         <div className="flex items-center space-x-3">
           <button className="flex items-center px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-100">
             <Filter className="w-4 h-4 mr-2" />
@@ -312,6 +309,9 @@ const [newTaskLabels, setNewTaskLabels] = useState<string[]>([]);
           </button>
         </div>
       </div>
+    <div className="p-6">
+      {/* Project Header */}
+    
 
       {/* Board View */}
       {viewMode === "board" && (
@@ -992,6 +992,7 @@ const [newTaskLabels, setNewTaskLabels] = useState<string[]>([]);
   </div>
 )}
     </div>
+    </>
   );
 };
 

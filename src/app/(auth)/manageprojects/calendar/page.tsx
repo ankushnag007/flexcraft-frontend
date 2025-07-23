@@ -453,7 +453,7 @@ const CalendarComponent = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M9 5l7 7 7-7"
+               d="M9 5l7 7-7 7"
               />
             </svg>
           </button>
@@ -503,222 +503,237 @@ const CalendarComponent = () => {
       {viewMode === 'day' && renderDayView()}
 
       {/* Event Modal */}
-      {showEventModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-gray-800">
-                  {editingEvent ? 'Edit Event' : 'Create New Event'}
-                </h3>
-                <button
-                  onClick={() => {
-                    setShowEventModal(false);
-                    setEditingEvent(null);
-                    resetEventForm();
-                  }}
-                  className="p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+     {showEventModal && (
+  <div className="fixed inset-0 z-50 overflow-hidden">
+    {/* Overlay */}
+    <div 
+      className="absolute inset-0 bg-[rgba(0,0,0,0.4)] bg-opacity-40 bg-opacity-50 transition-opacity"
+      onClick={() => {
+        setShowEventModal(false);
+        setEditingEvent(null);
+        resetEventForm();
+      }}
+    ></div>
+    
+    {/* Drawer */}
+    <div className="absolute inset-y-0 right-0 pl-10 max-w-full flex">
+      <div className="w-screen max-w-md">
+        <div className="h-full flex flex-col bg-white shadow-xl overflow-y-auto">
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-800">
+                {editingEvent ? 'Edit Event' : 'Create New Event'}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowEventModal(false);
+                  setEditingEvent(null);
+                  resetEventForm();
+                }}
+                className="p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Event Title*</label>
+                <input
+                  type="text"
+                  value={newEvent.title}
+                  onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter event title"
+                  required
+                />
               </div>
               
-              <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Event Title*</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Event Type</label>
+                  <select
+                    value={newEvent.type}
+                    onChange={(e) => setNewEvent({...newEvent, type: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="meeting">Meeting</option>
+                    <option value="design">Design Review</option>
+                    <option value="client">Client Call</option>
+                    <option value="team">Team Event</option>
+                    <option value="personal">Personal</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                   <input
                     type="text"
-                    value={newEvent.title}
-                    onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                    value={newEvent.location}
+                    onChange={(e) => setNewEvent({...newEvent, location: e.target.value})}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter event title"
+                    placeholder="e.g. Conference Room A"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Date*</label>
+                  <input
+                    type="date"
+                    value={newEvent.date}
+                    onChange={(e) => setNewEvent({...newEvent, date: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Event Type</label>
-                    <select
-                      value={newEvent.type}
-                      onChange={(e) => setNewEvent({...newEvent, type: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="meeting">Meeting</option>
-                      <option value="design">Design Review</option>
-                      <option value="client">Client Call</option>
-                      <option value="team">Team Event</option>
-                      <option value="personal">Personal</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Time*</label>
                     <input
-                      type="text"
-                      value={newEvent.location}
-                      onChange={(e) => setNewEvent({...newEvent, location: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="e.g. Conference Room A"
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Date*</label>
-                    <input
-                      type="date"
-                      value={newEvent.date}
-                      onChange={(e) => setNewEvent({...newEvent, date: e.target.value})}
+                      type="time"
+                      value={newEvent.time}
+                      onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Start Time*</label>
-                      <input
-                        type="time"
-                        value={newEvent.time}
-                        onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
-                      <select
-                        value={newEvent.duration}
-                        onChange={(e) => setNewEvent({...newEvent, duration: e.target.value})}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                      >
-                        <option value="0.5">30 min</option>
-                        <option value="1">1 hour</option>
-                        <option value="1.5">1.5 hours</option>
-                        <option value="2">2 hours</option>
-                        <option value="3">3 hours</option>
-                        <option value="4">4 hours</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                  <textarea
-                    value={newEvent.description}
-                    onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                    rows="3"
-                    placeholder="Enter event description"
-                  ></textarea>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Attendees</label>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {newEvent.attendees.map(attendeeId => {
-                      const attendee = sampleAttendees.find(a => a.id === attendeeId);
-                      return attendee ? (
-                        <div key={attendee.id} className="flex items-center bg-gray-100 rounded-full pl-2 pr-2 py-1">
-                          <img
-                            className="w-5 h-5 rounded-full mr-2"
-                            src={attendee.avatar}
-                            alt={attendee.name}
-                          />
-                          <span className="text-sm text-gray-700 mr-1">{attendee.name}</span>
-                          <button
-                            onClick={() => removeAttendee(attendee.id)}
-                            className="text-gray-500 hover:text-red-500"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-                      ) : null;
-                    })}
-                  </div>
-                  <div className="flex">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
                     <select
-                      value={newAttendee}
-                      onChange={(e) => setNewAttendee(e.target.value)}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500"
+                      value={newEvent.duration}
+                      onChange={(e) => setNewEvent({...newEvent, duration: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                     >
-                      <option value="">Select attendee</option>
-                      {sampleAttendees.filter(a => !newEvent.attendees.includes(a.id)).map(attendee => (
-                        <option key={attendee.id} value={attendee.id}>{attendee.name}</option>
-                      ))}
+                      <option value="0.5">30 min</option>
+                      <option value="1">1 hour</option>
+                      <option value="1.5">1.5 hours</option>
+                      <option value="2">2 hours</option>
+                      <option value="3">3 hours</option>
+                      <option value="4">4 hours</option>
                     </select>
-                    <button
-                      onClick={addAttendee}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700"
-                    >
-                      Add
-                    </button>
                   </div>
-                </div>
-                
-                <div className="border-t border-gray-200 pt-4">
-                  <div className="flex items-center mb-2">
-                    <input
-                      type="checkbox"
-                      id="recurring"
-                      checked={newEvent.recurring}
-                      onChange={(e) => setNewEvent({...newEvent, recurring: e.target.checked})}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="recurring" className="ml-2 block text-sm text-gray-700">
-                      Recurring event
-                    </label>
-                  </div>
-                  
-                  {newEvent.recurring && (
-                    <div className="ml-6">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Recurrence</label>
-                      <select
-                        value={newEvent.recurringType}
-                        onChange={(e) => setNewEvent({...newEvent, recurringType: e.target.value})}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                      >
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="yearly">Yearly</option>
-                      </select>
-                    </div>
-                  )}
                 </div>
               </div>
               
-              <div className="mt-8 flex justify-end space-x-3">
-                <button
-                  onClick={() => {
-                    setShowEventModal(false);
-                    setEditingEvent(null);
-                    resetEventForm();
-                  }}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSaveEvent}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  disabled={!newEvent.title}
-                >
-                  {editingEvent ? 'Update Event' : 'Create Event'}
-                </button>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  value={newEvent.description}
+                  onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                  rows="3"
+                  placeholder="Enter event description"
+                ></textarea>
               </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Attendees</label>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {newEvent.attendees.map(attendeeId => {
+                    const attendee = sampleAttendees.find(a => a.id === attendeeId);
+                    return attendee ? (
+                      <div key={attendee.id} className="flex items-center bg-gray-100 rounded-full pl-2 pr-2 py-1">
+                        <img
+                          className="w-5 h-5 rounded-full mr-2"
+                          src={attendee.avatar}
+                          alt={attendee.name}
+                        />
+                        <span className="text-sm text-gray-700 mr-1">{attendee.name}</span>
+                        <button
+                          onClick={() => removeAttendee(attendee.id)}
+                          className="text-gray-500 hover:text-red-500"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+                <div className="flex">
+                  <select
+                    value={newAttendee}
+                    onChange={(e) => setNewAttendee(e.target.value)}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Select attendee</option>
+                    {sampleAttendees.filter(a => !newEvent.attendees.includes(a.id)).map(attendee => (
+                      <option key={attendee.id} value={attendee.id}>{attendee.name}</option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={addAttendee}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+              
+              <div className="border-t border-gray-200 pt-4">
+                <div className="flex items-center mb-2">
+                  <input
+                    type="checkbox"
+                    id="recurring"
+                    checked={newEvent.recurring}
+                    onChange={(e) => setNewEvent({...newEvent, recurring: e.target.checked})}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="recurring" className="ml-2 block text-sm text-gray-700">
+                    Recurring event
+                  </label>
+                </div>
+                
+                {newEvent.recurring && (
+                  <div className="ml-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Recurrence</label>
+                    <select
+                      value={newEvent.recurringType}
+                      onChange={(e) => setNewEvent({...newEvent, recurringType: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                      <option value="yearly">Yearly</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="mt-8 flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowEventModal(false);
+                  setEditingEvent(null);
+                  resetEventForm();
+                }}
+                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveEvent}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                disabled={!newEvent.title}
+              >
+                {editingEvent ? 'Update Event' : 'Create Event'}
+              </button>
             </div>
           </div>
         </div>
-      )}
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };
