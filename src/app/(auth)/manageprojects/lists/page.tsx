@@ -271,7 +271,7 @@ const TaskList: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-[rgba(0,0,0,0.4)] bg-opacity-40">
+    <div className="flex h-screen bg-white">
       {/* Main Task List */}
       <div className="flex-1 overflow-auto p-6">
         <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
