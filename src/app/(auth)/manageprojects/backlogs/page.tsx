@@ -20,7 +20,6 @@ import {
   GanttChart,
   ChevronRight
 } from 'lucide-react';
-
 type BacklogStatus = 'backlog' | 'todo' | 'in-progress' | 'completed';
 type Priority = 'high' | 'medium' | 'low';
 type TaskType = 'feature' | 'bug' | 'chore' | 'research';
