@@ -70,6 +70,7 @@ import AuthGuard from "@/app/components/AuthGuard";
 import Link from "next/link";
 import IssuesManagement from "./issues/page";
 import SummaryComponent from "./summary/page";
+import Timeline from "./timeline/page";
 import ProjectSettings from "./settings/page";
 interface Task {
   id: string;
@@ -1136,140 +1137,7 @@ const JiraLikeProjectManagement = () => {
         );
       case "timeline":
         return (
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-6 hover:shadow-md transition-all duration-200 transition-all">
-            <h3 className="font-medium mb-3">Project Timeline</h3>
-            <div className="bg-gray-50 rounded-lg overflow-hidden">
-              {/* Timeline Header */}
-              <div className="flex bg-gray-100 border-b border-gray-200">
-                <div className="w-48 p-2 font-medium text-sm text-gray-500 border-r border-gray-200">
-                  Tasks
-                </div>
-                <div className="flex-1 flex">
-                  {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
-                    (day) => (
-                      <div
-                        key={day}
-                        className="flex-1 p-2 text-center text-sm font-medium text-gray-500 border-r border-gray-200 last:border-r-0"
-                      >
-                        {day}{" "}
-                        <span className="block text-xs font-normal">
-                          Jul{" "}
-                          {15 +
-                            [
-                              "Mon",
-                              "Tue",
-                              "Wed",
-                              "Thu",
-                              "Fri",
-                              "Sat",
-                              "Sun",
-                            ].indexOf(day)}
-                        </span>
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-
-              {/* Timeline Rows */}
-              <div className="divide-y divide-gray-200">
-                {/* Task 1 */}
-                <div className="flex h-12 relative">
-                  <div className="w-48 p-2 flex items-center text-sm font-medium border-r border-gray-200">
-                    Research Phase
-                  </div>
-                  <div className="flex-1 flex relative">
-                    <div className="absolute left-1/7 w-2/7 h-8 top-2 bg-blue-100 border border-blue-300 rounded flex items-center justify-center">
-                      <span className="text-xs text-blue-800 px-2 truncate">
-                        Jul 15-17
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Task 2 */}
-                <div className="flex h-12 relative">
-                  <div className="w-48 p-2 flex items-center text-sm font-medium border-r border-gray-200">
-                    Design Mockups
-                  </div>
-                  <div className="flex-1 flex relative">
-                    <div className="absolute left-2/7 w-3/7 h-8 top-2 bg-purple-100 border border-purple-300 rounded flex items-center justify-center">
-                      <span className="text-xs text-purple-800 px-2 truncate">
-                        Jul 17-20
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Task 3 */}
-                <div className="flex h-12 relative">
-                  <div className="w-48 p-2 flex items-center text-sm font-medium border-r border-gray-200">
-                    Development
-                  </div>
-                  <div className="flex-1 flex relative">
-                    <div className="absolute left-3/7 w-3/7 h-8 top-2 bg-green-100 border border-green-300 rounded flex items-center justify-center">
-                      <span className="text-xs text-green-800 px-2 truncate">
-                        Jul 20-23
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Task 4 */}
-                <div className="flex h-12 relative">
-                  <div className="w-48 p-2 flex items-center text-sm font-medium border-r border-gray-200">
-                    Testing
-                  </div>
-                  <div className="flex-1 flex relative">
-                    <div className="absolute left-5/7 w-2/7 h-8 top-2 bg-yellow-100 border border-yellow-300 rounded flex items-center justify-center">
-                      <span className="text-xs text-yellow-800 px-2 truncate">
-                        Jul 23-25
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Timeline Footer */}
-              <div className="bg-gray-50 p-2 border-t border-gray-200 flex justify-between items-center">
-                <button className="text-xs text-gray-500 hover:text-gray-700 flex items-center">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                  Previous Week
-                </button>
-                <span className="text-sm text-gray-600">
-                  Week of July 15 - 21, 2023
-                </span>
-                <button className="text-xs text-gray-500 hover:text-gray-700 flex items-center">
-                  Next Week
-                  <svg
-                    className="w-4 h-4 ml-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
+         <Timeline />
         );
       case "board":
         return (

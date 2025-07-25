@@ -149,6 +149,7 @@ const FlexcraftHomepage = () => {
             >
               Sign up
             </button>
+
           </div>
 
           <button 
@@ -726,7 +727,7 @@ const FlexcraftHomepage = () => {
       </motion.footer>
 
       {/* Login Modal */}
-  {showLoginModal && (
+{showLoginModal && (
   <div className="fixed inset-0 z-50 overflow-y-auto">
     <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
       {/* Background overlay */}
@@ -833,6 +834,29 @@ const FlexcraftHomepage = () => {
               </button>
             </div>
           </form>
+          <div className="mt-4">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              </div>
+            </div>
+            <div className="mt-4">
+              <button
+                className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                // onClick={googleLogin}
+              >
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/480px-Google_%22G%22_logo.svg.png"
+                  className="h-5 w-5"
+                  alt="Google logo"
+                />
+                Sign in with Google
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -971,6 +995,34 @@ const FlexcraftHomepage = () => {
     </button>
             </div>
           </form>
+         
+
+     <div className="mt-5">
+         
+          <div className="mt-4">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              </div>
+            </div>
+            <div className="mt-4">
+              <button
+                className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                // onClick={googleLogin}
+              >
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/480px-Google_%22G%22_logo.svg.png"
+                  className="h-5 w-5"
+                  alt="Google logo"
+                />
+                Sign up with Google
+              </button>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>

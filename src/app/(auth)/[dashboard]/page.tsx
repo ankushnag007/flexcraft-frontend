@@ -368,18 +368,21 @@ const FlexCraftDashboard = () => {
           </select> */}
           
         </div>
-        <div className="flex flex-wrap gap-2 mt-2 justify-center">
-          {themes.map(theme => (
-            <button
-              key={theme.name}
-              className={`shadow-lg w-6 h-6 rounded-full border-2 transition-all duration-150 ${selectedTheme.name === theme.name ? 'border-[var(--theme-accent)] scale-110' : 'border-[var(--theme-primary)]'}`}
-              style={{ background: theme.primary }}
-              title={theme.name}
-              onClick={() => handleThemeChange(theme.name)}
-              aria-label={`Switch to ${theme.name} theme`}
-            />
-          ))}
-        </div>
+       <div className="flex flex-wrap gap-2 mt-2 justify-center">
+  {themes.map(theme => (
+    <button
+      key={theme.name}
+      className={`shadow-lg w-6 h-6 rounded-full border-2 transition-all duration-150 ${selectedTheme.name === theme.name ? 'scale-110' : ''}`}
+      style={{
+        background: theme.primary,
+        borderColor: selectedTheme.name === theme.name ? theme.accent : theme.primary
+      }}
+      title={theme.name}
+      onClick={() => handleThemeChange(theme.name)}
+      aria-label={`Switch to ${theme.name} theme`}
+    />
+  ))}
+</div>
       </div>
     )
   }

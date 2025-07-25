@@ -26,14 +26,14 @@ const navItems = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/manageprojects', icon: FolderKanban, label: 'Projects' },
   { path: '/chat', icon: MessageSquare, label: 'Chat' },
-  // { path: '/email', icon: MailCheck, label: 'Emails' },
-  // { path: '/apiworkspace', icon: Terminal, label: 'API Testing' },
-  // { path: '/github', icon: Github, label: 'GitHub' },
-  // { path: '/aiagent', icon: Bot, label: 'AI-Agent' },
-  // { path: '/deployment', icon: UploadCloud, label: 'Deployment' },
-  // { path: '/integrationsapp', icon: Blocks, label: 'Integrations' },
-  // { path: '/automation', icon: Workflow, label: 'workflow-automation' },
-  // { path: '/flowcharts', icon: PenLine, label: 'Architect' },
+  { path: '/email', icon: MailCheck, label: 'Emails' },
+  { path: '/apiworkspace', icon: Terminal, label: 'API Testing' },
+  { path: '/github', icon: Github, label: 'GitHub' },
+  { path: '/aiagent', icon: Bot, label: 'AI-Agent' },
+  { path: '/deployment', icon: UploadCloud, label: 'Deployment' },
+  { path: '/integrationsapp', icon: Blocks, label: 'Integrations' },
+  { path: '/automation', icon: Workflow, label: 'workflow-automation' },
+  { path: '/flowcharts', icon: PenLine, label: 'Architect' },
 ]
 
 const Header = () => {
