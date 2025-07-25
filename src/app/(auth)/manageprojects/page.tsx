@@ -1120,17 +1120,17 @@ const JiraLikeProjectManagement = () => {
         );
       case "Bugs":
         return <BugTracker />;
-      // case "Docs":
-      //   return (
-      //     <DocEditor
-      //       //  initialDocuments={documents}
-      //       onSave={handleSave}
-      //       onDelete={handleDelete}
-      //       onUploadFile={handleUpload}
-      //       onShareDocument={undefined}
-      //       onAssignToTask={undefined}
-      //     />
-      //   );
+      case "Docs":
+        return (
+          <DocEditor
+            //  initialDocuments={documents}
+            onSave={handleSave}
+            onDelete={handleDelete}
+            onUploadFile={handleUpload}
+            onShareDocument={undefined}
+            onAssignToTask={undefined}
+          />
+        );
       case "summary":
         return (
           <SummaryComponent />

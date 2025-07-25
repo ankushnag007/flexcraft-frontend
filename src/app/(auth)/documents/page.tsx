@@ -784,7 +784,7 @@ export default function DocumentEditor({
 
   // Render
   return (
-    <AuthGuard>
+    // <AuthGuard>
       <div className={`flex flex-col h-full bg-white rounded-lg shadow ${className}`}>
         {/* Toolbar */}
         <div className="border-b p-2 flex items-center justify-between">
@@ -1293,6 +1293,6 @@ export default function DocumentEditor({
           </div>
         )}
       </div>
-    </AuthGuard>
+    // </AuthGuard>
   );
 };
