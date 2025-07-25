@@ -330,7 +330,7 @@ ${description || 'A full-stack application generated with CodeGen AI'}
 ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Documentation\n' : ''}${features.docker ? '- Docker Setup\n' : ''}${features.testing ? '- Testing Framework\n' : ''}${features.ciCd ? '- CI/CD Pipeline\n' : ''}${features.eslint ? '- ESLint Setup\n' : ''}
 
 ## Getting Started
-1. Install dependencies: \`npm install\`
+1. Install dependencies: \`npm install -f\`
 2. Start development server: \`npm start\`
 `
     };
