@@ -26,7 +26,10 @@ import {
   AlertCircle,
   CheckCircle2,
   TrendingUp,
-  AlertTriangle
+  AlertTriangle,
+  Minus,
+  MinusCircle,
+  PlusCircle
 } from 'lucide-react';
 
 // types.ts
@@ -563,13 +566,22 @@ const Goals: React.FC = () => {
                         <div className="flex justify-between items-center mb-3">
                           <div className="flex justify-between items-center mb-3">
                           {/* <h3 className="text-sm font-medium text-gray-900">Sub Goals</h3> */}
-                          <button 
-                            className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
-                            onClick={() => setIsAddingSubGoal(!isAddingSubGoal)}
-                          >
-                            <Plus className="h-4 w-4" />
-                            {isAddingSubGoal ? 'Cancel' : 'Add Sub Goal'}
-                          </button>
+                          <button
+  className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors duration-200"
+  onClick={() => setIsAddingSubGoal(!isAddingSubGoal)}
+>
+  {isAddingSubGoal ? (
+    <>
+      Cancel
+      <MinusCircle className="h-4 w-4" />
+    </>
+  ) : (
+    <>
+      Add Sub Goal
+      <PlusCircle className="h-4 w-4" />
+    </>
+  )}
+</button>
                         </div>
                         
                         {isAddingSubGoal && (
@@ -577,7 +589,7 @@ const Goals: React.FC = () => {
                             <input 
                               type="text" 
                               placeholder="Enter sub goal title"  
-                              className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="flex-1 border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                               value={subGoalTitle}
                               onChange={(e) => setSubGoalTitle(e.target.value)}
                               onKeyDown={(e) => {
@@ -589,7 +601,7 @@ const Goals: React.FC = () => {
                               }}
                             />
                             <button
-                              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                              className="px-2 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                               onClick={() => {
                                 if (subGoalTitle.trim()) {
                                   addSubGoal(selectedGoal.id, subGoalTitle.trim());

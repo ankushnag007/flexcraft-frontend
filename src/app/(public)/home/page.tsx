@@ -17,7 +17,9 @@ import { useRouter } from 'next/navigation';
 // import Demo2 from '../Assets/motiongraphic3.mp4';
 
 import Placeholder from '../../Assets/images/team.png'
-import logo from '../../../Assets/images/logo.png'
+import logo from '../../../Assets/images/headway-high-resolution-logo-grayscale-transparent.png'
+import logo1 from '../../../Assets/images/headway-high-resolution-logo-grayscale-transparent (1).png'
+
 import arrowFrame from '../../../Assets/images/arrow-frame.svg'
 import team from '../../../Assets/images/team.png'
 const FlexcraftHomepage = () => {
@@ -113,7 +115,7 @@ const FlexcraftHomepage = () => {
       <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white overflow-y-hidden">
         <div className="mb-4">
           <div className="rounded-full flex items-center justify-center animate-pulse">
-            <Image src={logo} className='h-6 w-auto' alt="Flexcraft Logo" />
+            <Image src={logo1} className='h-24 w-auto' alt="Flexcraft Logo" />
         {/* <p className="mt-4 text-blue-900 font-bold">Sync in with your team</p> */}
 
           </div>

@@ -225,31 +225,38 @@ const [newTaskLabels, setNewTaskLabels] = useState<string[]>([]);
     <>
       <div className="flex justify-between items-center mb-6">
        
-     <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-gray-800">
-              Website Redesign
-            </h1>
-            <ChevronDown className="w-5 h-5 ml-2 text-gray-500" />
-          </div>
-          <div className="flex items-center mt-2 space-x-4">
-            <span className="text-sm text-gray-600">Project Key: WEB</span>
-            <span className="text-sm text-gray-600">Lead: John Doe</span>
-            <span className="text-sm text-gray-600">Version: 2.0</span>
-          </div>
-        <div className="flex items-center space-x-3">
-          <button className="flex items-center px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-100">
-            <Filter className="w-4 h-4 mr-2" />
-            Filters
-          </button>
-          <button
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            onClick={() => setIsCreatingTask(true)}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create
-          </button>
-        </div>
-      </div>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+  {/* Left side - Title and details */}
+  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+    <div className="flex items-center">
+      <h1 className="text-2xl font-bold text-gray-800">Website Redesign</h1>
+      <ChevronDown className="w-5 h-5 ml-2 text-gray-500" />
+    </div>
+    
+    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+      <span>Project Key: WEB</span>
+      <span>Lead: John Doe</span>
+      <span>Version: 2.0</span>
+    </div>
+  </div>
+
+  {/* Right side - Buttons */}
+  <div className="flex items-center gap-2">
+    <button className="flex items-center px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-100 whitespace-nowrap">
+      <Filter className="w-4 h-4 mr-2" />
+      Filters
+    </button>
+    <button
+      className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 whitespace-nowrap"
+      onClick={() => setIsCreatingTask(true)}
+    >
+      <Plus className="w-4 h-4 mr-2" />
+      Create
+    </button>
+  </div>
+</div>
+</div>
+
 
       {/* View Options */}
       <div className="flex items-center justify-between mb-6 bg-white p-3 rounded-lg border border-gray-200">

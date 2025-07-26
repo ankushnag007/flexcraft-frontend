@@ -4,10 +4,10 @@ import { useEffect } from 'react'
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const isAuthenticated = true // Replace with real check (e.g., localStorage, Zustand, Redux)
+  const isAuthenticated = false // Replace with real check (e.g., localStorage, Zustand, Redux)
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isAuthenticated === false) {
       router.replace('/') // Force redirect
     }
   }, [isAuthenticated, router])

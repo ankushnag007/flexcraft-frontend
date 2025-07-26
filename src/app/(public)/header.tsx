@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import React from 'react'
-import logo from "../../Assets/images/logo.png"
+import logo from "../../Assets/images/headway-high-resolution-logo-grayscale-transparent.png"
 const header = () => {
   return (
     <>
