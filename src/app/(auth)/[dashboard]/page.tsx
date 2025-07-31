@@ -8,14 +8,30 @@ import {
   UserCheck, UserX, RefreshCw, Coffee, Bell, Folder,
   Code2, FileText, Video, CalendarSearch,
   Copy,
-  Link
+  Link,
+  User,
+  ArrowBigLeftDash,
+  ArrowBigLeftDashIcon,
+  ArrowBigRight,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  User2
 } from 'lucide-react';
+
 import logo from '../../../Assets/images/logo.png';
+import morning from '../../../Assets/images/morning.gif';
+import noon from '../../../Assets/images/noon.gif';
+import evening from '../../../Assets/images/night.gif';
+import { useRouter } from "next/navigation";
+
 import user from '../../../Assets/images/user.jpg';
 import Reports from '../manageprojects/reports/page';
 import Projects from '../manageprojects/projects/page';
 import Image from 'next/image';
 import AuthGuard from '@/app/components/AuthGuard';
+import { themes, defaultTheme, Theme } from '@/app/themes';
+import axios from "axios";
+import Drawer from '../manageprojects/Drawer/page';
 
 // TimeDisplay component to avoid hydration error
 function TimeDisplay() {
@@ -30,9 +46,58 @@ function TimeDisplay() {
   return <div className="text-sm text-gray-400">{time}</div>;
 }
 
+type RouteResponse = {
+  routename: string;
+  userId: string;
+};
+
 const FlexCraftDashboard = () => {
+  // THEME STATE
+  const [selectedTheme, setSelectedTheme] = React.useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('flexcraftTheme');
+      if (stored) {
+        const found = themes.find(t => t.name === stored);
+        if (found) return found;
+      }
+    }
+    return defaultTheme;
+  });
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const res = {
+      routename: 'homepage',
+      userId: '123'
+    };
+
+    const { routename } = res;
+
+    if (routename && routename !== 'dashboard') {
+      router.replace(`/${routename}`);
+    }
+  }, [router]);
+
+
+  // Apply theme to :root as CSS variables
+  React.useEffect(() => {
+    const root = document.documentElement;
+    Object.entries(selectedTheme).forEach(([key, value]) => {
+      if (key !== 'name') root.style.setProperty(`--theme-${key}`, value);
+    });
+    localStorage.setItem('flexcraftTheme', selectedTheme.name);
+  }, [selectedTheme]);
+
+  // Theme change handler
+  const handleThemeChange = (themeName: string) => {
+    const theme = themes.find(t => t.name === themeName);
+    if (theme) setSelectedTheme(theme);
+  };
+
   const [timeOfDay, setTimeOfDay] = useState('morning');
   const [currentTime, setCurrentTime] = useState('');
+  const [currentDay, setCurrentDay] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [activePlan, setActivePlan] = useState('pro');
@@ -81,6 +146,7 @@ const FlexCraftDashboard = () => {
       const hours = now.getHours();
       
       setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      setCurrentDay(now.toLocaleString([], { weekday: 'long' }));
       
       if (hours < 12) setTimeOfDay('morning');
       else if (hours < 17) setTimeOfDay('afternoon');
@@ -250,6 +316,76 @@ const FlexCraftDashboard = () => {
   const getFirstDayOfMonth = (year: number, month: number) => {
     return new Date(year, month, 1).getDay();
   };
+
+  const getTimeOfDayImage = () => {
+    switch(timeOfDay) {
+      case 'morning':
+        return morning;
+      case 'afternoon':
+        return noon;
+      default:
+        return evening;
+    }
+  }
+
+  const ThemePicker = () => {
+    const [selectedTheme, setSelectedTheme] = React.useState<Theme>(() => {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('flexcraftTheme')
+        if (stored) {
+          const found = themes.find(t => t.name === stored)
+          if (found) return found
+        }
+      }
+      return defaultTheme
+    })
+  
+    React.useEffect(() => {
+      const root = document.documentElement
+      Object.entries(selectedTheme).forEach(([key, value]) => {
+        if (key !== 'name') root.style.setProperty(`--theme-${key}`, value)
+      })
+      localStorage.setItem('flexcraftTheme', selectedTheme.name)
+    }, [selectedTheme])
+  
+    const handleThemeChange = (themeName: string) => {
+      const theme = themes.find(t => t.name === themeName)
+      if (theme) setSelectedTheme(theme)
+    }
+  
+    return (
+      <div className="w-full flex flex-col items-center var(--theme-background)" >
+        {/* <label className="mb-1 text-xs font-medium text-[var(--theme-text)]">Theme</label> */}
+        <div className="relative w-full var(--theme-background)">
+          {/* <select
+            className="w-full border border-[var(--theme-primary)] rounded px-3 py-1 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={selectedTheme.name}
+            onChange={e => handleThemeChange(e.target.value)}
+          >
+            {themes.map(theme => (
+              <option key={theme.name} value={theme.name}>{theme.name}</option>
+            ))}
+          </select> */}
+          
+        </div>
+       <div className="flex flex-wrap gap-2 mt-2 justify-center">
+  {themes.map(theme => (
+    <button
+      key={theme.name}
+      className={`shadow-lg w-6 h-6 rounded-full border-2 transition-all duration-150 ${selectedTheme.name === theme.name ? 'scale-110' : ''}`}
+      style={{
+        background: theme.primary,
+        borderColor: selectedTheme.name === theme.name ? theme.accent : theme.primary
+      }}
+      title={theme.name}
+      onClick={() => handleThemeChange(theme.name)}
+      aria-label={`Switch to ${theme.name} theme`}
+    />
+  ))}
+</div>
+      </div>
+    )
+  }
 
   const renderCalendarDays = () => {
     const daysInMonth = getDaysInMonth(currentYear, currentMonth);
@@ -532,7 +668,7 @@ const FlexCraftDashboard = () => {
                 <input
                   type="email"
                   id="email"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none   focus:border-blue-500"
                   placeholder="user@example.com"
                   value={newInvite.email}
                   onChange={(e) => setNewInvite({...newInvite, email: e.target.value})}
@@ -546,7 +682,7 @@ const FlexCraftDashboard = () => {
                 </label>
                 <select
                   id="role"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none   focus:border-blue-500"
                   value={newInvite.role}
                   onChange={(e) => setNewInvite({...newInvite, role: e.target.value})}
                 >
@@ -594,7 +730,7 @@ const FlexCraftDashboard = () => {
                 <input
                   type="text"
                   id="roleName"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none   focus:border-blue-500"
                   placeholder="e.g., Content Manager"
                   value={newRole.name}
                   onChange={(e) => setNewRole({...newRole, name: e.target.value})}
@@ -653,99 +789,470 @@ const FlexCraftDashboard = () => {
     </div>
   );
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Close drawer on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isDrawerOpen) {
+        setIsDrawerOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isDrawerOpen]);
+
+  // Prevent body scroll when drawer is open
+  useEffect(() => {
+    if (isDrawerOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isDrawerOpen]);
+
   return (
     <AuthGuard>
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--theme-background)]">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <div className="hidden md:ml-10 md:flex md:space-x-8">
-                <nav className="flex space-x-8">
-                  <a href="#" className={`flex items-center space-x-1.5 ${activeTab === 'profile' ? 'text-blue-600' : 'text-gray-500'} hover:text-gray-700 transition-colors`} onClick={() => setActiveTab('profile')}>
-                    <Folder className="h-4 w-4" />
-                    <span>Profile</span>
-                  </a>
-                  <a href="#" className={`flex items-center space-x-1.5 ${activeTab === 'projects' ? 'text-blue-600' : 'text-gray-500'} hover:text-gray-700 transition-colors`} onClick={() => setActiveTab('projects')}>
-                    <Folder className="h-4 w-4" />
-                    <span>Managed Projects</span>
-                  </a>
-                  <a href="#" className={`flex items-center space-x-1.5 ${activeTab === 'team' ? 'text-blue-600' : 'text-gray-500'} hover:text-gray-700 transition-colors`} onClick={() => setActiveTab('team')}>
-                    <Users className="h-4 w-4" />
-                    <span>Team</span>
-                  </a>
-                  <a href="#" className={`flex items-center space-x-1.5 ${activeTab === 'settings' ? 'text-blue-600' : 'text-gray-500'} hover:text-gray-700 transition-colors`} onClick={() => setActiveTab('settings')}>
-                    <Settings className="h-4 w-4" />
-                    <span>Settings</span>
-                  </a>
-                  <a href="#" className={`flex items-center space-x-1.5 ${activeTab === 'reports' ? 'text-blue-600' : 'text-gray-500'} hover:text-gray-700 transition-colors`} onClick={() => setActiveTab('reports')}>
-                    <FileText className="h-4 w-4" />
-                    <span>Reports</span>
-                  </a>
-                  <a href="#" className={`flex items-center space-x-1.5 ${activeTab === 'meetings' ? 'text-blue-600' : 'text-gray-500'} hover:text-gray-700 transition-colors`} onClick={() => setActiveTab('meetings')}>
-                    <CalendarSearch className="h-4 w-4" />
-                    <span>Schedule Meetings</span>
-                  </a>
-                </nav>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-500 hover:text-gray-700">
-                <Settings className="h-5 w-5" />
-              </button>
-              <button className="p-2 text-gray-500 hover:text-gray-700 relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  3
-                </span>
-              </button>
-              <div className="flex items-center">
-                <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
-                  JD
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 rounded-lg bg-gray-700)">
+  <div className="flex justify-between items-center w-full bg-gray-200 p-2 rounded-lg">
+    {/* Left-aligned navigation */}
+    <nav className="flex space-x-4">
+      <button
+        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+          activeTab === "profile"
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-500 hover:bg-gray-100 hover:text-[var(--theme-textoption)]"
+        } cursor-pointer`}
+        onClick={() => setActiveTab("profile")}
+      >
+        <User className="w-4 h-4 mr-2" />
+        Profile
+      </button>
+      <button className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+          activeTab === "projects"
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-500 hover:bg-gray-100 hover:text-[var(--theme-textoption)]"
+        }`}
+        onClick={() => setActiveTab("projects")}>
+        <Folder className="h-4 w-4 mr-2 cursor-pointer" />
+        <span>Managed Projects</span>
+      </button>
+      <button className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+          activeTab === "team"
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+        } cursor-pointer`}
+        onClick={() => setActiveTab("team")}>
+        <Users className="h-4 w-4 mr-2" />
+        <span>Team</span>
+      </button>
+      <button className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+          activeTab === "settings"
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+        } cursor-pointer`}
+        onClick={() => setActiveTab("settings")}>
+        <Settings className="h-4 w-4 mr-2" />
+        <span>Settings</span>
+      </button>
+      <button className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+          activeTab === "reports"
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+        } cursor-pointer`}
+        onClick={() => setActiveTab("reports")}>
+        <FileText className="h-4 w-4 mr-2" />
+        <span>Reports</span>
+      </button>
+      <button className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+          activeTab === "meetings"
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+        } cursor-pointer`}
+        onClick={() => setActiveTab("meetings")}>
+        <CalendarSearch className="h-4 w-4 mr-2" />
+        <span>Schedule Meetings</span>
+      </button>
+    </nav>
+
+    {/* Right-aligned user controls */}
+    <div className="flex items-center space-x-4">
+      <button className="p-2 text-gray-500 hover:text-gray-700">
+        <Settings className="h-5 w-5" />
+      </button>
+      <button className="p-2 text-gray-500 hover:text-gray-700 relative">
+        <Bell className="h-5 w-5" />
+        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+          3
+        </span>
+      </button>
+      <div className="flex items-center cursor-pointer" onClick={() => setIsDrawerOpen(true)}>
+        <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
+          JD
         </div>
-      </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-[var(--theme-background)]" >
+      <div className="bg-[var(--theme-background)]">
+  
+
+      {/* Drawer Overlay - only shown when drawer is open */}
+    
+
+      {/* Drawer Component - slides in from right */}
+      <div 
+        className={`border-l-2 shadow-2xl border-white fixed top-0 right-0 h-full w-2/4 bg-[var(--theme-background)]  z-50 transition-transform duration-300 ease-in-out ${
+          isDrawerOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+      <div className="flex flex-row items-center justify-between p-4 border-b bg-[var(--theme-background)]">
+  <div className="flex items-center gap-2">
+    <ThemePicker />
+  </div>
+  <div className="flex items-center justify-between p-4 border-b bg-[var(--theme-background)]">
+  <div className="flex items-center gap-2">
+    <h1 className="text-lg font-medium">Hey, Ankush</h1>
+    <User2 className="h-5 w-5 text-gray-600" />
+  </div>
+  <button
+    onClick={() => setIsDrawerOpen(false)}
+    className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+    aria-label="Close drawer"
+  >
+    <ArrowRightIcon className="h-5 w-5 text-gray-600" />
+  </button>
+</div>
+</div>
+        
+     <Drawer />
+      </div>
+    </div>
         {activeTab === 'profile' && (
-          <div className="space-y-8">
+          <div className="space-y-8 bg-[var(--theme-background)]">
+
+            {/* Global Theme Picker */}
+            {/* <div className="flex items-center justify-end mb-4">
+              <label className="mr-2 text-sm font-medium text-gray-700">Theme:</label>
+              <select
+                className="border rounded px-3 py-1 text-sm"
+                value={selectedTheme.name}
+                onChange={e => handleThemeChange(e.target.value)}
+              >
+                {themes.map(theme => (
+                  <option key={theme.name} value={theme.name}>{theme.name}</option>
+                ))}
+              </select>
+            </div> */}
+
             {/* Dashboard Header */}
-            <div className={`${styles.bg} p-6 rounded-xl shadow-sm`}>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-4">
-                  <Image alt="user" src={user} className='h-24 w-24 rounded-full'/>
+            <div className={`p-6 rounded-xl shadow-sm ${styles.bg}`}>
+  <div className="flex justify-between items-center">
+    <div className="flex items-center space-x-4">
+      <Image alt="user" src={user} className='h-24 w-24 rounded-full'/>
+      <div className="flex-1">
+        <h1 className={`text-2xl font-bold ${styles.text}`}>Hello, Alex</h1>
+        <div className="flex items-center space-x-2">
+          <div className={`p-3 rounded-full ${styles.bg} shadow-inner`}>
+            {styles.icon}
+          </div>
+          <p className={`font-medium ${styles.text}`}>{styles.greeting}</p>
+          <span className="text-sm text-gray-500">• {currentTime}</span>
+          <span className="text-sm text-gray-500 font-bold">• {currentDay}</span>
+        </div>
+      </div>
+    </div>
+    <p className={`font-medium ${styles.text}`}>Your free trial ends in 14 days</p>
+  </div>
+</div>
+
+            {/* Profile Details Section */}
+            <div className="bg-white rounded-xl shadow p-6 flex flex-col md:flex-row gap-8 items-start" >
+              <div className="flex-1 space-y-4" >
+                <div className="flex items-center justify-between">
+                  <div className="text-black">
+                    <h2 className="text-lg font-semibold">Profile Details</h2>
+                    <p className="text-gray-500 text-sm">Manage your personal information</p>
+                  </div>
+                  <button className="flex items-center text-blue-600 hover:text-blue-800 px-3 py-1 rounded transition-colors">
+                    <Edit className="h-4 w-4 mr-1" /> Edit
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                   <div>
-                    <h1 className={`text-2xl font-bold ${styles.text}`}>Hello, Alex</h1>
-                    <div className="flex items-center space-x-2">
-                      <div className={`p-3 rounded-full ${styles.bg} shadow-inner`}>
-                        {styles.icon}
-                      </div>
-                      <p className={`font-medium ${styles.text}`}>{styles.greeting}</p>
-                      <span className="text-sm text-gray-500">• {currentTime}</span>
+                    <label className="text-xs text-gray-500">Full Name</label>
+                    <div className="font-medium">Alex Johnson</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Email</label>
+                    <div className="flex items-center">
+                      <span className="font-medium">alex.johnson@example.com</span>
+                      <button className="ml-2 text-blue-500 hover:underline text-xs">Edit</button>
                     </div>
                   </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Role</label>
+                    <div className="font-medium">Super Admin</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Joined</label>
+                    <div className="font-medium">Jan 10, 2022</div>
+                  </div>
                 </div>
-                <div className="flex space-x-3">
-                  <button className={`flex items-center px-4 py-2 rounded-lg transition-all 
-                    ${timeOfDay === 'morning' ? 'bg-amber-500 hover:bg-amber-600' : 
-                      timeOfDay === 'afternoon' ? 'bg-sky-500 hover:bg-sky-600' : 
-                      'bg-indigo-500 hover:bg-indigo-600'} 
-                    text-white shadow-md hover:shadow-lg`}>
-                    <Zap className="h-4 w-4 mr-2" />
-                    Quick Action
+              </div>
+              <div className="flex-1 space-y-4" >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold">More Info</h2>
+                    <p className="text-gray-500 text-sm">Budget & Team Overview</p>
+                  </div>
+                  <button className="flex items-center text-blue-600 hover:text-blue-800 px-3 py-1 rounded transition-colors">
+                    <Edit className="h-4 w-4 mr-1" /> Edit
                   </button>
-                  <button className={`flex items-center px-3 py-2 rounded-lg transition-all 
-                    ${timeOfDay === 'morning' ? 'bg-amber-100 hover:bg-amber-200 text-amber-700' : 
-                      timeOfDay === 'afternoon' ? 'bg-sky-100 hover:bg-sky-200 text-sky-700' : 
-                      'bg-indigo-100 hover:bg-indigo-200 text-indigo-700'}`}>
-                    <Plus className="h-4 w-4 mr-1" />
-                    New
-                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  <div>
+                    <label className="text-xs text-gray-500">Annual Budget</label>
+                    <div className="font-medium">$120,000</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Spent</label>
+                    <div className="font-medium">$78,500</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Team Size</label>
+                    <div className="font-medium">12 Members</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Active Projects</label>
+                    <div className="font-medium">5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Security & Access */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h2 className="text-lg font-semibold mb-2">Security & Access</h2>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Two-Factor Authentication</span>
+                    <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">Enabled</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Last Login</span>
+                    <span className="text-gray-800">2025-07-13 17:45 (Delhi, India)</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">API Keys</span>
+                    <button className="text-blue-600 hover:underline text-xs">Manage Keys</button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Recent Security Events</span>
+                    <button className="text-blue-600 hover:underline text-xs">View Log</button>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold mb-2">Organization Management</h2>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Organization Name</span>
+                    <span className="font-medium">Flexcraft Inc.</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Org ID</span>
+                    <span className="font-mono text-xs">fc-00123</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Invite Code</span>
+                    <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">JOIN-2025</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Manage Users</span>
+                    <button className="text-blue-600 hover:underline text-xs">Go to User Management</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Billing Overview */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8">
+              <h2 className="text-lg font-semibold mb-2">Billing & Subscription</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs text-gray-500">Current Plan</label>
+                  <div className="font-medium">Pro Annual</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">Renewal Date</label>
+                  <div className="font-medium">2026-01-01</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">Payment Method</label>
+                  <div className="font-medium">Visa **** 1234</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">Invoices</label>
+                  <button className="text-blue-600 hover:underline text-xs">Download Latest</button>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">Billing Contact</label>
+                  <div className="font-medium">billing@flexcraft.com</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Recent Admin Actions */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8">
+              <h2 className="text-lg font-semibold mb-2">Recent Admin Actions</h2>
+              <ul className="divide-y">
+                <li className="py-2 flex items-center justify-between">
+                  <span className="text-gray-700">Invited user <b>samuel@company.com</b></span>
+                  <span className="text-xs text-gray-500">2 hours ago</span>
+                </li>
+                <li className="py-2 flex items-center justify-between">
+                  <span className="text-gray-700">Changed role for <b>jane@example.com</b> to Developer</span>
+                  <span className="text-xs text-gray-500">Yesterday</span>
+                </li>
+                <li className="py-2 flex items-center justify-between">
+                  <span className="text-gray-700">Updated billing info</span>
+                  <span className="text-xs text-gray-500">3 days ago</span>
+                </li>
+                <li className="py-2 flex items-center justify-between">
+                  <span className="text-gray-700">Revoked API key</span>
+                  <span className="text-xs text-gray-500">Last week</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Super Admin: System Health & Status */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8" >
+              <h2 className="text-lg font-semibold mb-2">System Health & Status</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">API</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">Online</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Database</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">Online</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Storage</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">Online</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Worker</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-yellow-100 text-yellow-700">Degraded</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Uptime</span>
+                  <span className="font-medium">99.98%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Last Outage</span>
+                  <span className="font-medium">2025-07-10 09:13</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Notifications & Preferences */}
+            <div className="bg-[var(--theme-background)] rounded-xl shadow p-6 mt-8" >
+              <h2 className="text-lg font-semibold mb-2">Notifications & Preferences</h2>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Email Notifications</span>
+                  <input type="checkbox" checked readOnly className="form-checkbox h-4 w-4 text-blue-600" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">SMS Alerts</span>
+                  <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Critical System Alerts</span>
+                  <input type="checkbox" checked readOnly className="form-checkbox h-4 w-4 text-blue-600" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Maintenance Announcements</span>
+                  <input type="checkbox" checked readOnly className="form-checkbox h-4 w-4 text-blue-600" />
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Integrations & Connected Apps */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8">
+              <h2 className="text-lg font-semibold mb-2">Integrations & Connected Apps</h2>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Slack</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">Connected</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">GitHub</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">Connected</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Zapier</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-gray-200 text-gray-500">Not Connected</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Add Integration</span>
+                  <button className="text-blue-600 hover:underline text-xs">Connect New App</button>
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Usage Analytics */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8">
+              <h2 className="text-lg font-semibold mb-2">Usage Analytics</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="text-xs text-gray-500">Active Users (30d)</label>
+                  <div className="font-medium">87</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">API Calls (30d)</label>
+                  <div className="font-medium">14,230</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">Storage Used</label>
+                  <div className="font-medium">32 GB</div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500">Most Active Team</label>
+                  <div className="font-medium">Frontend Devs</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Super Admin: Support & Help */}
+            <div className="bg-white rounded-xl shadow p-6 mt-8">
+              <h2 className="text-lg font-semibold mb-2">Support & Help</h2>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Contact Support</span>
+                  <button className="text-blue-600 hover:underline text-xs">Start Chat</button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Documentation</span>
+                  <a href="#" className="text-blue-600 hover:underline text-xs">View Docs</a>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">API Reference</span>
+                  <a href="#" className="text-blue-600 hover:underline text-xs">API Docs</a>
                 </div>
               </div>
             </div>
@@ -760,7 +1267,7 @@ const FlexCraftDashboard = () => {
                       <p className="text-2xl font-bold mt-1">{metric.value}</p>
                       <p className="text-xs text-gray-400 mt-1">Limit: {metric.limit}</p>
                     </div>
-                    <div className={`p-3 rounded-full ${metric.color} bg-opacity-20`}>
+                    <div className={`p-3 rounded-full ${metric.color} bg-opacity-2`}>
                       <metric.icon className="h-6 w-6" />
                     </div>
                   </div>
@@ -769,7 +1276,7 @@ const FlexCraftDashboard = () => {
             </div>
 
             {/* Current Plan */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            {/* <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className="p-6">
                 <h2 className="text-lg font-semibold mb-4">Your Current Plan</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -806,10 +1313,10 @@ const FlexCraftDashboard = () => {
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Recent Activity */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            {/* <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className="p-6 border-b">
                 <h2 className="text-lg font-semibold">Recent Activity</h2>
               </div>
@@ -829,10 +1336,13 @@ const FlexCraftDashboard = () => {
                   </div>
                 ))}
               </div>
+            </div> */}
+            <div>
+              
             </div>
 
             {/* Video Tutorial */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            {/* <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className="p-6 border-b">
                 <div className="flex justify-between items-center">
                   <h2 className="text-lg font-semibold">Getting Started</h2>
@@ -877,7 +1387,7 @@ const FlexCraftDashboard = () => {
                   <p className="text-sm text-gray-500 mt-1">Learn how to get started with our platform</p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         )}
 
@@ -912,7 +1422,7 @@ const FlexCraftDashboard = () => {
                   <input
                     type="text"
                     placeholder="Search team members..."
-                    className="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none   focus:border-blue-500"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -921,7 +1431,7 @@ const FlexCraftDashboard = () => {
                   <div className="flex items-center">
                     <Filter className="h-4 w-4 text-gray-500 mr-2" />
                     <select
-                      className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="border rounded-lg px-3 py-2 focus:outline-none   focus:border-blue-500"
                       value={selectedRoleFilter}
                       onChange={(e) => setSelectedRoleFilter(e.target.value)}
                     >
@@ -941,16 +1451,16 @@ const FlexCraftDashboard = () => {
 
             {/* Team Members Table */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="p-4 border-b">
+              <div className="p-4  shadow-sm">
                 <h2 className="font-semibold flex items-center">
                   <Users className="h-5 w-5 mr-2 text-blue-600" />
                   Team Members ({filteredTeamMembers.length})
                 </h2>
               </div>
-              <div className="divide-y">
+              <div className="">
                 {filteredTeamMembers.length > 0 ? (
                   filteredTeamMembers.map(member => (
-                    <div key={member.id} className="p-4 hover:bg-gray-50">
+                    <div key={member.id} className="p-4 hover:bg-gray-50 shadow-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
@@ -995,7 +1505,7 @@ const FlexCraftDashboard = () => {
                                 <select
                                   value={member.role}
                                   onChange={(e) => updateUserRole(member.id, e.target.value)}
-                                  className="border rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                  className="border rounded-lg px-2 py-1 text-sm focus:outline-none   focus:border-blue-500"
                                 >
                                   {roles.map(role => (
                                     <option key={role.id} value={role.name}>{role.name}</option>
@@ -1060,16 +1570,16 @@ const FlexCraftDashboard = () => {
 
             {/* Pending Invitations */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="p-4 border-b">
+              <div className="p-4 ">
                 <h2 className="font-semibold flex items-center">
                   <Mail className="h-5 w-5 mr-2 text-yellow-600" />
                   Pending Invitations ({filteredInvitations.length})
                 </h2>
               </div>
-              <div className="divide-y">
+              <div className="shadow-sm">
                 {filteredInvitations.length > 0 ? (
                   filteredInvitations.map(invite => (
-                    <div key={invite.id} className="p-4 hover:bg-gray-50">
+                    <div key={invite.id} className="p-4 hover:bg-gray-50 shadow-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
@@ -1114,16 +1624,249 @@ const FlexCraftDashboard = () => {
             </div>
 
             {/* Roles and Permissions */}
+           
+          </div>
+        )}
+
+        {activeTab === 'meetings' && (
+          <div className="rounded-lg shadow-sm p-6 bg-[var(--theme-background)]">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold flex items-center text-[var(--theme-text)]">
+                <CalendarSearch className="h-5 w-5 mr-2 text-blue-600" />
+                Schedule Meetings
+              </h2>
+              <button 
+                onClick={() => setShowForm(!showForm)}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Schedule New Meeting
+              </button>
+            </div>
+
+            {showForm && (
+              <div className="bg-blue-50 rounded-lg p-6 mb-8 transition-all duration-300">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Date Picker */}
+                  <div className="bg-white rounded-lg shadow-sm p-4">
+                    <h3 className="font-medium mb-3 flex items-center text-[var(--theme-textoption)]">
+                      <CalendarSearch className="h-4 w-4 mr-2 text-blue-500" />
+                      Select Date
+                    </h3>
+                    <div className="flex justify-center">
+                      <input 
+                        type="date"
+                        value={selectedDate.toISOString().split('T')[0]}
+                        onChange={(e) => setSelectedDate(new Date(e.target.value))}
+                        className="w-full p-2 border rounded-lg   focus:border-blue-500 text-[var(--theme-textoption)]"
+                        min={new Date().toISOString().split('T')[0]}
+                      />
+                    </div>
+                    <div className="mt-4 text-center">
+                      <p className="text-lg font-semibold text-[var(--theme-textoption)]">
+                        {selectedDate.toLocaleDateString([], { 
+                          weekday: 'long', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })}
+                      </p>
+                      <p className="text-[var(--theme-textoption)]">
+                        {selectedDate.toLocaleDateString([], { year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Time Slots */}
+                  <div className="bg-white rounded-lg shadow-sm p-4">
+                    <h3 className="font-medium mb-3 flex items-center text-[var(--theme-textoption)]">
+                      <Clock className="h-4 w-4 mr-2 text-blue-500" />
+                      Available Time Slots
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
+                      {availableSlots.map((slot, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedSlot(slot)}
+                          className={`p-2 border rounded-lg text-center text-[var(--theme-textoption)] shadow-sm border-none ${
+                            selectedSlot?.time === slot.time 
+                              ? 'bg-blue-100 border-blue-500 text-blue-700' 
+                              : 'hover:bg-gray-50'
+                          }`}
+                        >
+                          {slot.formattedTime}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Meeting Details Form */}
+                  <div className="bg-white rounded-lg shadow-sm p-4">
+                    <h3 className="font-medium mb-3 flex items-center">
+                      Meeting Details
+                    </h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Meeting Title</label>
+                        <input
+                          type="text"
+                          value={meetingTitle}
+                          onChange={(e) => setMeetingTitle(e.target.value)}
+                          placeholder="Team Sync, Client Meeting, etc."
+                          className="w-full p-2 border rounded-lg   focus:border-blue-500 text-[var(--theme-textoption)] shadow-sm border-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">Description (Optional)</label>
+                        <textarea
+                          value={meetingDescription}
+                          onChange={(e) => setMeetingDescription(e.target.value)}
+                          placeholder="Meeting agenda or notes"
+                          className="w-full p-2 border rounded-lg   focus:border-blue-500 h-24 text-[var(--theme-textoption)] shadow-sm border-none"
+                        />
+                      </div>
+                      <div className="pt-2">
+                        <button
+                          onClick={handleScheduleMeeting}
+                          disabled={!selectedSlot || !meetingTitle}
+                          className={`w-full px-4 py-2 rounded-lg ${
+                            !selectedSlot || !meetingTitle
+                              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                              : 'bg-blue-600 text-white hover:bg-blue-700'
+                          }`}
+                        >
+                          Schedule Meeting
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Calendar View */}
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium">Calendar</h3>
+                <div className="flex space-x-2">
+                  <button 
+                    className="px-3 py-1 border rounded-lg text-sm hover:bg-gray-50"
+                    onClick={() => changeMonth('prev')}
+                  >
+                    Previous
+                  </button>
+                  <div className="px-4 py-1 bg-blue-100 text-blue-700 rounded-lg font-medium">
+                    {getMonthName(currentMonth)} {currentYear}
+                  </div>
+                  <button 
+                    className="px-3 py-1 border rounded-lg text-sm hover:bg-gray-50"
+                    onClick={() => changeMonth('next')}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-7 gap-0 border border-gray-200 rounded-lg overflow-hidden">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="bg-gray-100 p-2 text-center font-medium text-[var(--theme-textoption)]">
+                    {day}
+                  </div>
+                ))}
+                {renderCalendarDays()}
+              </div>
+            </div>
+
+            {/* Selected Date Meetings */}
+            <div>
+              <h3 className="text-lg font-medium mb-4">
+                Meetings on {formatDateHeader(selectedDate)}
+              </h3>
+              
+              {filteredMeetings.length === 0 ? (
+                <div className="bg-gray-50 rounded-lg p-8 text-center">
+                  <Video className="h-12 w-12 mx-auto text-gray-400" />
+                  <p className="mt-4 text-[var(--theme-textoption)]">No meetings scheduled for this date</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredMeetings.map((meeting) => (
+                    <div 
+                      key={meeting.id} 
+                      className="border rounded-lg p-4 hover:bg-[var(--theme-background)] transition-colors"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="font-medium">{meeting.title}</div>
+                          <div className="flex items-center mt-1 text-sm text-gray-500">
+                            <Clock className="h-4 w-4 mr-1" />
+                            {meeting.formattedTime}
+                          </div>
+                          {meeting.description && (
+                            <p className="mt-2 text-gray-600 text-sm">{meeting.description}</p>
+                          )}
+                        </div>
+                        
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => copyToClipboard(meeting.link, meeting.id)}
+                            className="flex items-center px-3 py-1 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 text-[var(--theme-textoption)]"
+                          >
+                            {copiedLink === meeting.id ? (
+                              <Check className="h-4 w-4 mr-1 text-green-500" />
+                            ) : (
+                              <Copy className="h-4 w-4 mr-1" />
+                            )}
+                            Copy Link
+                          </button>
+                          <button
+                            onClick={() => deleteMeeting(meeting.id)}
+                            className="flex items-center px-3 py-1 bg-red-50 text-red-600 rounded-lg text-sm hover:bg-red-100"
+                          >
+                            <Trash className="h-4 w-4 mr-1" />
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-3 pt-3 border-t">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center text-sm">
+                            <Link className="h-4 w-4 mr-1 text-blue-500" />
+                            <span className="text-blue-600 font-medium">Meeting Link:</span>
+                          </div>
+                          <a
+                            href={meeting.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 text-sm hover:underline truncate max-w-xs"
+                          >
+                            {meeting.link}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'reports' && <Reports />}
+        {activeTab === 'projects' && <Projects />}
+        {activeTab === 'settings' && (
+          <div className="space-y-8">
+            {/* Roles and Permissions in Settings */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="p-4 border-b">
+              <div className="p-4 shadow-sm">
                 <h2 className="font-semibold flex items-center">
                   <Lock className="h-5 w-5 mr-2 text-purple-600" />
                   Roles and Permissions ({roles.length})
                 </h2>
               </div>
-              <div className="divide-y">
+              <div className="">
                 {roles.map(role => (
-                  <div key={role.id} className="p-4 hover:bg-gray-50">
+                  <div key={role.id} className="p-4 hover:bg-gray-50 shadow-sm">
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="font-bold">{role.name}</div>
@@ -1172,233 +1915,6 @@ const FlexCraftDashboard = () => {
             </div>
           </div>
         )}
-
-        {activeTab === 'meetings' && (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold flex items-center">
-                <CalendarSearch className="h-5 w-5 mr-2 text-blue-600" />
-                Schedule Meetings
-              </h2>
-              <button 
-                onClick={() => setShowForm(!showForm)}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Schedule New Meeting
-              </button>
-            </div>
-
-            {showForm && (
-              <div className="bg-blue-50 rounded-lg p-6 mb-8 transition-all duration-300">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Date Picker */}
-                  <div className="bg-white rounded-lg shadow-sm p-4">
-                    <h3 className="font-medium mb-3 flex items-center">
-                      <CalendarSearch className="h-4 w-4 mr-2 text-blue-500" />
-                      Select Date
-                    </h3>
-                    <div className="flex justify-center">
-                      <input 
-                        type="date"
-                        value={selectedDate.toISOString().split('T')[0]}
-                        onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        min={new Date().toISOString().split('T')[0]}
-                      />
-                    </div>
-                    <div className="mt-4 text-center">
-                      <p className="text-lg font-semibold">
-                        {selectedDate.toLocaleDateString([], { 
-                          weekday: 'long', 
-                          month: 'long', 
-                          day: 'numeric' 
-                        })}
-                      </p>
-                      <p className="text-gray-500">
-                        {selectedDate.toLocaleDateString([], { year: 'numeric' })}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Time Slots */}
-                  <div className="bg-white rounded-lg shadow-sm p-4">
-                    <h3 className="font-medium mb-3 flex items-center">
-                      <Clock className="h-4 w-4 mr-2 text-blue-500" />
-                      Available Time Slots
-                    </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
-                      {availableSlots.map((slot, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setSelectedSlot(slot)}
-                          className={`p-2 border rounded-lg text-center ${
-                            selectedSlot?.time === slot.time 
-                              ? 'bg-blue-100 border-blue-500 text-blue-700' 
-                              : 'hover:bg-gray-50'
-                          }`}
-                        >
-                          {slot.formattedTime}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Meeting Details Form */}
-                  <div className="bg-white rounded-lg shadow-sm p-4">
-                    <h3 className="font-medium mb-3 flex items-center">
-                      Meeting Details
-                    </h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm text-gray-600 mb-1">Meeting Title</label>
-                        <input
-                          type="text"
-                          value={meetingTitle}
-                          onChange={(e) => setMeetingTitle(e.target.value)}
-                          placeholder="Team Sync, Client Meeting, etc."
-                          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm text-gray-600 mb-1">Description (Optional)</label>
-                        <textarea
-                          value={meetingDescription}
-                          onChange={(e) => setMeetingDescription(e.target.value)}
-                          placeholder="Meeting agenda or notes"
-                          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-24"
-                        />
-                      </div>
-                      <div className="pt-2">
-                        <button
-                          onClick={handleScheduleMeeting}
-                          disabled={!selectedSlot || !meetingTitle}
-                          className={`w-full px-4 py-2 rounded-lg ${
-                            !selectedSlot || !meetingTitle
-                              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                              : 'bg-blue-600 text-white hover:bg-blue-700'
-                          }`}
-                        >
-                          Schedule Meeting
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Calendar View */}
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Calendar</h3>
-                <div className="flex space-x-2">
-                  <button 
-                    className="px-3 py-1 border rounded-lg text-sm hover:bg-gray-50"
-                    onClick={() => changeMonth('prev')}
-                  >
-                    Previous
-                  </button>
-                  <div className="px-4 py-1 bg-blue-100 text-blue-700 rounded-lg font-medium">
-                    {getMonthName(currentMonth)} {currentYear}
-                  </div>
-                  <button 
-                    className="px-3 py-1 border rounded-lg text-sm hover:bg-gray-50"
-                    onClick={() => changeMonth('next')}
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-7 gap-0 border border-gray-200 rounded-lg overflow-hidden">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <div key={day} className="bg-gray-100 p-2 text-center text-gray-700 font-medium">
-                    {day}
-                  </div>
-                ))}
-                {renderCalendarDays()}
-              </div>
-            </div>
-
-            {/* Selected Date Meetings */}
-            <div>
-              <h3 className="text-lg font-medium mb-4">
-                Meetings on {formatDateHeader(selectedDate)}
-              </h3>
-              
-              {filteredMeetings.length === 0 ? (
-                <div className="bg-gray-50 rounded-lg p-8 text-center">
-                  <Video className="h-12 w-12 mx-auto text-gray-400" />
-                  <p className="mt-4 text-gray-500">No meetings scheduled for this date</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {filteredMeetings.map((meeting) => (
-                    <div 
-                      key={meeting.id} 
-                      className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="font-medium">{meeting.title}</div>
-                          <div className="flex items-center mt-1 text-sm text-gray-500">
-                            <Clock className="h-4 w-4 mr-1" />
-                            {meeting.formattedTime}
-                          </div>
-                          {meeting.description && (
-                            <p className="mt-2 text-gray-600 text-sm">{meeting.description}</p>
-                          )}
-                        </div>
-                        
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => copyToClipboard(meeting.link, meeting.id)}
-                            className="flex items-center px-3 py-1 bg-gray-100 rounded-lg text-sm hover:bg-gray-200"
-                          >
-                            {copiedLink === meeting.id ? (
-                              <Check className="h-4 w-4 mr-1 text-green-500" />
-                            ) : (
-                              <Copy className="h-4 w-4 mr-1" />
-                            )}
-                            Copy Link
-                          </button>
-                          <button
-                            onClick={() => deleteMeeting(meeting.id)}
-                            className="flex items-center px-3 py-1 bg-red-50 text-red-600 rounded-lg text-sm hover:bg-red-100"
-                          >
-                            <Trash className="h-4 w-4 mr-1" />
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-3 pt-3 border-t">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center text-sm">
-                            <Link className="h-4 w-4 mr-1 text-blue-500" />
-                            <span className="text-blue-600 font-medium">Meeting Link:</span>
-                          </div>
-                          <a
-                            href={meeting.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 text-sm hover:underline truncate max-w-xs"
-                          >
-                            {meeting.link}
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'reports' && <Reports />}
-        {activeTab === 'projects' && <Projects />}
       </div>
 
       {/* Modals */}

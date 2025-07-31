@@ -338,7 +338,7 @@ const Chat = () => {
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder={`Message #${activeChannel}`}
-              className="w-full pl-12 pr-16 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-12 pr-16 py-3 border rounded-lg focus:outline-none  "
             />
             
             <div className="absolute right-3 top-3 flex space-x-2">

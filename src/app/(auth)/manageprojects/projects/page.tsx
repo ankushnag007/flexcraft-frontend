@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Users, 
   Calendar, 
@@ -38,13 +38,33 @@ interface Project {
   spent: number;
   manager: string;
 }
+import { themes, defaultTheme, Theme } from '@/app/themes';
+
 
 const ProjectsDashboard = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filter, setFilter] = useState<'all' | 'on-track' | 'at-risk' | 'delayed'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedProject, setExpandedProject] = useState<string | null>(null);
+    const [selectedTheme, setSelectedTheme] = React.useState<Theme>(() => {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('flexcraftTheme');
+        if (stored) {
+          const found = themes.find(t => t.name === stored);
+          if (found) return found;
+        }
+      }
+      return defaultTheme;
+    });
   
+    // Apply theme to :root as CSS variables
+    React.useEffect(() => {
+      const root = document.documentElement;
+      Object.entries(selectedTheme).forEach(([key, value]) => {
+        if (key !== 'name') root.style.setProperty(`--theme-${key}`, value);
+      });
+      localStorage.setItem('flexcraftTheme', selectedTheme.name);
+    }, [selectedTheme]);
   // Sample data - replace with API calls
   const [projects] = useState<Project[]>([
     {
@@ -145,13 +165,13 @@ const ProjectsDashboard = () => {
 
   return (
     <AuthGuard>
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[var(--theme-background)] p-6 var(--theme-background)">
+      <div className="max-w-7xl mx-auto var(--theme-background)">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 var(--theme-background)">
           <div>
             <h1 className="text-xl font-bold text-blue-500">Project Portfolio</h1>
-            <p className="text-gray-600 text-sm">Manage and track all your active projects</p>
+            {/* <p className="text-gray-600 text-sm">Manage and track all   active projects</p> */}
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -162,13 +182,13 @@ const ProjectsDashboard = () => {
               <input
                 type="text"
                 placeholder="Search projects..."
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="block w-full pl-10 pr-3 py-2  border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none   focus:border-blue-500 sm:text-sm"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             
-            <div className="flex items-center space-x-2 bg-white border rounded-md ">
+            <div className="flex items-center space-x-2 bg-white ">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-600'}`}
@@ -184,7 +204,6 @@ const ProjectsDashboard = () => {
                 <List className="w-5 h-5" />
               </button>
             </div>
-            
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Filter className="h-5 w-5 text-gray-400" />
@@ -192,7 +211,7 @@ const ProjectsDashboard = () => {
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value as any)}
-                className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none   focus:border-blue-500 sm:text-sm"
               >
                 <option value="all">All Projects</option>
                 <option value="on-track">On Track</option>
@@ -201,7 +220,8 @@ const ProjectsDashboard = () => {
               </select>
             </div>
             
-            <button className="flex items-center justify-center px-4 py-2 rounded-md shadow-sm text-sm font-medium text-white bg-white hover:bg-blue-700 text-black hover:text-white animate-pulse ">
+            
+            <button className="flex items-center justify-center px-4 py-2 rounded-md shadow-sm text-sm font-medium text-black bg-white hover:bg-blue-700 text-black hover:text-white animate-pulse ">
               <Plus className="w-5 h-5 mr-2" />
               New Project
             </button>
@@ -209,8 +229,8 @@ const ProjectsDashboard = () => {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 var(--theme-background)">
+          <div className="bg-white p-4 rounded-lg shadow-sm var(--theme-background)">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Total Projects</p>
@@ -222,7 +242,7 @@ const ProjectsDashboard = () => {
             </div>
           </div>
           
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
+          <div className="bg-white p-4 rounded-lg shadow-sm ">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">On Track</p>
@@ -236,7 +256,7 @@ const ProjectsDashboard = () => {
             </div>
           </div>
           
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
+          <div className="bg-white p-4 rounded-lg shadow-sm ">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">At Risk</p>
@@ -250,7 +270,7 @@ const ProjectsDashboard = () => {
             </div>
           </div>
           
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
+          <div className="bg-white p-4 rounded-lg shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Delayed</p>
@@ -269,7 +289,7 @@ const ProjectsDashboard = () => {
         {viewMode === 'grid' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.map((project) => (
-              <div key={project.id} className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow">
+              <div key={project.id} className="bg-white rounded-lg shadow-sm  overflow-hidden hover:shadow-md transition-shadow">
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
@@ -352,7 +372,7 @@ const ProjectsDashboard = () => {
                   </div>
                 </div>
                 
-                <div className="bg-gray-50 px-6 py-3 border-t flex justify-between items-center">
+                <div className="   px-6 py-3  flex justify-between items-center bg-[var(--theme-background)]">
                   <span className="text-xs text-gray-500">
                     Managed by {project.manager}
                   </span>
@@ -375,7 +395,7 @@ const ProjectsDashboard = () => {
                 </div>
                 
                 {expandedProject === project.id && (
-                  <div className="border-t p-6 bg-gray-50">
+                  <div className=" p-6 bg-gray-50">
                     <h4 className="text-sm font-medium mb-3">Project Details</h4>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
@@ -404,7 +424,7 @@ const ProjectsDashboard = () => {
 
         {/* List View */}
         {viewMode === 'list' && (
-          <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="bg-white rounded-lg shadow-sm  overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>

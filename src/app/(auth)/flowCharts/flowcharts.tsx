@@ -1,9 +1,9 @@
-const Flowcharts = () => {
-    return (
-        <div>
-            <h1>Flowcharts</h1>
-        </div>
-    );
-};    
+import React from 'react'
 
-export default Flowcharts;
+const flowcharts = () => {
+  return (
+    <div>flowcharts</div>
+  )
+}
+
+export default flowcharts

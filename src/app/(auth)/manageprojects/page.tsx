@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import {
   Plus,
@@ -46,13 +46,34 @@ import {
   LucideToggleLeft,
   DownloadCloud,
   X,
+  File,
+  FileImage,
+  ChevronsUpDown,
+  Pen,
 } from "lucide-react";
 import logo from "../Assets/images/logo.png";
 // import BugTracker from "./(auth)/bugsTracker/page";
 // import { render } from "react-dom";
-import BugTracker from "../bugsTracker/page"
+import BugTracker from "../bugsTracker/page";
+// DocEditor
+import Notes from "./notes/page"
+import DocEditor from "../documents/page";
+// Goals
+import Goals from "../manageprojects/goals/page"
+import List from "../manageprojects/lists/page" 
+import Tasks from "../manageprojects/tasks/page" 
+// Backlogs
+// TeamsComponent
+import TeamsComponent from "../manageprojects/teams/page" 
+import Calendar from "../manageprojects/calendar/page"
+
+import Backlogs from "../manageprojects/backlogs/page" 
 import AuthGuard from "@/app/components/AuthGuard";
 import Link from "next/link";
+import IssuesManagement from "./issues/page";
+import SummaryComponent from "./summary/page";
+import Timeline from "./timeline/page";
+import ProjectSettings from "./settings/page";
 interface Task {
   id: string;
   title: string;
@@ -68,10 +89,89 @@ interface Task {
   storyPoints?: number;
 }
 
+interface Note {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  color: string;
+  tags: string[];
+}
 
 const JiraLikeProjectManagement = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [documents, setDocuments] = useState<Document[]>([
+    {
+      id: "1",
+      title: "Sample Document",
+      content: "<h1>Welcome</h1><p>This is a sample document</p>",
+      lastEdited: new Date().toLocaleString(),
+      status: "draft",
+      tags: ["sample"],
+      sharedWith: [],
+    },
+  ]);
+
+  const [notes, setNotes] = useState<Note[]>([
+    {
+      id: '1',
+      title: 'Project Kickoff',
+      content: 'Discuss project goals and timeline with the team.',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      color: 'bg-blue-100',
+      tags: ['meeting', 'important'],
+    },
+    {
+      id: '2',
+      title: 'Design Ideas',
+      content: 'Consider using a modern color scheme with blues and greens.',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      color: 'bg-green-100',
+      tags: ['design'],
+    },
+  ]);
+
+
+  const handleSave = async (doc: Document) => {
+    // In a real app, you would call your API here
+    const savedDoc = {
+      ...doc,
+      id: doc.id || Date.now().toString(),
+      lastEdited: new Date().toLocaleString(),
+    };
+
+    setDocuments((prev) =>
+      doc.id
+        ? prev.map((d) => (d.id === doc.id ? savedDoc : d))
+        : [savedDoc, ...prev]
+    );
+
+    return savedDoc;
+  };
+
+  const handleDelete = async (id: string) => {
+    setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+  };
+
+  const handleUpload = async (file: File) => {
+    // Simulate file upload
+    return {
+      id: `file-${Date.now()}`,
+      type: file.type.startsWith("image/")
+        ? "image"
+        : file.type.startsWith("video/")
+        ? "video"
+        : "file",
+      url: URL.createObjectURL(file),
+      name: file.name,
+      size: `${(file.size / 1024).toFixed(1)} KB`,
+      uploadedAt: new Date().toLocaleString(),
+    };
+  };
 
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
@@ -169,15 +269,119 @@ const JiraLikeProjectManagement = () => {
     "low" | "medium" | "high" | "critical"
   >("medium");
   const [isCreatingTask, setIsCreatingTask] = useState(false);
+  const [taskIdCounter, setTaskIdCounter] = useState(() => {
+    // Find the max numeric ID in the initial tasks array
+    const maxId = tasks.reduce(
+      (max, task) => Math.max(max, Number(task.id)),
+      0
+    );
+    return maxId + 1;
+  });
+  const DEMO_MEMBERS: User[] = [
+    {
+      id: "1",
+      name: "John Doe",
+      email: "john@example.com",
+      avatar: "https://i.pravatar.cc/150?img=1",
+    },
+    {
+      id: "2",
+      name: "Jane Smith",
+      email: "jane@example.com",
+      avatar: "https://i.pravatar.cc/150?img=2",
+    },
+    {
+      id: "3",
+      name: "Mike Johnson",
+      email: "mike@example.com",
+      avatar: "https://i.pravatar.cc/150?img=3",
+    },
+    {
+      id: "4",
+      name: "Sarah Williams",
+      email: "sarah@example.com",
+      avatar: "https://i.pravatar.cc/150?img=4",
+    },
+    {
+      id: "5",
+      name: "David Brown",
+      email: "david@example.com",
+      avatar: "https://i.pravatar.cc/150?img=5",
+    },
+    {
+      id: "6",
+      name: "Emily Davis",
+      email: "emily@example.com",
+      avatar: "https://i.pravatar.cc/150?img=6",
+    },
+    {
+      id: "7",
+      name: "Robert Wilson",
+      email: "robert@example.com",
+      avatar: "https://i.pravatar.cc/150?img=7",
+    },
+    {
+      id: "8",
+      name: "Jennifer Lee",
+      email: "jennifer@example.com",
+      avatar: "https://i.pravatar.cc/150?img=8",
+    },
+    {
+      id: "9",
+      name: "Thomas Taylor",
+      email: "thomas@example.com",
+      avatar: "https://i.pravatar.cc/150?img=9",
+    },
+    {
+      id: "10",
+      name: "Lisa Anderson",
+      email: "lisa@example.com",
+      avatar: "https://i.pravatar.cc/150?img=10",
+    },
+    {
+      id: "11",
+      name: "William Martinez",
+      email: "william@example.com",
+      avatar: "https://i.pravatar.cc/150?img=11",
+    },
+    {
+      id: "12",
+      name: "Amanda Thompson",
+      email: "amanda@example.com",
+      avatar: "https://i.pravatar.cc/150?img=12",
+    },
+  ];
+  const [newTaskStatus, setNewTaskStatus] = useState<Task["status"]>("backlog");
   const [viewMode, setViewMode] = useState<"list" | "board">("board");
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [activeContentTab, setActiveContentTab] = useState("Your work");
-  
+  // Drag and drop state and handlers
+  const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+
+  const handleDragStart = (taskId: string) => {
+    setDraggedTaskId(taskId);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedTaskId(null);
+  };
+
+  const handleDrop = (newStatus: Task["status"]) => {
+    if (draggedTaskId) {
+      setTasks((tasks) =>
+        tasks.map((task) =>
+          task.id === draggedTaskId ? { ...task, status: newStatus } : task
+        )
+      );
+      setDraggedTaskId(null);
+    }
+  };
+  const [activeContentTab, setActiveContentTab] = useState("summary");
+
   const handleAddTask = () => {
     if (!newTaskTitle.trim()) return;
 
     const newTask: Task = {
-      id: Date.now().toString(),
+      id: taskIdCounter.toString(),
       title: newTaskTitle,
       description: newTaskDescription,
       status: "backlog",
@@ -258,234 +462,727 @@ const JiraLikeProjectManagement = () => {
           <div className="bg-white p-6 rounded-lg shadow min-h-screen">
             <h2 className="text-xl font-bold mb-4">Your Work</h2>
             <div className="bg-white p-6 rounded-lg shadow min-h-screen">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Your Work</h2>
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search tasks..."
-              className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <svg 
-              className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24" 
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth="2" 
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              ></path>
-            </svg>
-          </div>
-          
-          <select 
-            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-auto"
-            // value={filter}
-            // onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="all">All Tasks</option>
-            <option value="assigned">Assigned to Me</option>
-            <option value="in-progress">In Progress</option>
-            <option value="completed">Completed</option>
-          </select>
-        </div>
-      </div>
-      
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 hover:shadow-md transition-shadow">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="font-medium text-gray-700 mb-1">Assigned to you</h3>
-              {/* <p className="text-2xl font-bold text-gray-800">{assignedCount} tasks</p> */}
-            </div>
-            <div className="bg-blue-100 p-3 rounded-lg">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-green-50 p-4 rounded-lg border border-green-100 hover:shadow-md transition-shadow">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="font-medium text-gray-700 mb-1">Recently viewed</h3>
-              <p className="text-2xl font-bold text-gray-800">3 projects</p>
-            </div>
-            <div className="bg-green-100 p-3 rounded-lg">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-purple-50 p-4 rounded-lg border border-purple-100 hover:shadow-md transition-shadow">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="font-medium text-gray-700 mb-1">Worked on</h3>
-              <p className="text-2xl font-bold text-gray-800">12 tasks this week</p>
-            </div>
-            <div className="bg-purple-100 p-3 rounded-lg">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Task List */}
-      <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
-        <div className="grid grid-cols-12 bg-gray-100 px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-          <div className="col-span-5">Task</div>
-          <div className="col-span-2">Project</div>
-          <div className="col-span-2">Due Date</div>
-          <div className="col-span-3 text-right">Status</div>
-        </div>
-        
-        <div className="divide-y divide-gray-200">
-          {filteredTasks.length === 0 ? (
-            <div className="text-center py-8">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No tasks found</h3>
-              <p className="mt-1 text-sm text-gray-500">Try changing your filters or search query</p>
-            </div>
-          ) : (
-            filteredTasks.map(task => (
-              <div 
-                key={task.id} 
-                className="grid grid-cols-12 px-4 py-4 hover:bg-gray-50 transition-colors"
-              >
-                <div className="col-span-5">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 mr-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">
-                          {task.assignee.split(' ').map(n => n[0]).join('')}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
+                  Your Work
+                </h2>
+                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search tasks..."
+                      className="pl-10 pr-4 py-2 border rounded-lg   focus:border-blue-500 w-full"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <svg
+                      className="w-5 h-5 absolute left-3 top-2.5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      ></path>
+                    </svg>
+                  </div>
+
+                  <select
+                    className="px-4 py-2 border rounded-lg   focus:border-blue-500 w-full sm:w-auto"
+                    // value={filter}
+                    // onChange={(e) => setFilter(e.target.value)}
+                  >
+                    <option value="all">All Tasks</option>
+                    <option value="assigned">Assigned to Me</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-medium text-gray-700 mb-1">
+                        Assigned to you
+                      </h3>
+                      {/* <p className="text-2xl font-bold text-gray-800">{assignedCount} tasks</p> */}
+                    </div>
+                    <div className="bg-blue-100 p-3 rounded-lg">
+                      <svg
+                        className="w-6 h-6 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        ></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 p-4 rounded-lg border border-green-100 hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-medium text-gray-700 mb-1">
+                        Recently viewed
+                      </h3>
+                      <p className="text-2xl font-bold text-gray-800">
+                        3 projects
+                      </p>
+                    </div>
+                    <div className="bg-green-100 p-3 rounded-lg">
+                      <svg
+                        className="w-6 h-6 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        ></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-purple-50 p-4 rounded-lg border border-purple-100 hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-medium text-gray-700 mb-1">
+                        Worked on
+                      </h3>
+                      <p className="text-2xl font-bold text-gray-800">
+                        12 tasks this week
+                      </p>
+                    </div>
+                    <div className="bg-purple-100 p-3 rounded-lg">
+                      <svg
+                        className="w-6 h-6 text-purple-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        ></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Task List */}
+              <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+                <div className="grid grid-cols-12 bg-gray-100 px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <div className="col-span-5">Task</div>
+                  <div className="col-span-2">Project</div>
+                  <div className="col-span-2">Due Date</div>
+                  <div className="col-span-3 text-right">Status</div>
+                </div>
+
+                <div className="divide-y divide-gray-200">
+                  {filteredTasks.length === 0 ? (
+                    <div className="text-center py-8">
+                      <svg
+                        className="mx-auto h-12 w-12 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        ></path>
+                      </svg>
+                      <h3 className="mt-2 text-sm font-medium text-gray-900">
+                        No tasks found
+                      </h3>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Try changing your filters or search query
+                      </p>
+                    </div>
+                  ) : (
+                    filteredTasks.map((task) => (
+                      <div
+                        key={task.id}
+                        className="grid grid-cols-12 px-4 py-4 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="col-span-5">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 mr-3">
+                              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                                <span className="text-white text-sm font-medium">
+                                  {task.assignee
+                                    .split(" ")
+                                    .map((n) => n[0])
+                                    .join("")}
+                                </span>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-900">
+                                {task.title}
+                              </div>
+                              <div className="text-sm text-gray-500 mt-1 line-clamp-1">
+                                {task.description}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="col-span-2 flex items-center">
+                          <span className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded text-xs">
+                            {/* {task.project} */}
+                          </span>
+                        </div>
+
+                        <div className="col-span-2 flex items-center">
+                          <div className="flex items-center">
+                            <svg
+                              className="w-4 h-4 text-gray-400 mr-1"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              ></path>
+                            </svg>
+                            {/* <span className="text-sm text-gray-600">{new Date(task.dueDate).toLocaleDateString()}</span> */}
+                          </div>
+                        </div>
+
+                        <div className="col-span-3 flex items-center justify-end space-x-2">
+                          {/* <PriorityBadge priority={task.priority} />
+                  <StatusBadge status={task.status} /> */}
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+                              ></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Stats Section */}
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white p-6 rounded-lg border border-gray-200">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                    Task Distribution
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm font-medium text-gray-700">
+                          To Do
+                        </span>
+                        <span className="text-sm font-medium text-gray-700">
+                          {tasks.filter((t) => t.status === "todo").length}
                         </span>
                       </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div
+                          className="bg-gray-500 h-2.5 rounded-full"
+                          style={{
+                            width: `${
+                              (tasks.filter((t) => t.status === "todo").length /
+                                tasks.length) *
+                              100
+                            }%`,
+                          }}
+                        ></div>
+                      </div>
                     </div>
+
                     <div>
-                      <div className="font-medium text-gray-900">{task.title}</div>
-                      <div className="text-sm text-gray-500 mt-1 line-clamp-1">{task.description}</div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm font-medium text-gray-700">
+                          In Progress
+                        </span>
+                        {/* <span className="text-sm font-medium text-gray-700">{inProgressCount}</span> */}
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div
+                          className="bg-blue-500 h-2.5 rounded-full"
+                          // style={{ width: `${(inProgressCount / tasks.length) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm font-medium text-gray-700">
+                          Completed
+                        </span>
+                        {/* <span className="text-sm font-medium text-gray-700">{completedCount}</span> */}
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div
+                          className="bg-green-500 h-2.5 rounded-full"
+                          // style={{ width: `${(completedCount / tasks.length) * 100}%` }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
-                
-                <div className="col-span-2 flex items-center">
-                  <span className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded text-xs">
-                    {/* {task.project} */}
-                  </span>
-                </div>
-                
-                <div className="col-span-2 flex items-center">
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    <span className="text-sm text-gray-600">{new Date(task.dueDate).toLocaleDateString()}</span>
+
+                <div className="bg-white p-6 rounded-lg border border-gray-200">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                    Priority Breakdown
+                  </h3>
+                  <div className="flex justify-between items-center">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-red-500">
+                        {tasks.filter((t) => t.priority === "high").length}
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        High Priority
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-yellow-500">
+                        {tasks.filter((t) => t.priority === "medium").length}
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">Medium</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-green-500">
+                        {tasks.filter((t) => t.priority === "low").length}
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">Low</div>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="col-span-3 flex items-center justify-end space-x-2">
-                  {/* <PriorityBadge priority={task.priority} />
-                  <StatusBadge status={task.status} /> */}
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-      
-      {/* Stats Section */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Task Distribution</h3>
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium text-gray-700">To Do</span>
-                <span className="text-sm font-medium text-gray-700">{tasks.filter(t => t.status === 'todo').length}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div 
-                  className="bg-gray-500 h-2.5 rounded-full" 
-                  style={{ width: `${(tasks.filter(t => t.status === 'todo').length / tasks.length) * 100}%` }}
-                ></div>
-              </div>
-            </div>
-            
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium text-gray-700">In Progress</span>
-                {/* <span className="text-sm font-medium text-gray-700">{inProgressCount}</span> */}
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div 
-                  className="bg-blue-500 h-2.5 rounded-full" 
-                  // style={{ width: `${(inProgressCount / tasks.length) * 100}%` }}
-                ></div>
-              </div>
-            </div>
-            
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium text-gray-700">Completed</span>
-                {/* <span className="text-sm font-medium text-gray-700">{completedCount}</span> */}
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div 
-                  className="bg-green-500 h-2.5 rounded-full" 
-                  // style={{ width: `${(completedCount / tasks.length) * 100}%` }}
-                ></div>
               </div>
             </div>
           </div>
-        </div>
-        
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Priority Breakdown</h3>
-          <div className="flex justify-between items-center">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-red-500">{tasks.filter(t => t.priority === 'high').length}</div>
-              <div className="text-sm text-gray-600 mt-1">High Priority</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-500">{tasks.filter(t => t.priority === 'medium').length}</div>
-              <div className="text-sm text-gray-600 mt-1">Medium</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-500">{tasks.filter(t => t.priority === 'low').length}</div>
-              <div className="text-sm text-gray-600 mt-1">Low</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-          </div>
+        );
+      case "Backlogs":
+        return (
+   <Backlogs />
         );
       case "Tasks":
         return (
+          <Tasks />
+        );
+      case "Filters":
+        return (
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold mb-4">Filters</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <h3 className="font-medium mb-2">Status</h3>
+                <div className="space-y-2">
+                  {["backlog", "todo", "in-progress", "review", "done"].map(
+                    (status) => (
+                      <label key={status} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          className="rounded text-blue-600"
+                        />
+                        <span className="ml-2 capitalize">{status}</span>
+                      </label>
+                    )
+                  )}
+                </div>
+              </div>
+              <div>
+                <h3 className="font-medium mb-2">Priority</h3>
+                <div className="space-y-2">
+                  {["low", "medium", "high", "critical"].map((priority) => (
+                    <label key={priority} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        className="rounded text-blue-600"
+                      />
+                      <span className="ml-2 capitalize">{priority}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h3 className="font-medium mb-2">Type</h3>
+                <div className="space-y-2">
+                  {["task", "bug", "story", "epic"].map((type) => (
+                    <label key={type} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        className="rounded text-blue-600"
+                      />
+                      <span className="ml-2 capitalize">{type}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case "Dashboards":
+        return (
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold mb-4">Dashboards</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center mb-3">
+                  <BarChart2 className="w-5 h-5 text-blue-500 mr-2" />
+                  <h3 className="font-medium">Project Overview</h3>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  High-level metrics and progress
+                </p>
+              </div>
+              <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center mb-3">
+                  <PieChart className="w-5 h-5 text-green-500 mr-2" />
+                  <h3 className="font-medium">Work Distribution</h3>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Tasks by status and assignee
+                </p>
+              </div>
+              <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center mb-3">
+                  <GanttChart className="w-5 h-5 text-purple-500 mr-2" />
+                  <h3 className="font-medium">Timeline</h3>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Project schedule and milestones
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      case "Teams":
+        return (
+         <TeamsComponent />
+        );
+        // case "Plans":
+        return (
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold mb-4">Plans</h2>
+            <div className="space-y-4">
+              <div className="border rounded-lg p-4">
+                <h3 className="font-medium mb-2">Free Plan</h3>
+                <p className="text-gray-600 text-sm mb-3">
+                  Basic features for small teams
+                </p>
+                <button className="text-sm text-blue-600 hover:text-blue-800">
+                  Current Plan
+                </button>
+              </div>
+              <div className="border rounded-lg p-4">
+                <h3 className="font-medium mb-2">Standard Plan</h3>
+                <p className="text-gray-600 text-sm mb-3">
+                  Advanced features for growing teams
+                </p>
+                <button className="text-sm px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+                  Upgrade
+                </button>
+              </div>
+              <div className="border rounded-lg p-4">
+                <h3 className="font-medium mb-2">Premium Plan</h3>
+                <p className="text-gray-600 text-sm mb-3">
+                  Enterprise features for large teams
+                </p>
+                <button className="text-sm px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+                  Upgrade
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      case "Apps":
+        return (
+         <div className="bg-white p-6 rounded-lg shadow">
+  <div className="flex justify-between items-center mb-6">
+    <h2 className="text-xl font-bold">Integrations</h2>
+    <div className="relative w-64">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+      <input
+        type="text"
+        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+        placeholder="Search integrations..."
+      />
+    </div>
+  </div>
+
+  {/* Categories */}
+  <div className="flex space-x-2 mb-6 overflow-x-auto pb-2">
+    <button className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+      All
+    </button>
+    <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200">
+      Development
+    </button>
+    <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200">
+      Productivity
+    </button>
+    <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200">
+      Communication
+    </button>
+    <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200">
+      Analytics
+    </button>
+    <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200">
+      Design
+    </button>
+    <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200">
+      Storage
+    </button>
+  </div>
+
+  {/* Integration Grid */}
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {/* Development */}
+    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col">
+      <div className="flex items-center mb-3">
+        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+          <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+        </div>
+        <h3 className="font-medium">GitHub</h3>
+      </div>
+      <p className="text-gray-600 text-sm mb-4 flex-grow">
+        Connect repositories, sync commits, and manage pull requests
+      </p>
+      <button className="mt-auto w-full py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+        Connect
+      </button>
+    </div>
+
+    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col">
+      <div className="flex items-center mb-3">
+        <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3">
+          <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+        </div>
+        <h3 className="font-medium">GitLab</h3>
+      </div>
+      <p className="text-gray-600 text-sm mb-4 flex-grow">
+        Sync your GitLab projects and manage merge requests
+      </p>
+      <button className="mt-auto w-full py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+        Connect
+      </button>
+    </div>
+
+    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col">
+      <div className="flex items-center mb-3">
+        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+        </div>
+        <h3 className="font-medium">Bitbucket</h3>
+      </div>
+      <p className="text-gray-600 text-sm mb-4 flex-grow">
+        Link Bitbucket repositories and track development progress
+      </p>
+      <button className="mt-auto w-full py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+        Connect
+      </button>
+    </div>
+
+    {/* Communication */}
+    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col">
+      <div className="flex items-center mb-3">
+        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+          <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </div>
+        <h3 className="font-medium">Slack</h3>
+      </div>
+      <p className="text-gray-600 text-sm mb-4 flex-grow">
+        Get notifications in Slack channels and create tasks from messages
+      </p>
+      <button className="mt-auto w-full py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+        Connect
+      </button>
+    </div>
+
+    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col">
+      <div className="flex items-center mb-3">
+        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+          </svg>
+        </div>
+        <h3 className="font-medium">Microsoft Teams</h3>
+      </div>
+      <p className="text-gray-600 text-sm mb-4 flex-grow">
+        Sync with Teams channels and get task notifications
+      </p>
+      <button className="mt-auto w-full py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+        Connect
+      </button>
+    </div>
+
+    {/* Productivity */}
+    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col">
+      <div className="flex items-center mb-3">
+        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+          <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <h3 className="font-medium">Google Docs</h3>
+      </div>
+      <p className="text-gray-600 text-sm mb-4 flex-grow">
+        Attach Google Docs to tasks and sync comments
+      </p>
+      <button className="mt-auto w-full py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+        Connect
+      </button>
+    </div>
+
+    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col">
+      <div className="flex items-center mb-3">
+        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <h3 className="font-medium">Notion</h3>
+      </div>
+      <p className="text-gray-600 text-sm mb-4 flex-grow">
+        Sync tasks with Notion databases and pages
+      </p>
+      <button className="mt-auto w-full py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+        Connect
+      </button>
+    </div>
+
+    {/* Analytics */}
+    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col">
+      <div className="flex items-center mb-3">
+        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        </div>
+        <h3 className="font-medium">Google Analytics</h3>
+      </div>
+      <p className="text-gray-600 text-sm mb-4 flex-grow">
+        Track project metrics and generate reports
+      </p>
+      <button className="mt-auto w-full py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+        Connect
+      </button>
+    </div>
+
+    {/* Design */}
+    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col">
+      <div className="flex items-center mb-3">
+        <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center mr-3">
+          <svg className="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+          </svg>
+        </div>
+        <h3 className="font-medium">Figma</h3>
+      </div>
+      <p className="text-gray-600 text-sm mb-4 flex-grow">
+        Attach design files and sync comments
+      </p>
+      <button className="mt-auto w-full py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+        Connect
+      </button>
+    </div>
+  </div>
+
+  {/* View More */}
+  <div className="mt-6 text-center">
+    <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+      View all 25+ integrations →
+    </button>
+  </div>
+</div>
+        );
+      case "Bugs":
+        return <BugTracker />;
+      case "Docs":
+        return (
+          <DocEditor
+            //  initialDocuments={documents}
+            onSave={handleSave}
+            onDelete={handleDelete}
+            onUploadFile={handleUpload}
+            onShareDocument={undefined}
+            onAssignToTask={undefined}
+          />
+        );
+        case "Notes":
+        return(
+          <Notes initialNotes={notes}
+        onNotesChange={setNotes}/>
+        );
+      case "summary":
+        return (
+          <SummaryComponent />
+        );
+      case "timeline":
+        return (
+         <Timeline />
+        );
+      case "board":
+        return (
           <div>
             {/* Project Header */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6 ">
               <div>
                 <div className="flex items-center">
                   <h1 className="text-2xl font-bold text-gray-800">
@@ -518,7 +1215,7 @@ const JiraLikeProjectManagement = () => {
             </div>
 
             {/* View Options */}
-            <div className="flex items-center justify-between mb-6 bg-white p-3 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between mb-6 bg-white p-3 rounded-lg border border-gray-200 transition-all">
               <div className="flex items-center space-x-4">
                 <button
                   className={`flex items-center px-3 py-1 rounded ${
@@ -546,30 +1243,30 @@ const JiraLikeProjectManagement = () => {
 
               <div className="flex items-center space-x-3">
                 {isSearchOpen ? (
-        <div className="flex items-center bg-gray-100 rounded-full px-3 py-2 transition-all duration-300">
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent border-none outline-none w-64 px-2"
-            autoFocus
-          />
-          <button
-            onClick={toggleSearch}
-            className="p-1 text-gray-500 hover:text-gray-700 rounded-full"
-          >
-        
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={toggleSearch}
-          className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full"
-        >
-          <Search className="w-5 h-5" />
-        </button>
-      )}
+                  <div className="flex items-center bg-gray-100 rounded-full px-3 py-2 transition-all duration-300">
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="bg-transparent border-none outline-none w-64 px-2"
+                      autoFocus
+                    />
+                    <button
+                      onClick={toggleSearch}
+                      className=" text-gray-500 hover:text-gray-700 hover:bg-white rounded-full p-1"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={toggleSearch}
+                    className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full"
+                  >
+                    <Search className="w-5 h-5" />
+                  </button>
+                )}
                 <button className="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-md">
                   <ArrowUpDown className="w-4 h-4 mr-2" />
                   Sort
@@ -581,7 +1278,11 @@ const JiraLikeProjectManagement = () => {
             {viewMode === "board" && (
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 {/* Backlog Column */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div
+                  className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => handleDrop("backlog")}
+                >
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="font-semibold text-gray-700">Backlog</h2>
                     <div className="flex items-center">
@@ -591,7 +1292,14 @@ const JiraLikeProjectManagement = () => {
                             .length
                         }
                       </span>
-                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+
+                      <Plus
+                        className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer"
+                        onClick={() => {
+                          setIsCreatingTask(true);
+                          setNewTaskStatus("backlog");
+                        }}
+                      />
                     </div>
                   </div>
                   {filteredTasks
@@ -599,7 +1307,12 @@ const JiraLikeProjectManagement = () => {
                     .map((task) => (
                       <div
                         key={task.id}
-                        className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer"
+                        className={`bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer ${
+                          draggedTaskId === task.id ? "opacity-50" : ""
+                        }`}
+                        draggable
+                        onDragStart={() => handleDragStart(task.id)}
+                        onDragEnd={handleDragEnd}
                         onClick={() => openTaskDetails(task)}
                       >
                         <div className="flex justify-between items-start">
@@ -643,7 +1356,11 @@ const JiraLikeProjectManagement = () => {
 
                 {/* Other columns (To Do, In Progress, Review, Done) */}
                 {/* To Do Column */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div
+                  className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => handleDrop("todo")}
+                >
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="font-semibold text-gray-700">To Do</h2>
                     <div className="flex items-center">
@@ -653,7 +1370,13 @@ const JiraLikeProjectManagement = () => {
                             .length
                         }
                       </span>
-                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                      <Plus
+                        className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer"
+                        onClick={() => {
+                          setIsCreatingTask(true);
+                          setNewTaskStatus("todo");
+                        }}
+                      />
                     </div>
                   </div>
                   {filteredTasks
@@ -661,7 +1384,12 @@ const JiraLikeProjectManagement = () => {
                     .map((task) => (
                       <div
                         key={task.id}
-                        className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer"
+                        className={`bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer ${
+                          draggedTaskId === task.id ? "opacity-50" : ""
+                        }`}
+                        draggable
+                        onDragStart={() => handleDragStart(task.id)}
+                        onDragEnd={handleDragEnd}
                         onClick={() => openTaskDetails(task)}
                       >
                         <div className="flex justify-between items-start">
@@ -704,7 +1432,11 @@ const JiraLikeProjectManagement = () => {
                 </div>
 
                 {/* In Progress Column */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div
+                  className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => handleDrop("in-progress")}
+                >
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="font-semibold text-gray-700">In Progress</h2>
                     <div className="flex items-center">
@@ -715,7 +1447,13 @@ const JiraLikeProjectManagement = () => {
                           ).length
                         }
                       </span>
-                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                      <Plus
+                        className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer"
+                        onClick={() => {
+                          setIsCreatingTask(true);
+                          setNewTaskStatus("in-progress");
+                        }}
+                      />
                     </div>
                   </div>
                   {filteredTasks
@@ -723,7 +1461,12 @@ const JiraLikeProjectManagement = () => {
                     .map((task) => (
                       <div
                         key={task.id}
-                        className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer"
+                        className={`bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer ${
+                          draggedTaskId === task.id ? "opacity-50" : ""
+                        }`}
+                        draggable
+                        onDragStart={() => handleDragStart(task.id)}
+                        onDragEnd={handleDragEnd}
                         onClick={() => openTaskDetails(task)}
                       >
                         <div className="flex justify-between items-start">
@@ -766,7 +1509,11 @@ const JiraLikeProjectManagement = () => {
                 </div>
 
                 {/* Review Column */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div
+                  className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => handleDrop("review")}
+                >
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="font-semibold text-gray-700">Review</h2>
                     <div className="flex items-center">
@@ -776,7 +1523,13 @@ const JiraLikeProjectManagement = () => {
                             .length
                         }
                       </span>
-                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                      <Plus
+                        className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer"
+                        onClick={() => {
+                          setIsCreatingTask(true);
+                          setNewTaskStatus("review");
+                        }}
+                      />
                     </div>
                   </div>
                   {filteredTasks
@@ -784,7 +1537,12 @@ const JiraLikeProjectManagement = () => {
                     .map((task) => (
                       <div
                         key={task.id}
-                        className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer"
+                        className={`bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer ${
+                          draggedTaskId === task.id ? "opacity-50" : ""
+                        }`}
+                        draggable
+                        onDragStart={() => handleDragStart(task.id)}
+                        onDragEnd={handleDragEnd}
                         onClick={() => openTaskDetails(task)}
                       >
                         <div className="flex justify-between items-start">
@@ -827,7 +1585,11 @@ const JiraLikeProjectManagement = () => {
                 </div>
 
                 {/* Done Column */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div
+                  className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => handleDrop("done")}
+                >
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="font-semibold text-gray-700">Done</h2>
                     <div className="flex items-center">
@@ -837,7 +1599,13 @@ const JiraLikeProjectManagement = () => {
                             .length
                         }
                       </span>
-                      <Plus className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                      <Plus
+                        className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer"
+                        onClick={() => {
+                          setIsCreatingTask(true);
+                          setNewTaskStatus("done");
+                        }}
+                      />
                     </div>
                   </div>
                   {filteredTasks
@@ -845,7 +1613,12 @@ const JiraLikeProjectManagement = () => {
                     .map((task) => (
                       <div
                         key={task.id}
-                        className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer"
+                        className={`bg-white p-3 rounded-lg shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-shadow cursor-pointer ${
+                          draggedTaskId === task.id ? "opacity-50" : ""
+                        }`}
+                        draggable
+                        onDragStart={() => handleDragStart(task.id)}
+                        onDragEnd={handleDragEnd}
                         onClick={() => openTaskDetails(task)}
                       >
                         <div className="flex justify-between items-start">
@@ -987,432 +1760,336 @@ const JiraLikeProjectManagement = () => {
             )}
           </div>
         );
-      case "Filters":
+
+      case "calendar":
         return (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Filters</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <h3 className="font-medium mb-2">Status</h3>
-                <div className="space-y-2">
-                  {["backlog", "todo", "in-progress", "review", "done"].map(
-                    (status) => (
-                      <label key={status} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          className="rounded text-blue-600"
-                        />
-                        <span className="ml-2 capitalize">{status}</span>
-                      </label>
-                    )
-                  )}
-                </div>
-              </div>
-              <div>
-                <h3 className="font-medium mb-2">Priority</h3>
-                <div className="space-y-2">
-                  {["low", "medium", "high", "critical"].map((priority) => (
-                    <label key={priority} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        className="rounded text-blue-600"
-                      />
-                      <span className="ml-2 capitalize">{priority}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h3 className="font-medium mb-2">Type</h3>
-                <div className="space-y-2">
-                  {["task", "bug", "story", "epic"].map((type) => (
-                    <label key={type} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        className="rounded text-blue-600"
-                      />
-                      <span className="ml-2 capitalize">{type}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      case "Dashboards":
-        return (
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-bold mb-4">Dashboards</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-center mb-3">
-                    <BarChart2 className="w-5 h-5 text-blue-500 mr-2" />
-                    <h3 className="font-medium">Project Overview</h3>
-                  </div>
-                  <p className="text-gray-600 text-sm">
-                    High-level metrics and progress
-                  </p>
-                </div>
-                <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-center mb-3">
-                    <PieChart className="w-5 h-5 text-green-500 mr-2" />
-                    <h3 className="font-medium">Work Distribution</h3>
-                  </div>
-                  <p className="text-gray-600 text-sm">
-                    Tasks by status and assignee
-                  </p>
-                </div>
-                <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-center mb-3">
-                    <GanttChart className="w-5 h-5 text-purple-500 mr-2" />
-                    <h3 className="font-medium">Timeline</h3>
-                  </div>
-                  <p className="text-gray-600 text-sm">
-                    Project schedule and milestones
-                  </p>
-                </div>
-              </div>
-            </div>
-        );
-      case "Teams":
-        return (
-          <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Teams</h2>
-            <button className="flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium">
-              <span>View All</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {/* Development Team Card */}
-            <div className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow duration-200">
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-gray-800">Development</h3>
-              </div>
-              <ul className="space-y-3">
-                {["John Doe", "Jane Smith", "Mike Johnson"].map((member) => (
-                  <li key={member} className="flex items-center group">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center text-white font-medium text-xs mr-3">
-                      {member.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <span className="text-gray-700 group-hover:text-blue-600 transition-colors">{member}</span>
-                    <button className="ml-auto opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-600 transition-opacity">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                      </svg>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              <button className="mt-4 w-full py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors">
-                + Add Member
-              </button>
-            </div>
-        
-            {/* Design Team Card */}
-            <div className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow duration-200">
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-gray-800">Design</h3>
-              </div>
-              <ul className="space-y-3">
-                {["Sarah Williams", "Alex Chen"].map((member) => (
-                  <li key={member} className="flex items-center group">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 flex items-center justify-center text-white font-medium text-xs mr-3">
-                      {member.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <span className="text-gray-700 group-hover:text-purple-600 transition-colors">{member}</span>
-                    <button className="ml-auto opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-600 transition-opacity">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                      </svg>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              <button className="mt-4 w-full py-2 text-sm font-medium text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded-lg transition-colors">
-                + Add Member
-              </button>
-            </div>
-        
-            {/* Product Team Card */}
-            <div className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow duration-200">
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-gray-800">Product</h3>
-              </div>
-              <ul className="space-y-3">
-                {["Emily Davis", "Robert Brown"].map((member) => (
-                  <li key={member} className="flex items-center group">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center text-white font-medium text-xs mr-3">
-                      {member.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <span className="text-gray-700 group-hover:text-green-600 transition-colors">{member}</span>
-                    <button className="ml-auto opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-600 transition-opacity">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                      </svg>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              <button className="mt-4 w-full py-2 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors">
-                + Add Member
-              </button>
-            </div>
-          </div>
-        </div>
-        );
-      // case "Plans":
-        return (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Plans</h2>
-            <div className="space-y-4">
-              <div className="border rounded-lg p-4">
-                <h3 className="font-medium mb-2">Free Plan</h3>
-                <p className="text-gray-600 text-sm mb-3">
-                  Basic features for small teams
-                </p>
-                <button className="text-sm text-blue-600 hover:text-blue-800">
-                  Current Plan
-                </button>
-              </div>
-              <div className="border rounded-lg p-4">
-                <h3 className="font-medium mb-2">Standard Plan</h3>
-                <p className="text-gray-600 text-sm mb-3">
-                  Advanced features for growing teams
-                </p>
-                <button className="text-sm px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
-                  Upgrade
-                </button>
-              </div>
-              <div className="border rounded-lg p-4">
-                <h3 className="font-medium mb-2">Premium Plan</h3>
-                <p className="text-gray-600 text-sm mb-3">
-                  Enterprise features for large teams
-                </p>
-                <button className="text-sm px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
-                  Upgrade
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-      case "Apps":
-        return (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Apps</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex items-center mb-3">
-                  <GitPullRequest className="w-5 h-5 text-purple-500 mr-2" />
-                  <h3 className="font-medium">Git Integration</h3>
-                </div>
-                <p className="text-gray-600 text-sm">
-                  Connect with GitHub, GitLab, Bitbucket
-                </p>
-              </div>
-              <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex items-center mb-3">
-                  <Sliders className="w-5 h-5 text-blue-500 mr-2" />
-                  <h3 className="font-medium">Automation</h3>
-                </div>
-                <p className="text-gray-600 text-sm">
-                  Automate repetitive tasks
-                </p>
-              </div>
-              <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex items-center mb-3">
-                  <BarChart2 className="w-5 h-5 text-green-500 mr-2" />
-                  <h3 className="font-medium">Advanced Reports</h3>
-                </div>
-                <p className="text-gray-600 text-sm">
-                  Custom reports and analytics
-                </p>
-              </div>
-            </div>
-          </div>
-        );
-      case "Bugs":
-        return <BugTracker />;
-      case "summary":
-        return (
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <h3 className="font-medium mb-3">Project Summary</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-blue-50 p-3 rounded">
-                <p className="text-sm text-gray-600">Total Tasks</p>
-                <p className="font-bold">{tasks.length}</p>
-              </div>
-              <div className="bg-green-50 p-3 rounded">
-                <p className="text-sm text-gray-600">Completed</p>
-                <p className="font-bold">
-                  {tasks.filter((t) => t.status === "done").length}
-                </p>
-              </div>
-              <div className="bg-yellow-50 p-3 rounded">
-                <p className="text-sm text-gray-600">In Progress</p>
-                <p className="font-bold">
-                  {tasks.filter((t) => t.status === "in-progress").length}
-                </p>
-              </div>
-            </div>
-          </div>
-        );
-      case "timeline":
-        return (
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <h3 className="font-medium mb-3">Project Timeline</h3>
-            <div className="h-64 bg-gray-50 rounded flex items-center justify-center text-gray-400">
-              Timeline visualization will appear here
-            </div>
-          </div>
-        );
-      case "board":
-        return (
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <h3 className="font-medium mb-3">Kanban Board</h3>
-            <div className="h-64 bg-gray-50 rounded flex items-center justify-center text-gray-400">
-              Kanban board will appear here
-            </div>
-          </div>
-        );
-     
-        return (
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <h3 className="font-medium mb-3">Calendar</h3>
-            <div className="h-full bg-gray-50 rounded flex items-center justify-center text-gray-400 overflow-auto" >
-                          {/* <div><MeetingScheduler /></div> */}
-              
-            </div>
-          </div>
+          <Calendar />
         );
       case "list":
         return (
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <h3 className="font-medium mb-3">Task List</h3>
-            <div className="space-y-2">
-              {tasks.slice(0, 5).map((task) => (
-                <div
-                  key={task.id}
-                  className="flex items-center justify-between p-2 hover:bg-gray-50 rounded"
-                >
-                  <span className="truncate">{task.title}</span>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(
-                      task.priority
-                    )}`}
-                  >
-                    {task.priority}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+   <List />
         );
-      case "forms":
-        return (
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <h3 className="font-medium mb-3">Forms</h3>
-            <div className="h-64 bg-gray-50 rounded flex items-center justify-center text-gray-400">
-              Form templates will appear here
-            </div>
-          </div>
-        );
+
       case "goals":
         return (
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <h3 className="font-medium mb-3">Project Goals</h3>
-            <div className="space-y-3">
-              <div className="flex items-start">
-                <input type="checkbox" className="mt-1 mr-2" />
-                <div>
-                  <p>Launch new website design</p>
-                  <p className="text-xs text-gray-500">Due: 2024-04-15</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <input type="checkbox" className="mt-1 mr-2" />
-                <div>
-                  <p>Implement payment gateway</p>
-                  <p className="text-xs text-gray-500">Due: 2024-04-30</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Goals />
+
         );
       case "issues":
         return (
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <h3 className="font-medium mb-3">Open Issues</h3>
-            <div className="space-y-2">
-              {tasks
-                .filter((t) => t.type === "bug")
-                .slice(0, 3)
-                .map((task) => (
-                  <div
-                    key={task.id}
-                    className="p-2 border rounded hover:bg-gray-50"
-                  >
-                    <div className="flex justify-between">
-                      <span className="font-medium">{task.title}</span>
-                      <span className="text-xs text-red-500">Bug</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {task.description?.substring(0, 50)}...
-                    </p>
-                  </div>
-                ))}
-            </div>
-          </div>
+       <IssuesManagement /> 
         );
-      case "settings":
+     case "documents":
         return (
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <h3 className="font-medium mb-3">Project Settings</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Project Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 border rounded"
-                  defaultValue="Website Redesign"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Project Key
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 border rounded"
-                  defaultValue="WEB"
-                />
-              </div>
-              <button className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
-                Save Changes
-              </button>
-            </div>
+        <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-200 transition-all">
+  {/* Header with title and actions */}
+  <div className="border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+    <h3 className="text-lg font-medium">Download Documents</h3>
+    <div className="flex items-center space-x-2">
+      <button className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 flex items-center">
+        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        Download Selected
+      </button>
+    </div>
+  </div>
+
+  {/* Search and filter bar */}
+  <div className="border-b border-gray-200 px-4 py-3 bg-gray-50">
+    <div className="flex flex-wrap items-center gap-3">
+      {/* Search */}
+      <div className="relative flex-1 min-w-[200px]">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input
+          type="text"
+          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          placeholder="Search documents..."
+        />
+      </div>
+
+      {/* Filters */}
+      <div className="flex items-center space-x-2">
+        <div className="relative">
+          <select className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded-md leading-tight focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option>All Projects</option>
+            <option>BilliMD</option>
+            <option>Marketing Site</option>
+            <option>Mobile App</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
           </div>
+        </div>
+
+        <div className="relative">
+          <select className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded-md leading-tight focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option>All Tasks</option>
+            <option>Design</option>
+            <option>Development</option>
+            <option>QA</option>
+            <option>Documentation</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+
+        <div className="relative">
+          <select className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded-md leading-tight focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option>All Users</option>
+            <option>John Doe</option>
+            <option>Jane Smith</option>
+            <option>Alex Johnson</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+
+        <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* Documents Table */}
+  <div className="overflow-x-auto">
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-gray-50">
+        <tr>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <input type="checkbox" className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
+          </th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Name
+          </th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Project
+          </th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Task
+          </th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Uploaded By
+          </th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Date
+          </th>
+          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Size
+          </th>
+          <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {/* Document 1 */}
+        <tr className="hover:bg-gray-50">
+          <td className="px-6 py-4 whitespace-nowrap">
+            <input type="checkbox" className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex items-center">
+              <svg className="flex-shrink-0 h-5 w-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <div className="ml-4">
+                <div className="text-sm font-medium text-gray-900">Project_Specification.pdf</div>
+                <div className="text-sm text-gray-500">Document</div>
+              </div>
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="text-sm text-gray-900">BilliMD</div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+              Requirements
+            </span>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex items-center">
+              <img className="h-6 w-6 rounded-full" src="https://i.pravatar.cc/150?img=1" alt="" />
+              <div className="ml-2">
+                <div className="text-sm font-medium text-gray-900">John Doe</div>
+              </div>
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            2024-03-15
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            2.4 MB
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <button className="text-blue-600 hover:text-blue-900 mr-3">Preview</button>
+            <button className="text-blue-600 hover:text-blue-900">Download</button>
+          </td>
+        </tr>
+
+        {/* Document 2 */}
+        <tr className="hover:bg-gray-50">
+          <td className="px-6 py-4 whitespace-nowrap">
+            <input type="checkbox" className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex items-center">
+              <svg className="flex-shrink-0 h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              <div className="ml-4">
+                <div className="text-sm font-medium text-gray-900">UI_Mockups_Final.sketch</div>
+                <div className="text-sm text-gray-500">Design File</div>
+              </div>
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="text-sm text-gray-900">BilliMD</div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+              UI Design
+            </span>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex items-center">
+              <img className="h-6 w-6 rounded-full" src="https://i.pravatar.cc/150?img=2" alt="" />
+              <div className="ml-2">
+                <div className="text-sm font-medium text-gray-900">Jane Smith</div>
+              </div>
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            2024-03-20
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            8.7 MB
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <button className="text-blue-600 hover:text-blue-900 mr-3">Preview</button>
+            <button className="text-blue-600 hover:text-blue-900">Download</button>
+          </td>
+        </tr>
+
+        {/* Document 3 */}
+        <tr className="hover:bg-gray-50">
+          <td className="px-6 py-4 whitespace-nowrap">
+            <input type="checkbox" className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex items-center">
+              <svg className="flex-shrink-0 h-5 w-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <div className="ml-4">
+                <div className="text-sm font-medium text-gray-900">Test_Cases.xlsx</div>
+                <div className="text-sm text-gray-500">Spreadsheet</div>
+              </div>
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="text-sm text-gray-900">BilliMD</div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+              QA Testing
+            </span>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex items-center">
+              <img className="h-6 w-6 rounded-full" src="https://i.pravatar.cc/150?img=3" alt="" />
+              <div className="ml-2">
+                <div className="text-sm font-medium text-gray-900">Alex Johnson</div>
+              </div>
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            2024-04-05
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            1.2 MB
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <button className="text-blue-600 hover:text-blue-900 mr-3">Preview</button>
+            <button className="text-blue-600 hover:text-blue-900">Download</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  {/* Pagination */}
+  <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+    <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+      <div>
+        <p className="text-sm text-gray-700">
+          Showing <span className="font-medium">1</span> to <span className="font-medium">3</span> of{' '}
+          <span className="font-medium">24</span> results
+        </p>
+      </div>
+      <div>
+        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+          <a
+            href="#"
+            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+          >
+            <span className="sr-only">Previous</span>
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </a>
+          <a
+            href="#"
+            aria-current="page"
+            className="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+          >
+            1
+          </a>
+          <a
+            href="#"
+            className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+          >
+            2
+          </a>
+          <a
+            href="#"
+            className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+          >
+            3
+          </a>
+          <a
+            href="#"
+            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+          >
+            <span className="sr-only">Next</span>
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+        );
+        case "settings":
+        return (
+       <ProjectSettings/>
         );
 
       default:
@@ -1420,137 +2097,126 @@ const JiraLikeProjectManagement = () => {
     }
   };
 
-
-
   return (
     <AuthGuard>
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <div className="w-16 bg-white shadow-sm flex flex-col items-center py-4">
-        {/* Planning Section */}
-        <div className="flex flex-col items-center space-y-6">
-          <button
-            className={`p-2 rounded-lg ${
-              activeContentTab === "summary"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-            onClick={() => setActiveContentTab("summary")}
-            title="Summary"
-          >
-            <ClipboardList className="w-5 h-5" />
-          </button>
-          <button
-            className={`p-2 rounded-lg ${
-              activeContentTab === "timeline"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-            onClick={() => setActiveContentTab("timeline")}
-            title="Timeline"
-          >
-            <TimelineIcon className="w-5 h-5" />
-          </button>
-          <button
-            className={`p-2 rounded-lg ${
-              activeContentTab === "board"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-            onClick={() => setActiveContentTab("board")}
-            title="Board"
-          >
-            <BoardIcon className="w-5 h-5" />
-          </button>
-          <button
-            className={`p-2 rounded-lg ${
-              activeContentTab === "calendar"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-            onClick={() => setActiveContentTab("calendar")}
-            title="Calendar"
-          >
-            <CalendarIcon className="w-5 h-5" />
-          </button>
-          <button
-            className={`p-2 rounded-lg ${
-              activeContentTab === "list"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-            onClick={() => setActiveContentTab("list")}
-            title="List"
-          >
-            <ListIcon className="w-5 h-5" />
-          </button>
-          <button
-            className={`p-2 rounded-lg ${
-              activeContentTab === "forms"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-            onClick={() => setActiveContentTab("forms")}
-            title="Forms"
-          >
-            <FormInput className="w-5 h-5" />
-          </button>
-          <button
-            className={`p-2 rounded-lg ${
-              activeContentTab === "goals"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-            onClick={() => setActiveContentTab("goals")}
-            title="Goals"
-          >
-            <Trophy className="w-5 h-5" />
-          </button>
-          <button
-            className={`p-2 rounded-lg ${
-              activeContentTab === "issues"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-            onClick={() => setActiveContentTab("issues")}
-            title="Issues"
-          >
-            <IssuesIcon className="w-5 h-5" />
-          </button>
-          <button
-            className={`p-2 rounded-lg ${
-              activeContentTab === "settings"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-            onClick={() => setActiveContentTab("settings")}
-            title="Settings"
-          >
-            <DownloadCloud className="w-5 h-5" />
-          </button>
-          <button
-            className={`p-2 rounded-lg ${
-              activeContentTab === "settings"
-                ? "bg-blue-50 text-blue-600"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-            onClick={() => setActiveContentTab("settings")}
-            title="Settings"
-          >
-            <SettingsIcon className="w-5 h-5" />
-          </button>
+      <div className="min-h-screen bg-[var(--theme-background)]  flex">
+        {/* Sidebar */}
+        <div className="w-16 bg-white shadow-sm flex flex-col items-center py-4">
+          {/* Planning Section */}
+          <div className="flex flex-col items-center space-y-6">
+            <button
+              className={`p-2 rounded-lg ${
+                activeContentTab === "summary"
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-500 hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveContentTab("summary")}
+              title="Summary"
+            >
+              <ClipboardList className="w-5 h-5" />
+            </button>
+            <button
+              className={`p-2 rounded-lg ${
+                activeContentTab === "timeline"
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-500 hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveContentTab("timeline")}
+              title="Timeline"
+            >
+              <TimelineIcon className="w-5 h-5" />
+            </button>
+            <button
+              className={`p-2 rounded-lg ${
+                activeContentTab === "board"
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-500 hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveContentTab("board")}
+              title="Board"
+            >
+              <BoardIcon className="w-5 h-5" />
+            </button>
+            <button
+              className={`p-2 rounded-lg ${
+                activeContentTab === "calendar"
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-500 hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveContentTab("calendar")}
+              title="Calendar"
+            >
+              <CalendarIcon className="w-5 h-5" />
+            </button>
+            <button
+              className={`p-2 rounded-lg ${
+                activeContentTab === "list"
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-500 hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveContentTab("list")}
+              title="List"
+            >
+              <ListIcon className="w-5 h-5" />
+            </button>
+          
+            <button
+              className={`p-2 rounded-lg ${
+                activeContentTab === "goals"
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-500 hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveContentTab("goals")}
+              title="Goals"
+            >
+              <Trophy className="w-5 h-5" />
+            </button>
+           
+            <button
+              className={`p-2 rounded-lg ${
+                activeContentTab === "documents"
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-500 hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveContentTab("documents")}
+              title="Documents"
+            >
+              <FileImage className="w-5 h-5" />
+            </button>
+            <button
+              className={`p-2 rounded-lg ${
+                activeContentTab === "settings"
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-500 hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveContentTab("settings")}
+              title="Settings"
+            >
+              <SettingsIcon className="w-5 h-5" />
+            </button>
+             <button
+              className={`p-2 rounded-lg ${
+                activeContentTab === "issues"
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-500 hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveContentTab("issues")}
+              title="Issues"
+            >
+              <IssuesIcon className="w-5 h-5" />
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="bg-white shadow-sm  sticky top-0 z-0">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center space-x-6">
-                <nav className="flex space-x-1">
-                {/* <button
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <header className="bg-white shadow-sm  sticky top-0 z-0">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="flex items-center justify-between h-16">
+                <div className="flex items-center space-x-6">
+                  <nav className="flex space-x-1">
+                    {/* <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                       activeContentTab === "Dashboards"
                         ? "bg-blue-50 text-blue-600"
@@ -1562,32 +2228,43 @@ const JiraLikeProjectManagement = () => {
                     Dashboards
                   </button> */}
 
-{/* <Link href={`/manageprojects/reports/${"flexcraft-workspace"}`}>
+                    {/* <Link href={`/manageprojects/reports/${"flexcraft-workspace"}`}>
   View Post
 </Link> */}
-                  <button
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                      activeContentTab === "Your work"
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                    }`}
-                    onClick={() => setActiveContentTab("Your work")}
-                  >
-                    <Home className="w-4 h-4 mr-2" />
-                    Your work
-                  </button>
-                  <button
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                      activeContentTab === "Tasks"
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                    }`}
-                    onClick={() => setActiveContentTab("Tasks")}
-                  >
-                    <Folder className="w-4 h-4 mr-2" />
-                    Tasks
-                  </button>
-                  {/* <button
+                    <button
+                      className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                        activeContentTab === "Your work"
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                      } cursor-pointer`}
+                      onClick={() => setActiveContentTab("Your work")}
+                    >
+                      <Home className="w-4 h-4 mr-2" />
+                      Your work
+                    </button>
+                    <button
+                      className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                        activeContentTab === "Tasks"
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                      } cursor-pointer`}
+                      onClick={() => setActiveContentTab("Tasks")}
+                    >
+                      <Folder className="w-4 h-4 mr-2" />
+                      Tasks
+                    </button>
+                    <button
+                      className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                        activeContentTab === "Backlogs"
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                      } cursor-pointer`}
+                      onClick={() => setActiveContentTab("Backlogs")}
+                    >
+                      <ClipboardList className="w-4 h-4 mr-2" />
+                      Backlogs
+                    </button>
+                    {/* <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                       activeContentTab === "Filters"
                         ? "bg-blue-50 text-blue-600"
@@ -1598,19 +2275,19 @@ const JiraLikeProjectManagement = () => {
                     <Sliders className="w-4 h-4 mr-2" />
                     Filters
                   </button> */}
-             
-                  <button
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                      activeContentTab === "Teams"
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                    }`}
-                    onClick={() => setActiveContentTab("Teams")}
-                  >
-                    <TeamIcon className="w-4 h-4 mr-2" />
-                    Teams
-                  </button>
-                  {/* <button
+
+                    <button
+                      className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                        activeContentTab === "Teams"
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                      } cursor-pointer`}
+                      onClick={() => setActiveContentTab("Teams")}
+                    >
+                      <TeamIcon className="w-4 h-4 mr-2" />
+                      Teams
+                    </button>
+                    {/* <button
                     className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
                       activeContentTab === "Plans"
                         ? "bg-blue-50 text-blue-600"
@@ -1621,47 +2298,58 @@ const JiraLikeProjectManagement = () => {
                     <CreditCard className="w-4 h-4 mr-2" />
                     Plans
                   </button> */}
-                  <button
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                      activeContentTab === "Apps"
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                    }`}
-                    onClick={() => setActiveContentTab("Apps")}
-                  >
-                    <Grid className="w-4 h-4 mr-2" />
-                    Apps
-                  </button>
-                  <button
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                      activeContentTab === "Bugs"
-                        ? "bg-blue-50 text-red-500"
-                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                    }`}
-                    onClick={() => setActiveContentTab("Bugs")}
-                  >
-                    <BugIcon className="w-4 h-4 mr-2" />
-                    Bugs
-                  </button>
-                  <button
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                      activeContentTab === "Backlogs"
-                        ? "bg-blue-50 text-blue-500"
-                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                    }`}
-                    onClick={() => setActiveContentTab("Backlogs")}
-                  >
-                    <LucideToggleLeft className="w-4 h-4 mr-2" />
-                    Backlogs
-                  </button>
-                </nav>
-              </div>
+                    <button
+                      className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                        activeContentTab === "Apps"
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                      } cursor-pointer`}
+                      onClick={() => setActiveContentTab("Apps")}
+                    >
+                      <Grid className="w-4 h-4 mr-2" />
+                      Apps
+                    </button>
+                    <button
+                      className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                        activeContentTab === "Bugs"
+                          ? "bg-blue-50 text-red-500"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                      } cursor-pointer`}
+                      onClick={() => setActiveContentTab("Bugs")}
+                    >
+                      <BugIcon className="w-4 h-4 mr-2" />
+                      Bugs
+                    </button>
+                    <button
+                      className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                        activeContentTab === "Docs"
+                          ? "bg-blue-50 text-blue-500"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                      }`}
+                      onClick={() => setActiveContentTab("Docs")}
+                    >
+                      <File className="w-4 h-4 mr-2" />
+                      Docs
+                    </button>
+                      <button
+                      className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                        activeContentTab === "Notes"
+                          ? "bg-blue-50 text-blue-500"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                      }`}
+                      onClick={() => setActiveContentTab("Notes")}
+                    >
+                      <Pen className="w-4 h-4 mr-2" />
+                      Notes
+                    </button>
+                  </nav>
+                </div>
 
-              <div className="ml-4 flex items-center space-x-4">
-                {/* <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full" onClick={toggleSearch}>
+                <div className="ml-4 flex items-center space-x-4">
+                  {/* <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full" onClick={toggleSearch}>
                   <Search className="w-5 h-5" /> 
                 </button> */}
-                {/* {isSearchOpen && (
+                  {/* {isSearchOpen && (
                   <input
                     type="text"
                     className="ml-2 p-1 border rounded"
@@ -1671,256 +2359,270 @@ const JiraLikeProjectManagement = () => {
                     autoFocus
                   />
                 )} */}
-                <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
-                  <Bell className="w-5 h-5" />
-                </button>
-                <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
-                  <HelpCircle className="w-5 h-5" />
-                </button>
-                <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
-                  <Settings className="w-5 h-5" />
-                </button>
-                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
-                  JD
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Content Area */}
-        <div className="overflow-auto p-6 ">
-          
-          <div className="flex">
-            {/* Main Content */}
-            
-            <div className="flex-1">{renderContent()}</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Task Creation Modal */}
-      {isCreatingTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-medium mb-4">Create New Task</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Task Title
-                </label>
-                <input
-                  type="text"
-                  placeholder="Task title"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newTaskTitle}
-                  onChange={(e) => setNewTaskTitle(e.target.value)}
-                  autoFocus
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  placeholder="Task description"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newTaskDescription}
-                  onChange={(e) => setNewTaskDescription(e.target.value)}
-                  rows={3}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Type
-                  </label>
-                  <select
-                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newTaskType}
-                    onChange={(e) => setNewTaskType(e.target.value as any)}
-                  >
-                    <option value="task">Task</option>
-                    <option value="bug">Bug</option>
-                    <option value="story">Story</option>
-                    <option value="epic">Epic</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Priority
-                  </label>
-                  <select
-                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newTaskPriority}
-                    onChange={(e) => setNewTaskPriority(e.target.value as any)}
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                    <option value="critical">Critical</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-end space-x-3 mt-6">
-              <button
-                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100"
-                onClick={() => setIsCreatingTask(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                onClick={handleAddTask}
-              >
-                Create Task
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Task Detail Modal */}
-      {selectedTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <span
-                  className={`inline-block w-3 h-3 rounded-full ${getTypeColor(
-                    selectedTask.type
-                  )} mr-2`}
-                ></span>
-                <span className="text-lg font-bold">{selectedTask.title}</span>
-              </div>
-              <button
-                className="text-gray-500 hover:text-gray-700"
-                onClick={closeTaskDetails}
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="grid grid-cols-3 gap-6">
-              <div className="col-span-2">
-                <div className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">
-                    Description
-                  </h3>
-                  <p className="text-gray-800">
-                    {selectedTask.description || "No description provided"}
-                  </p>
-                </div>
-
-                <div className="border-t border-gray-200 pt-4">
-                  <h3 className="text-sm font-medium text-gray-500 mb-3">
-                    Activity
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="flex items-start">
-                      <div className="w-8 h-8 rounded-full bg-gray-300 mr-3"></div>
-                      <div>
-                        <p className="text-sm font-medium">John Doe</p>
-                        <p className="text-sm text-gray-500">
-                          Updated the status to In Progress
-                        </p>
-                        <p className="text-xs text-gray-400">2 hours ago</p>
-                      </div>
-                    </div>
+                  <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
+                    <Bell className="w-5 h-5" />
+                  </button>
+                  <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
+                    <HelpCircle className="w-5 h-5" />
+                  </button>
+                  <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
+                    <Settings className="w-5 h-5" />
+                  </button>
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
+                    JD
                   </div>
                 </div>
               </div>
+            </div>
+          </header>
 
+          {/* Content Area */}
+          <div className="overflow-auto p-6 ">
+            <div className="flex">
+              {/* Main Content */}
+
+              <div
+                className={`flex-1 transition-opacity duration-200 ${
+                  isCreatingTask ? "opacity-40 pointer-events-none" : ""
+                }`}
+              >
+                {renderContent()}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Task Creation Modal */}
+        {isCreatingTask && (
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50"
+            style={{ background: "rgba(0,0,0,0.05)" }}
+          >
+            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+              <h3 className="text-lg font-medium mb-4">Create New Task</h3>
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">
-                    Details
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center">
-                      <span className="text-gray-500 w-24">Status:</span>
-                      <span className="font-medium">{selectedTask.status}</span>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Task Title
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Task title"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none  "
+                    value={newTaskTitle}
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    placeholder="Task description"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none "
+                    value={newTaskDescription}
+                    onChange={(e) => setNewTaskDescription(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Type
+                    </label>
+                    <select
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none "
+                      value={newTaskType}
+                      onChange={(e) => setNewTaskType(e.target.value as any)}
+                    >
+                      <option value="task">Task</option>
+                      <option value="bug">Bug</option>
+                      <option value="story">Story</option>
+                      <option value="epic">Epic</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Priority
+                    </label>
+                    <select
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none  "
+                      value={newTaskPriority}
+                      onChange={(e) =>
+                        setNewTaskPriority(e.target.value as any)
+                      }
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="critical">Critical</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100"
+                  onClick={() => setIsCreatingTask(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  onClick={handleAddTask}
+                >
+                  Create Task
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Task Detail Modal */}
+        {selectedTask && (
+          <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <span
+                    className={`inline-block w-3 h-3 rounded-full ${getTypeColor(
+                      selectedTask.type
+                    )} mr-2`}
+                  ></span>
+                  <span className="text-lg font-bold">
+                    {selectedTask.title}
+                  </span>
+                </div>
+                <button
+                  className="text-gray-500 hover:text-gray-700"
+                  onClick={closeTaskDetails}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="grid grid-cols-3 gap-6">
+                <div className="col-span-2">
+                  <div className="mb-6">
+                    <h3 className="text-sm font-medium text-gray-500 mb-2">
+                      Description
+                    </h3>
+                    <p className="text-gray-800">
+                      {selectedTask.description || "No description provided"}
+                    </p>
+                  </div>
+
+                  <div className="border-t border-gray-200 pt-4">
+                    <h3 className="text-sm font-medium text-gray-500 mb-3">
+                      Activity
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-start">
+                        <div className="w-8 h-8 rounded-full bg-gray-300 mr-3"></div>
+                        <div>
+                          <p className="text-sm font-medium">John Doe</p>
+                          <p className="text-sm text-gray-500">
+                            Updated the status to In Progress
+                          </p>
+                          <p className="text-xs text-gray-400">2 hours ago</p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center">
-                      <span className="text-gray-500 w-24">Assignee:</span>
-                      <span className="font-medium">
-                        {selectedTask.assignee}
-                      </span>
-                    </div>
-                    <div className="flex items-center">
-                      <span className="text-gray-500 w-24">Priority:</span>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${getPriorityColor(
-                          selectedTask.priority
-                        )}`}
-                      >
-                        {selectedTask.priority}
-                      </span>
-                    </div>
-                    <div className="flex items-center">
-                      <span className="text-gray-500 w-24">Due Date:</span>
-                      <span className="font-medium">
-                        {selectedTask.dueDate}
-                      </span>
-                    </div>
-                    {selectedTask.storyPoints && (
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-500 mb-2">
+                      Details
+                    </h3>
+                    <div className="space-y-3">
                       <div className="flex items-center">
-                        <span className="text-gray-500 w-24">
-                          Story Points:
-                        </span>
+                        <span className="text-gray-500 w-24">Status:</span>
                         <span className="font-medium">
-                          {selectedTask.storyPoints}
+                          {selectedTask.status}
                         </span>
                       </div>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">
-                    Labels
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedTask.labels?.map((label) => (
-                      <span
-                        key={label}
-                        className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded"
-                      >
-                        {label}
-                      </span>
-                    ))}
-                    {(!selectedTask.labels ||
-                      selectedTask.labels.length === 0) && (
-                      <span className="text-gray-400 text-sm">No labels</span>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">
-                    Attachments
-                  </h3>
-                  {selectedTask.attachments ? (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Paperclip className="w-4 h-4 mr-2" />
-                      <span>{selectedTask.attachments} files attached</span>
+                      <div className="flex items-center">
+                        <span className="text-gray-500 w-24">Assignee:</span>
+                        <span className="font-medium">
+                          {selectedTask.assignee}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-gray-500 w-24">Priority:</span>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${getPriorityColor(
+                            selectedTask.priority
+                          )}`}
+                        >
+                          {selectedTask.priority}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-gray-500 w-24">Due Date:</span>
+                        <span className="font-medium">
+                          {selectedTask.dueDate}
+                        </span>
+                      </div>
+                      {selectedTask.storyPoints && (
+                        <div className="flex items-center">
+                          <span className="text-gray-500 w-24">
+                            Story Points:
+                          </span>
+                          <span className="font-medium">
+                            {selectedTask.storyPoints}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <span className="text-gray-400 text-sm">
-                      No attachments
-                    </span>
-                  )}
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-500 mb-2">
+                      Labels
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedTask.labels?.map((label) => (
+                        <span
+                          key={label}
+                          className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded"
+                        >
+                          {label}
+                        </span>
+                      ))}
+                      {(!selectedTask.labels ||
+                        selectedTask.labels.length === 0) && (
+                        <span className="text-gray-400 text-sm">No labels</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-500 mb-2">
+                      Attachments
+                    </h3>
+                    {selectedTask.attachments ? (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Paperclip className="w-4 h-4 mr-2" />
+                        <span>{selectedTask.attachments} files attached</span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400 text-sm">
+                        No attachments
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </AuthGuard>
   );
 };

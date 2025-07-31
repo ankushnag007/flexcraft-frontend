@@ -330,7 +330,7 @@ ${description || 'A full-stack application generated with CodeGen AI'}
 ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Documentation\n' : ''}${features.docker ? '- Docker Setup\n' : ''}${features.testing ? '- Testing Framework\n' : ''}${features.ciCd ? '- CI/CD Pipeline\n' : ''}${features.eslint ? '- ESLint Setup\n' : ''}
 
 ## Getting Started
-1. Install dependencies: \`npm install\`
+1. Install dependencies: \`npm install -f\`
 2. Start development server: \`npm start\`
 `
     };
@@ -699,7 +699,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
             type="text"
             value={currentPrompt}
             onChange={(e) => setCurrentPrompt(e.target.value)}
-            className={`w-full border ${themeColors.border} rounded-lg pl-4 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
+            className={`w-full border ${themeColors.border} rounded-lg pl-4 pr-10 py-3 text-sm focus:outline-none   ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
             placeholder="How would you like to modify your code?"
             disabled={isProcessing}
           />
@@ -801,28 +801,35 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
           <div className="flex gap-2">
             <div className="relative">
               <button 
-                className="px-3 py-1 text-xs rounded flex items-center gap-1"
+                className="px-3 py-1 text-xs rounded flex items-center gap-1 hover:bg-gray-400"
                 onClick={() => setShowThemeSelector(!showThemeSelector)}
                 style={{
                   backgroundColor: themes[theme].accent.replace('bg-', ''),
                   color: 'white'
                 }}
               >
-                <Palette size={14} /> Theme
+                {/* <Palette size={14} /> Theme */}
               </button>
               {showThemeSelector ? renderThemeSelector() : null}
             </div>
-            <button className={`px-3 py-1 text-xs rounded flex items-center gap-1 ${themeColors.bgTertiary} ${themeColors.textPrimary} hover:${themeColors.bgTertiary}`}>
+            <div className="relative">
+                <button 
+                  className="px-3 py-1 text-sm rounded-md text-black bg-gray-200 hover:bg-gray-300 transition-colors flex items-center gap-1"
+                  onClick={() => setShowThemeSelector(!showThemeSelector)}
+                >
+                  <Palette size={16} /> Theme
+                </button>
+                {showThemeSelector && renderThemeSelector()}
+              </div>
+            <button className={`px-3 py-1 text-xs rounded flex items-center gap-1 hover:bg-gray-400 ${themeColors.bgTertiary} ${themeColors.textPrimary} hover:${themeColors.bgTertiary}`}>
               <Github size={14} /> Push
             </button>
-            <button className={`px-3 py-1 text-xs rounded flex items-center gap-1 ${themeColors.bgTertiary} ${themeColors.textPrimary} hover:${themeColors.bgTertiary}`}>
+            <button className={`px-3 py-1 text-xs rounded flex items-center gap-1 hover:bg-gray-400 ${themeColors.bgTertiary} ${themeColors.textPrimary} hover:${themeColors.bgTertiary}`}>
               <Download size={14} /> Export
             </button>
             <button 
-              className={`px-3 py-1 text-xs text-white rounded flex items-center gap-1 hover:opacity-90`}
-              style={{ 
-                background: `linear-gradient(to right, ${themes[theme].accent.replace('bg-', '')}, ${themes[theme].accentHover.replace('hover:', '').replace('bg-', '')})` 
-              }}
+              className={`px-3 py-1 text-xs text-white rounded flex items-center gap-1 hover:opacity-90 hover:bg-gray-400 ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
+              
               onClick={handleDeployClick}
             >
               <HardDriveUpload size={14} /> Deploy
@@ -1112,15 +1119,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
               <button className="px-3 py-1 text-sm rounded-md bg-gray-200 hover:bg-gray-300 transition-colors">
                 Examples
               </button>
-              <div className="relative">
-                <button 
-                  className="px-3 py-1 text-sm rounded-md bg-gray-200 hover:bg-gray-300 transition-colors flex items-center gap-1"
-                  onClick={() => setShowThemeSelector(!showThemeSelector)}
-                >
-                  <Palette size={16} /> Theme
-                </button>
-                {showThemeSelector && renderThemeSelector()}
-              </div>
+             
             </div>
           </header>
         )}
@@ -1268,7 +1267,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
                         type="text"
                         value={projectName}
                         onChange={(e) => setProjectName(e.target.value)}
-                        className={`w-full px-4 py-2 border ${themeColors.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
+                        className={`w-full px-4 py-2 border ${themeColors.border} rounded-lg focus:outline-none   ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
                       />
                     </div>
                     <div>
@@ -1276,7 +1275,7 @@ ${features.auth ? '- Authentication\n' : ''}${features.apiDocs ? '- API Document
                       <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className={`w-full px-4 py-2 border ${themeColors.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
+                        className={`w-full px-4 py-2 border ${themeColors.border} rounded-lg focus:outline-none   ${themeColors.bgTertiary} ${themeColors.textPrimary}`}
                         rows={2}
                       />
                     </div>
