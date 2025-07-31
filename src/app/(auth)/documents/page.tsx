@@ -14,8 +14,6 @@ import {
   LucideToggleRight
 } from 'lucide-react';
 import AuthGuard from '@/app/components/AuthGuard';
-import FileViewer from 'react-file-viewer'
-
 
 // Types
 interface User {
@@ -483,42 +481,45 @@ export default function DocumentEditor({
     try {
       switch(attachment.type) {
         case 'pdf':
+          return (
+            <div className={previewStyle}>
+              <div className="text-center p-6">
+                <FileTypeIcon type={attachment.type} className="w-16 h-16 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900">{attachment.name}</h3>
+                <p className="text-sm text-gray-500 mb-4">PDF Document</p>
+                <iframe 
+                  src={attachment.url} 
+                  className="w-full h-[400px] border rounded"
+                  title={attachment.name}
+                />
+                {downloadButton}
+              </div>
+            </div>
+          );
+
         case 'doc':
         case 'excel':
         case 'ppt':
           return (
             <div className={previewStyle}>
-              {typeof window !== 'undefined' && (
-                <FileViewer
-                  fileType={attachment.fileType || ''}
-                  filePath={attachment.url}
-                  onError={onError}
-                  errorComponent={<div className="text-red-500 p-4">{error || 'Error loading preview'}</div>}
-                  unsupportedComponent={
-                    <div className="text-center p-6">
-                      <FileTypeIcon type={attachment.type} className="w-16 h-16 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900">{attachment.name}</h3>
-                      <p className="text-sm text-gray-500 mb-4">
-                        {attachment.type === 'pdf' ? 'PDF Document' : 
-                         attachment.type === 'doc' ? 'Word Document' : 
-                         attachment.type === 'excel' ? 'Excel Spreadsheet' : 'PowerPoint Presentation'}
-                      </p>
-                      {downloadButton}
-                      {attachment.type !== 'pdf' && (
-                        <a
-                          href={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(attachment.url)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          View Online
-                        </a>
-                      )}
-                    </div>
-                  }
-                />
-              )}
+              <div className="text-center p-6">
+                <FileTypeIcon type={attachment.type} className="w-16 h-16 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900">{attachment.name}</h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  {attachment.type === 'doc' ? 'Word Document' : 
+                   attachment.type === 'excel' ? 'Excel Spreadsheet' : 'PowerPoint Presentation'}
+                </p>
+                {downloadButton}
+                <a
+                  href={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(attachment.url)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  View Online
+                </a>
+              </div>
             </div>
           );
 

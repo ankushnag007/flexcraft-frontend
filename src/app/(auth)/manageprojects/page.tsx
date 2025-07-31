@@ -49,12 +49,14 @@ import {
   File,
   FileImage,
   ChevronsUpDown,
+  Pen,
 } from "lucide-react";
 import logo from "../Assets/images/logo.png";
 // import BugTracker from "./(auth)/bugsTracker/page";
 // import { render } from "react-dom";
 import BugTracker from "../bugsTracker/page";
 // DocEditor
+import Notes from "./notes/page"
 import DocEditor from "../documents/page";
 // Goals
 import Goals from "../manageprojects/goals/page"
@@ -87,6 +89,16 @@ interface Task {
   storyPoints?: number;
 }
 
+interface Note {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  color: string;
+  tags: string[];
+}
+
 const JiraLikeProjectManagement = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -101,6 +113,28 @@ const JiraLikeProjectManagement = () => {
       sharedWith: [],
     },
   ]);
+
+  const [notes, setNotes] = useState<Note[]>([
+    {
+      id: '1',
+      title: 'Project Kickoff',
+      content: 'Discuss project goals and timeline with the team.',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      color: 'bg-blue-100',
+      tags: ['meeting', 'important'],
+    },
+    {
+      id: '2',
+      title: 'Design Ideas',
+      content: 'Consider using a modern color scheme with blues and greens.',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      color: 'bg-green-100',
+      tags: ['design'],
+    },
+  ]);
+
 
   const handleSave = async (doc: Document) => {
     // In a real app, you would call your API here
@@ -341,7 +375,7 @@ const JiraLikeProjectManagement = () => {
       setDraggedTaskId(null);
     }
   };
-  const [activeContentTab, setActiveContentTab] = useState("Your work");
+  const [activeContentTab, setActiveContentTab] = useState("summary");
 
   const handleAddTask = () => {
     if (!newTaskTitle.trim()) return;
@@ -1130,6 +1164,11 @@ const JiraLikeProjectManagement = () => {
             onShareDocument={undefined}
             onAssignToTask={undefined}
           />
+        );
+        case "Notes":
+        return(
+          <Notes initialNotes={notes}
+        onNotesChange={setNotes}/>
         );
       case "summary":
         return (
@@ -2291,6 +2330,17 @@ const JiraLikeProjectManagement = () => {
                     >
                       <File className="w-4 h-4 mr-2" />
                       Docs
+                    </button>
+                      <button
+                      className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                        activeContentTab === "Notes"
+                          ? "bg-blue-50 text-blue-500"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                      }`}
+                      onClick={() => setActiveContentTab("Notes")}
+                    >
+                      <Pen className="w-4 h-4 mr-2" />
+                      Notes
                     </button>
                   </nav>
                 </div>

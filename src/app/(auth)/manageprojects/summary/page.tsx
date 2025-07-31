@@ -1,5 +1,6 @@
 "use client"
-import React, { useState } from 'react';
+import { AlignEndVertical, BarChart2, MoreHorizontal } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { 
   BarChart, 
   Bar, 
@@ -88,6 +89,11 @@ const ACTIVITIES = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 const SummaryComponent = () => {
+   const [date, setDate] = useState('');
+
+  useEffect(() => {
+    setDate(new Date().toLocaleDateString());
+  }, []);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeReport, setActiveReport] = useState('overview');
   const [showAllMembers, setShowAllMembers] = useState(false);
@@ -357,31 +363,29 @@ const SummaryComponent = () => {
                 />
               </svg>
             </div>
-            <div>
-              <h3 className="font-medium text-lg text-gray-800">
-                Project Dashboard
-              </h3>
-              <p className="text-sm text-gray-500">
-                Last updated: {new Date().toLocaleDateString()}
-              </p>
-            </div>
+              <div>
+                <h3 className="font-medium text-lg text-gray-800">
+                  Project Dashboard
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Last updated: {date}
+                </p>
+              </div>
           </div>
+      
+                  <div className="mt-6 flex justify-end gap-2">
+      <button 
+            onClick={toggleDrawer}
+            className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md flex items-center transition-colors"
+          >
+            <BarChart2 className="w-4 h-4 mr-1" />
+            View Report
+          </button>
           <button className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md flex items-center transition-colors">
-            <svg
-              className="w-4 h-4 mr-1"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-              />
-            </svg>
+           <MoreHorizontal className="w-4 h-4 mr-1" />
             More
           </button>
+        </div>
         </div>
 
         {/* Main metrics grid */}
@@ -597,27 +601,7 @@ const SummaryComponent = () => {
         </div>
 
         {/* Call to action */}
-        <div className="mt-6 flex justify-end">
-          <button 
-            onClick={toggleDrawer}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center"
-          >
-            View Full Project Report
-            <svg
-              className="w-4 h-4 ml-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
-        </div>
+
       </div>
 
       {/* Report Drawer */}
