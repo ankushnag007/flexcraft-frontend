@@ -96,7 +96,7 @@ const Header = () => {
         slider.style.transform = `translateX(${left}px)`
         slider.style.width = `${width}px`
       } else {
-        slider.style.transition = 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)'
+        slider.style.transition = 'all 0ms cubic-bezier(0.4, 0, 0.2, 1)'
         
         requestAnimationFrame(() => {
           if (sliderRef.current) {
@@ -279,22 +279,28 @@ const Header = () => {
                   }}
                 />
                 {navItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    href={item.path}
-                    ref={(el) => handleTabRef(el, item.path)}
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors relative z-10 ${
-                      pathname.startsWith(item.path)
-                        ? 'text-[var(--theme-accent)] font-medium' 
-                        : 'text-[var(--theme-text)] hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)] hover:text-[var(--theme-text)]'
-                    }`}
-                    onMouseEnter={() => setActiveTab(item.path)}
-                    onMouseLeave={() => setActiveTab(navItems.find(i => pathname.startsWith(i.path))?.path || null)}
-                    onClick={(e) => showTour && handleNavClick(item.path, e)}
-                  >
-                    <item.icon className="w-4 h-4 mr-2 flex-shrink-0" />
-                    <span className="truncate">{item.label}</span>
-                  </Link>
+                 <Link
+  key={item.path}
+  href={item.path}
+  ref={(el) => handleTabRef(el, item.path)}
+  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors relative z-10 ${
+    pathname.startsWith(item.path)
+      ? 'text-[var(--theme-accent)] font-medium' 
+      : 'text-[var(--theme-text)] hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)] hover:text-[var(--theme-text)]'
+  }`}
+  onMouseEnter={() => setActiveTab(item.path)}
+  onMouseLeave={() => setActiveTab(navItems.find(i => pathname.startsWith(i.path))?.path || null)}
+  onClick={(e) => {
+    if (showTour) {
+      e.preventDefault();
+      handleNavClick(item.path, e);
+    }
+    // Otherwise, let Next.js Link handle navigation
+  }}
+>
+  <item.icon className="w-4 h-4 mr-2 flex-shrink-0" />
+  <span className="truncate">{item.label}</span>
+</Link>
                 ))}
               </nav>
             </div>
