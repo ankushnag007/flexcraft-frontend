@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+"use client"
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 interface Note {

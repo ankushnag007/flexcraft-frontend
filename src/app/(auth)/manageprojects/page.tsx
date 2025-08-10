@@ -1212,10 +1212,7 @@ const JiraLikeProjectManagement = () => {
                   Create
                 </button>
               </div>
-            </div>
-
-            {/* View Options */}
-            <div className="flex items-center justify-between mb-6 bg-white p-3 rounded-lg border border-gray-200 transition-all">
+            <div className="flex items-center justify-between mb-6 bg-white p-3 rounded-lg border border-gray-200 transition-all max-w-7xl mx-auto w-full">
               <div className="flex items-center space-x-4">
                 <button
                   className={`flex items-center px-3 py-1 rounded ${
@@ -1273,6 +1270,9 @@ const JiraLikeProjectManagement = () => {
                 </button>
               </div>
             </div>
+            </div>
+
+            {/* View Options */}
 
             {/* Board View */}
             {viewMode === "board" && (
@@ -2484,7 +2484,8 @@ const JiraLikeProjectManagement = () => {
 
         {/* Task Detail Modal */}
         {selectedTask && (
-          <div className="fixed inset-0 bg-[rgba(0,0,0,0.4)] bg-opacity-40 flex items-center justify-center z-50">
+          <div className={`fixed inset-y-0 right-0 w-full overflow-y-auto md:w-2/2 lg:w-4/8 bg-white shadow-lg transform
+        } transition-transform duration-300 ease-in-out z-30`}>
             <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
               <div className="flex justify-between items-start mb-4">
                 <div>
