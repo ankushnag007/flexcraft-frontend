@@ -139,7 +139,7 @@ const DEMO_DOCUMENTS: Document[] = [
   }
 ];
 
-export default function DocumentEditor({
+const DocumentEditor =({
   initialDocuments = DEMO_DOCUMENTS,
   teamMembers = DEMO_MEMBERS,
   tasks = DEMO_TASKS,
@@ -150,7 +150,7 @@ export default function DocumentEditor({
   onShareDocument,
   onAssignToTask,
   className = ''
-}: DocumentEditorProps) {
+}: DocumentEditorProps) =>{
   // State
   const [documents, setDocuments] = useState<Document[]>(initialDocuments);
   const [currentDoc, setCurrentDoc] = useState<Document>(createNewDocument());
@@ -1297,3 +1297,5 @@ export default function DocumentEditor({
     // </AuthGuard>
   );
 };
+
+export default DocumentEditor;
