@@ -58,60 +58,16 @@ const Header = () => {
 
   const pathname = usePathname()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<string | null>(null)
   const [showTour, setShowTour] = useState(false)
   const [hasCompletedTour, setHasCompletedTour] = useState(false)
   const [currentTourStep, setCurrentTourStep] = useState(0)
   
-  const navRef = useRef<HTMLDivElement>(null)
-  const sliderRef = useRef<HTMLDivElement>(null)
   const itemsRef = useRef<Map<string, HTMLAnchorElement>>(new Map())
-  const resizeObserverRef = useRef<ResizeObserver | null>(null)
-  const animationFrameRef = useRef<number | null>(null)
   const tourTooltipRef = useRef<HTMLDivElement>(null)
-
-  const updateSlider = useCallback((immediate = false) => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current)
-    }
-
-    animationFrameRef.current = requestAnimationFrame(() => {
-      const currentPath = navItems.find(item => pathname.startsWith(item.path))?.path || activeTab
-      if (!currentPath) return
-
-      const tabElement = itemsRef.current.get(currentPath)
-      if (!tabElement || !navRef.current || !sliderRef.current) return
-
-      const navRect = navRef.current.getBoundingClientRect()
-      const tabRect = tabElement.getBoundingClientRect()
-
-      const left = tabRect.left - navRect.left
-      const width = tabRect.width
-
-      const slider = sliderRef.current
-      if (!slider) return
-
-      if (immediate) {
-        slider.style.transition = 'none'
-        slider.style.transform = `translateX(${left}px)`
-        slider.style.width = `${width}px`
-      } else {
-        slider.style.transition = 'all 0ms cubic-bezier(0.4, 0, 0.2, 1)'
-        
-        requestAnimationFrame(() => {
-          if (sliderRef.current) {
-            sliderRef.current.style.transform = `translateX(${left}px)`
-            sliderRef.current.style.width = `${width}px`
-          }
-        })
-      }
-    })
-  }, [pathname, activeTab])
 
   useEffect(() => {
     const initialTab = navItems.find(item => pathname.startsWith(item.path))
     if (initialTab) {
-      setActiveTab(initialTab.path)
       const initialStep = navItems.findIndex(item => item.path === initialTab.path)
       setCurrentTourStep(initialStep >= 0 ? initialStep : 0)
     }
@@ -120,41 +76,15 @@ const Header = () => {
     if (tourCompleted !== 'true') {
       setTimeout(() => setShowTour(true), 1500)
     }
-
-    resizeObserverRef.current = new ResizeObserver(() => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-      animationFrameRef.current = requestAnimationFrame(() => {
-        updateSlider()
-      })
-    })
-
-    if (navRef.current) {
-      resizeObserverRef.current.observe(navRef.current)
-    }
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect()
-      }
-    }
-  }, [updateSlider, pathname])
+  }, [pathname])
 
   const handleTabRef = useCallback((el: HTMLAnchorElement | null, path: string) => {
     if (el) {
       itemsRef.current.set(path, el)
-      if (pathname.startsWith(path)) {
-        setActiveTab(path)
-        updateSlider(true)
-      }
     } else {
       itemsRef.current.delete(path)
     }
-  }, [pathname, updateSlider])
+  }, [])
 
   const handleNextTourStep = () => {
     if (currentTourStep < navItems.length - 1) {
@@ -187,11 +117,9 @@ const Header = () => {
     if (!currentItem) return
 
     const element = itemsRef.current.get(currentItem.path)
-    if (!element || !navRef.current) return
+    if (!element) return
 
-    const navRect = navRef.current.getBoundingClientRect()
     const itemRect = element.getBoundingClientRect()
-
     const tooltip = tourTooltipRef.current
     const tooltipWidth = tooltip.offsetWidth
     const viewportWidth = window.innerWidth
@@ -264,43 +192,27 @@ const Header = () => {
         <div className="w-full px-4">
           <div className="flex items-center justify-between h-16 w-full">
             <div className="flex items-center overflow-hidden whitespace-nowrap relative">
-              <nav 
-                ref={navRef}
-                className="flex space-x-1 relative"
-              >
-                <div 
-                  ref={sliderRef}
-                  className="absolute bg-[color-mix(in_srgb,var(--theme-accent)_30%,var(--theme-background)_70%)] rounded-md h-8 top-1/2 -translate-y-1/2 origin-left"
-                  style={{
-                    pointerEvents: 'none',
-                    willChange: 'transform',
-                    transition: 'all 250ms ease',
-                    left: 0
-                  }}
-                />
+              <nav className="flex space-x-1 relative">
                 {navItems.map((item) => (
-                 <Link
-  key={item.path}
-  href={item.path}
-  ref={(el) => handleTabRef(el, item.path)}
-  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors relative z-10 ${
-    pathname.startsWith(item.path)
-      ? 'text-[var(--theme-accent)] font-medium' 
-      : 'text-[var(--theme-text)] hover:bg-[color-mix(in_srgb,var(--theme-accent)_10%,var(--theme-background)_90%)] hover:text-[var(--theme-text)]'
-  }`}
-  onMouseEnter={() => setActiveTab(item.path)}
-  onMouseLeave={() => setActiveTab(navItems.find(i => pathname.startsWith(i.path))?.path || null)}
-  onClick={(e) => {
-    if (showTour) {
-      e.preventDefault();
-      handleNavClick(item.path, e);
-    }
-    // Otherwise, let Next.js Link handle navigation
-  }}
->
-  <item.icon className="w-4 h-4 mr-2 flex-shrink-0" />
-  <span className="truncate">{item.label}</span>
-</Link>
+                  <Link
+                    key={item.path}
+                    href={item.path}
+                    ref={(el) => handleTabRef(el, item.path)}
+                    className={`flex items-center px-3 py-2 text-sm font-medium transition-colors relative ${
+                      pathname.startsWith(item.path)
+                        ? 'text-[var(--theme-accent)] font-medium border-b-2 border-[var(--theme-accent)]' 
+                        : 'text-[var(--theme-text)] hover:text-[var(--theme-accent)]'
+                    }`}
+                    onClick={(e) => {
+                      if (showTour) {
+                        e.preventDefault();
+                        handleNavClick(item.path, e);
+                      }
+                    }}
+                  >
+                    <item.icon className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <span className="truncate">{item.label}</span>
+                  </Link>
                 ))}
               </nav>
             </div>
@@ -376,8 +288,6 @@ const Header = () => {
         </div>
       )}
 
-
-
       <style jsx global>{`
         .tour-highlight {
           position: relative;
@@ -427,17 +337,7 @@ const ThemePicker = () => {
 
   return (
     <div className="w-full flex flex-col items-center var(--theme-background)" >
-      {/* <label className="mb-1 text-xs font-medium text-[var(--theme-text)]">Theme</label> */}
       <div className="relative w-full var(--theme-background)">
-        {/* <select
-          className="w-full border border-[var(--theme-primary)] rounded px-3 py-1 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={selectedTheme.name}
-          onChange={e => handleThemeChange(e.target.value)}
-        >
-          {themes.map(theme => (
-            <option key={theme.name} value={theme.name}>{theme.name}</option>
-          ))}
-        </select> */}
         <div className="absolute right-2 top-2 flex items-center pointer-events-none bg-gray-200 p-1 rounded-lg" >
           <label className="font-bold  text-sm font-sm font-sm pr-2 " style={{color: selectedTheme.primary}}>Selected theme </label>
           <span

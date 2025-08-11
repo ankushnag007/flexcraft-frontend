@@ -66,18 +66,18 @@ const FlexCraftDashboard = () => {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const res = {
-      routename: 'homepage',
-      userId: '123'
-    };
+  // useEffect(() => {
+  //   const res = {
+  //     routename: 'homepage',
+  //     userId: '123'
+  //   };
 
-    const { routename } = res;
+  //   const { routename } = res;
 
-    if (routename && routename !== 'dashboard') {
-      router.replace(`/${routename}`);
-    }
-  }, [router]);
+  //   if (routename && routename !== 'dashboard') {
+  //     router.replace(`/${routename}`);
+  //   }
+  // }, [router]);
 
 
   // Apply theme to :root as CSS variables

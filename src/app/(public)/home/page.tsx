@@ -301,14 +301,12 @@ const FlexcraftHomepage = () => {
       {/* Demo Video Section */}
       <motion.section 
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
-        variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
       >
         <motion.section 
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
-          variants={sectionVariants}
           initial="offscreen"
           whileInView="onscreen"
           viewport={{ once: true, amount: 0.3 }}
@@ -344,7 +342,6 @@ const FlexcraftHomepage = () => {
       {/* Feature Highlights */}
       <motion.section 
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
-        variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
@@ -384,7 +381,6 @@ const FlexcraftHomepage = () => {
       {/* Platform Architecture Section */}
       <motion.section 
         className="bg-white pt-16"
-        variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
@@ -402,7 +398,6 @@ const FlexcraftHomepage = () => {
               <motion.div 
                 key={feature.title}
                 className="bg-gray-50 p-6 rounded-lg text-center"
-                variants={fadeInUp}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
@@ -424,7 +419,6 @@ const FlexcraftHomepage = () => {
       {/* Workflow Section */}
       <motion.section 
         className="bg-gradient-to-r from-blue-50 to-indigo-50 py-16"
-        variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
@@ -445,7 +439,6 @@ const FlexcraftHomepage = () => {
                 <motion.div 
                   key={step.title}
                   className="bg-white p-6 rounded-xl shadow-sm text-center relative z-10"
-                  variants={fadeInUp}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true }}
@@ -468,7 +461,6 @@ const FlexcraftHomepage = () => {
       {/* Unified Platform Section */}
       <motion.section 
         className="bg-gray-50 py-16"
-        variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
@@ -507,7 +499,6 @@ const FlexcraftHomepage = () => {
       {/* AI Section */}
       <motion.section 
         className="bg-white py-16"
-        variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
@@ -546,7 +537,6 @@ const FlexcraftHomepage = () => {
       {/* Stats Section */}
       <motion.section 
         className="py-16 bg-gray-900 text-white"
-        variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
@@ -556,7 +546,7 @@ const FlexcraftHomepage = () => {
             {stats.map((stat, index) => (
               <motion.div 
                 key={stat.value}
-                variants={fadeInUp}
+                // variants={fadeInUp}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
@@ -573,7 +563,7 @@ const FlexcraftHomepage = () => {
       {/* Integration Section */}
       <motion.section 
         className="bg-gray-50 py-16"
-        variants={sectionVariants}
+        // variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
@@ -620,7 +610,7 @@ const FlexcraftHomepage = () => {
       {/* Resources Section */}
       <motion.section 
         className="bg-white py-16"
-        variants={sectionVariants}
+        // variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
@@ -638,7 +628,7 @@ const FlexcraftHomepage = () => {
               <motion.div 
                 key={resource.title}
                 className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all"
-                variants={fadeInUp}
+                // variants={fadeInUp}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
@@ -668,7 +658,7 @@ const FlexcraftHomepage = () => {
       {/* Testimonials */}
       <motion.section 
         className="bg-white py-16"
-        variants={sectionVariants}
+        // variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
@@ -718,7 +708,7 @@ const FlexcraftHomepage = () => {
       {/* CTA Section */}
       <motion.section 
         className="bg-gradient-to-r from-blue-600 to-blue-800 py-16"
-        variants={sectionVariants}
+        // variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.3 }}
@@ -744,7 +734,7 @@ const FlexcraftHomepage = () => {
       {/* Footer */}
       <motion.footer 
         className="bg-gray-800 text-white"
-        variants={sectionVariants}
+        // variants={sectionVariants}
         initial="offscreen"
         whileInView="onscreen"
         viewport={{ once: true, amount: 0.1 }}
