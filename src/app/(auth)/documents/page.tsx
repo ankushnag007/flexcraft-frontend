@@ -139,7 +139,7 @@ const DEMO_DOCUMENTS: Document[] = [
   }
 ];
 
-const DocumentEditor =({
+const DocumentEditor = ({
   initialDocuments = DEMO_DOCUMENTS,
   teamMembers = DEMO_MEMBERS,
   tasks = DEMO_TASKS,
@@ -150,7 +150,7 @@ const DocumentEditor =({
   onShareDocument,
   onAssignToTask,
   className = ''
-}: DocumentEditorProps) =>{
+}: DocumentEditorProps) => {
   // State
   const [documents, setDocuments] = useState<Document[]>(initialDocuments);
   const [currentDoc, setCurrentDoc] = useState<Document>(createNewDocument());
@@ -177,6 +177,7 @@ const DocumentEditor =({
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
+  const lastSelectionRef = useRef<Range | null>(null);
 
   // Helper functions
   function createNewDocument(): Document {
@@ -218,6 +219,30 @@ const DocumentEditor =({
       tagInputRef.current.selectionStart = tagInputRef.current.selectionEnd = newTag.length;
     }
   }, [newTag]);
+
+  // Fix for contentEditable cursor position
+  useEffect(() => {
+    if (editorRef.current && viewMode === 'edit') {
+      // Focus the editor when entering edit mode
+      setTimeout(() => {
+        if (editorRef.current) {
+          editorRef.current.focus();
+          
+          // Move cursor to end if there's content
+          if (editorRef.current.innerHTML) {
+            const range = document.createRange();
+            range.selectNodeContents(editorRef.current);
+            range.collapse(false);
+            const selection = window.getSelection();
+            if (selection) {
+              selection.removeAllRanges();
+              selection.addRange(range);
+            }
+          }
+        }
+      }, 100);
+    }
+  }, [viewMode]);
 
   // Document operations
   const createDocument = () => {
@@ -970,44 +995,10 @@ const DocumentEditor =({
                   </h1>
                 )}
                 
-             
                 <div className="flex items-center mt-2 text-sm text-gray-500">
                   <span>Last edited: {currentDoc.lastEdited}</span>
                   <span className="mx-2">•</span>
                   <span className="capitalize">{currentDoc.status}</span>
-                     <div className='flex flex-1 items-end justify-end'>
-                     {currentDoc.sharedWith && currentDoc.sharedWith.length > 0 && (
-                  <div className="flex items-center space-x-2 m-2">
-  <span className="text-sm text-gray-600">Shared to:</span>
-  <div className="flex -space-x-2">
-    {currentDoc.sharedWith.slice(0, 3).map(userId => {
-      const member = getMemberById(userId);
-      return member ? (
-        <div 
-          key={member.id}
-          className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium"
-          title={`${member.name} (${member.email})`}
-        >
-          {member.avatar ? (
-            <img src={member.avatar} alt={member.name} className="w-full h-full rounded-full" />
-          ) : (
-            member.name.charAt(0).toUpperCase()
-          )}
-        </div>
-      ) : null;
-    })}
-    {currentDoc.sharedWith.length > 3 && (
-      <div 
-        className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium"
-        title={`Shared with ${currentDoc.sharedWith.length} members`}
-      >
-        +{currentDoc.sharedWith.length - 3}
-      </div>
-    )}
-  </div>
-</div>
-                  )}
-                </div>
                 </div>
                 
                 {/* Tags */}

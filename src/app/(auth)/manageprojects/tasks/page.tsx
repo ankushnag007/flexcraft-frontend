@@ -281,7 +281,7 @@ const ProjectBoard = () => {
       {/* Board View */}
       {viewMode === "board" && (
         <div className="flex-1 overflow-hidden">
-          <div className="flex h-full overflow-x-auto pb-4">
+          <div className="flex h-full overflow-none pb-4">
             {/* Existing Sections */}
             {sections.map((section) => (
               <div

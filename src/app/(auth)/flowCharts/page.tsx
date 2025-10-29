@@ -1,721 +1,1352 @@
-'use client'
-import { useState, useRef, useEffect } from 'react';
-import { marked } from 'marked';
 
-type EditorMode = 'document' | 'both' | 'canvas';
-type ToolMode = 'select' | 'node' | 'text' | 'shape' | 'connection' | 'icon';
-type ShapeType = 'rectangle' | 'circle' | 'diamond' | 'triangle' | 'hexagon';
-type Theme = 'light' | 'dark' | 'system';
+  "use client"
+  import React, { useState, useRef, useEffect, useCallback } from 'react';
+  import { 
+    MousePointer, 
+    Square, 
+    Circle, 
+    ArrowRight, 
+    Minus, 
+    Type, 
+    Pencil, 
+    Eraser,
+    Hand,
+    RotateCcw,
+    RotateCw,
+    ZoomIn,
+    ZoomOut,
+    Download,
+    Upload,
+    Trash2,
+    Copy,
+    AlignLeft,
+    Bold,
+    Italic,
+    Underline,
+    Menu,
+    Search,
+    Folder,
+    File,
+    Users,
+    Bot,
+    BookOpen,
+    Github,
+    Lock,
+    Archive,
+    Plus,
+    ChevronDown,
+    Sparkles,
+    Database,
+    Server,
+    Globe,
+    Smartphone,
+    Cpu,
+    HardDrive,
+    Cloud,
+    Wifi,
+    Shield,
+    Settings,
+    User,
+    Mail,
+    Calendar,
+    MessageSquare,
+    ImageIcon,
+    Video,
+    Music,
+    FileText,
+    Code,
+    Monitor,
+    Laptop,
+    Tablet,
+    MessageSquareMore,
+    Save
+  } from 'lucide-react';
 
-interface DiagramElement {
-  id: string;
-  type: 'node' | 'text' | 'shape' | 'icon' | 'connection';
-  shape?: ShapeType;
-  icon?: string;
-  content?: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  color?: string;
-  from?: string;
-  to?: string;
-}
+  interface Point {
+    x: number;
+    y: number;
+  }
 
-const ErasorEditor = () => {
-  const [title, setTitle] = useState<string>('Untitled File');
-  const [content, setContent] = useState<string>('Type your notes or document here — style with markdown or shortcuts (Ctrl/i)');
-  const [mode, setMode] = useState<EditorMode>('document');
-  const [zoom, setZoom] = useState<number>(100);
-  const [isPreview, setIsPreview] = useState<boolean>(false);
-  const [toolMode, setToolMode] = useState<ToolMode>('select');
-  const [selectedShape, setSelectedShape] = useState<ShapeType>('rectangle');
-  const [selectedIcon, setSelectedIcon] = useState<string>('📝');
-  const [diagramElements, setDiagramElements] = useState<DiagramElement[]>([]);
-  const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
-  const [theme, setTheme] = useState<Theme>('light');
-  const [connectionStart, setConnectionStart] = useState<string | null>(null);
-  const [showShortcuts, setShowShortcuts] = useState<boolean>(false);
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const editorRef = useRef<HTMLDivElement>(null);
+  interface DrawingElement {
+    id: string;
+    type: 'freehand' | 'rectangle' | 'circle' | 'arrow' | 'line' | 'text' | 'curved-arrow' | 'node' | 'icon' | 'comment';
+    points: Point[];
+    style: {
+      stroke: string;
+      strokeWidth: number;
+      fill?: string;
+      borderRadius?: number;
+      fontStyle?: 'normal' | 'bold' | 'italic' | 'bold italic';
+      textAlign?: 'left' | 'center' | 'right';
+      textDecoration?: 'none' | 'underline';
+    };
+    text?: string;
+    iconType?: string;
+    nodeType?: 'rounded' | 'diamond' | 'circle';
+    bounds?: { x: number; y: number; width: number; height: number };
+    comment?: string;
+  }
 
-  // Available icons for the icon tool
-  const availableIcons = ['📝', '🔗', '⭐', '🔄', '📊', '📌', '🔵', '🟢', '🔴', '❓', '💡', '⚠️'];
-  const availableColors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'];
+  type Tool = 'select' | 'rectangle' | 'circle' | 'arrow' | 'curved-arrow' | 'line' | 'pen' | 'eraser' | 'text' | 'hand' | 'node' | 'icon' | 'comment';
+  type Tab = 'document' | 'both' | 'canvas';
 
-  // Apply theme
-  useEffect(() => {
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(theme === 'system' ? 
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : 
-      theme);
-  }, [theme]);
+  const iconLibrary = [
+    { name: 'Database', icon: Database },
+    { name: 'Server', icon: Server },
+    { name: 'Globe', icon: Globe },
+    { name: 'Smartphone', icon: Smartphone },
+    { name: 'Cpu', icon: Cpu },
+    { name: 'HardDrive', icon: HardDrive },
+    { name: 'Cloud', icon: Cloud },
+    { name: 'Wifi', icon: Wifi },
+    { name: 'Shield', icon: Shield },
+    { name: 'Settings', icon: Settings },
+    { name: 'User', icon: User },
+    { name: 'Mail', icon: Mail },
+    { name: 'Calendar', icon: Calendar },
+    { name: 'MessageSquare', icon: MessageSquare },
+    { name: 'ImageIcon', icon: ImageIcon },
+    { name: 'Video', icon: Video },
+    { name: 'Music', icon: Music },
+    { name: 'FileText', icon: FileText },
+    { name: 'Code', icon: Code },
+    { name: 'Monitor', icon: Monitor },
+    { name: 'Laptop', icon: Laptop },
+    { name: 'Tablet', icon: Tablet }
+  ];
 
-  // Handle markdown parsing
-  const getMarkdownText = () => {
-    return { __html: marked(content) };
-  };
+  const EraserWhiteboard: React.FC = () => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const documentRef = useRef<HTMLDivElement>(null);
+    
+    const [currentTool, setCurrentTool] = useState<Tool>('select');
+    const [activeTab, setActiveTab] = useState<Tab>('both');
+    const [isDrawing, setIsDrawing] = useState(false);
+    const [elements, setElements] = useState<DrawingElement[]>([]);
+    const [currentElement, setCurrentElement] = useState<DrawingElement | null>(null);
+    const [selectedElement, setSelectedElement] = useState<string | null>(null);
+    const [zoom, setZoom] = useState(100);
+    const [pan, setPan] = useState({ x: 0, y: 0 });
+    const [isPanning, setIsPanning] = useState(false);
+    const [lastPanPoint, setLastPanPoint] = useState<Point>({ x: 0, y: 0 });
+    const [strokeColor, setStrokeColor] = useState('#000000');
+    const [strokeWidth, setStrokeWidth] = useState(2);
+    const [fillColor, setFillColor] = useState('transparent');
+    const [isTextEditing, setIsTextEditing] = useState(false);
+    const [textInput, setTextInput] = useState('');
+    const [textPosition, setTextPosition] = useState<Point>({ x: 0, y: 0 });
+    const [showIconLibrary, setShowIconLibrary] = useState(false);
+    const [selectedIcon, setSelectedIcon] = useState('Database');
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [showAIDialog, setShowAIDialog] = useState(false);
+    const [aiPrompt, setAiPrompt] = useState('');
+    const [documentContent, setDocumentContent] = useState('# Untitled Document\n\nStart typing your document here...');
+    const [selectedNodeType, setSelectedNodeType] = useState<'rounded' | 'diamond' | 'circle'>('rounded');
+    const [activeFilter, setActiveFilter] = useState('All');
+    const [isCommentEditing, setIsCommentEditing] = useState(false);
+    const [commentInput, setCommentInput] = useState('');
+    const [commentPosition, setCommentPosition] = useState<Point>({ x: 0, y: 0 });
+    const [selectedElementForComment, setSelectedElementForComment] = useState<string | null>(null);
+    const [fontStyle, setFontStyle] = useState<'normal' | 'bold' | 'italic' | 'bold italic'>('normal');
+    const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left');
+    const [textDecoration, setTextDecoration] = useState<'none' | 'underline'>('none');
+    const [isMovingElement, setIsMovingElement] = useState(false);
+    const [moveStartPoint, setMoveStartPoint] = useState<Point>({ x: 0, y: 0 });
+    const [selectedElementForMove, setSelectedElementForMove] = useState<DrawingElement | null>(null);
 
-  // Handle canvas click to add elements
-  const handleCanvasClick = (e: React.MouseEvent) => {
-    if (mode !== 'canvas') return;
+    const tools = [
+      { id: 'select', icon: MousePointer, label: 'Select' },
+      { id: 'rectangle', icon: Square, label: 'Rectangle' },
+      { id: 'circle', icon: Circle, label: 'Circle' },
+      { id: 'arrow', icon: ArrowRight, label: 'Arrow' },
+      { id: 'curved-arrow', icon: ArrowRight, label: 'Curved Arrow' },
+      { id: 'line', icon: Minus, label: 'Line' },
+      { id: 'pen', icon: Pencil, label: 'Pen' },
+      { id: 'text', icon: Type, label: 'Text' },
+      { id: 'node', icon: Square, label: 'Node' },
+      { id: 'icon', icon: Database, label: 'Icon' },
+      { id: 'comment', icon: MessageSquareMore, label: 'Comment' },
+      { id: 'hand', icon: Hand, label: 'Hand' },
+    ];
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const sidebarItems = [
+      { label: 'All Files', icon: File, shortcut: 'A', count: null },
+      { label: 'Team Folders', icon: Folder, shortcut: null, count: null, isHeader: true },
+      { label: 'Eraserbot', icon: Bot, shortcut: 'B', count: null, beta: true },
+      { label: 'AI References', icon: BookOpen, shortcut: 'C', count: null },
+      { label: 'Team Templates', icon: FileText, shortcut: 'T', count: null },
+      { label: 'Github Sync', icon: Github, shortcut: 'G', count: null, beta: true },
+      { label: 'Private Files', icon: Lock, shortcut: null, count: null, upgrade: true },
+      { label: 'Archive', icon: Archive, shortcut: 'E', count: null },
+    ];
 
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const filterTabs = ['All', 'Recents', 'Created by Me', 'Folders', 'Unsorted'];
 
-    // Handle connection creation
-    if (toolMode === 'connection' && connectionStart) {
-      const elementUnderCursor = findElementAtPosition(x, y);
-      if (elementUnderCursor && elementUnderCursor.id !== connectionStart) {
-        const newConnection: DiagramElement = {
-          id: `conn-${Date.now()}`,
-          type: 'connection',
-          from: connectionStart,
-          to: elementUnderCursor.id,
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-          color: availableColors[Math.floor(Math.random() * availableColors.length)]
-        };
-        setDiagramElements([...diagramElements, newConnection]);
-      }
-      setConnectionStart(null);
-      return;
-    }
+    const getMousePos = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return { x: 0, y: 0 };
+      
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (e.clientX - rect.left - pan.x) / (zoom / 100),
+        y: (e.clientY - rect.top - pan.y) / (zoom / 100)
+      };
+    }, [pan, zoom]);
 
-    if (toolMode === 'select') return;
+    const generateId = () => Math.random().toString(36).substr(2, 9);
 
-    const newElement: DiagramElement = {
-      id: `element-${Date.now()}`,
-      type: toolMode === 'shape' ? 'shape' : 
-            toolMode === 'node' ? 'node' : 
-            toolMode === 'text' ? 'text' : 
-            toolMode === 'connection' ? 'node' : 'icon',
-      shape: toolMode === 'shape' ? selectedShape : undefined,
-      icon: toolMode === 'icon' ? selectedIcon : undefined,
-      content: toolMode === 'text' ? 'Double click to edit' : undefined,
-      x,
-      y,
-      width: toolMode === 'text' ? 150 : 100,
-      height: toolMode === 'text' ? 40 : 60,
-      color: availableColors[Math.floor(Math.random() * availableColors.length)]
+    const drawCurvedArrow = (ctx: CanvasRenderingContext2D, start: Point, end: Point, strokeStyle: string, lineWidth: number) => {
+      const cp1x = start.x + (end.x - start.x) * 0.5;
+      const cp1y = start.y;
+      const cp2x = start.x + (end.x - start.x) * 0.5;
+      const cp2y = end.y;
+
+      ctx.strokeStyle = strokeStyle;
+      ctx.lineWidth = lineWidth;
+      
+      ctx.beginPath();
+      ctx.moveTo(start.x, start.y);
+      ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, end.x, end.y);
+      ctx.stroke();
+
+      // Arrow head
+      const headLength = 15;
+      const angle = Math.atan2(end.y - cp2y, end.x - cp2x);
+      ctx.beginPath();
+      ctx.moveTo(end.x, end.y);
+      ctx.lineTo(
+        end.x - headLength * Math.cos(angle - Math.PI / 6),
+        end.y - headLength * Math.sin(angle - Math.PI / 6)
+      );
+      ctx.moveTo(end.x, end.y);
+      ctx.lineTo(
+        end.x - headLength * Math.cos(angle + Math.PI / 6),
+        end.y - headLength * Math.sin(angle + Math.PI / 6)
+      );
+      ctx.stroke();
     };
 
-    // If in connection mode and clicked on an element, start connection
-    if (toolMode === 'connection' && !connectionStart) {
-      const elementUnderCursor = findElementAtPosition(x, y);
-      if (elementUnderCursor) {
-        setConnectionStart(elementUnderCursor.id);
+    const drawNode = (ctx: CanvasRenderingContext2D, element: DrawingElement) => {
+      if (element.points.length < 2) return;
+
+      const [start, end] = element.points;
+      const width = Math.abs(end.x - start.x);
+      const height = Math.abs(end.y - start.y);
+      const x = Math.min(start.x, end.x);
+      const y = Math.min(start.y, end.y);
+
+      ctx.strokeStyle = element.style.stroke;
+      ctx.lineWidth = element.style.strokeWidth;
+      ctx.fillStyle = element.style.fill || '#f8f9fa';
+
+      switch (element.nodeType) {
+        case 'rounded':
+          const radius = 10;
+          ctx.beginPath();
+          ctx.roundRect(x, y, width, height, radius);
+          ctx.fill();
+          ctx.stroke();
+          break;
+        
+        case 'diamond':
+          ctx.beginPath();
+          ctx.moveTo(x + width / 2, y);
+          ctx.lineTo(x + width, y + height / 2);
+          ctx.lineTo(x + width / 2, y + height);
+          ctx.lineTo(x, y + height / 2);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          break;
+        
+        case 'circle':
+          const centerX = x + width / 2;
+          const centerY = y + height / 2;
+          const circleRadius = Math.min(width, height) / 2;
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, circleRadius, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
+          break;
+      }
+
+      // Draw text if present
+      if (element.text) {
+        ctx.fillStyle = element.style.stroke;
+        ctx.font = getFontStyle(element.style);
+        ctx.textAlign = element.style.textAlign || 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(element.text, x + width / 2, y + height / 2);
+      }
+    };
+
+    const getFontStyle = (style: DrawingElement['style']) => {
+      let font = '';
+      if (style.fontStyle?.includes('bold')) font += 'bold ';
+      if (style.fontStyle?.includes('italic')) font += 'italic ';
+      font += `${style.strokeWidth * 8}px Arial`;
+      return font;
+    };
+
+    const drawIcon = (ctx: CanvasRenderingContext2D, element: DrawingElement) => {
+      if (element.points.length < 1) return;
+      
+      const point = element.points[0];
+      const size = 32;
+      
+      // Draw icon background
+      ctx.fillStyle = element.style.fill || '#f0f0f0';
+      ctx.fillRect(point.x - size/2, point.y - size/2, size, size);
+      
+      // Draw icon border
+      ctx.strokeStyle = element.style.stroke;
+      ctx.lineWidth = element.style.strokeWidth;
+      ctx.strokeRect(point.x - size/2, point.y - size/2, size, size);
+      
+      // Draw icon symbol (simplified representation)
+      ctx.fillStyle = element.style.stroke;
+      ctx.font = '16px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(element.iconType?.charAt(0) || 'I', point.x, point.y);
+    };
+
+    const drawComment = (ctx: CanvasRenderingContext2D, element: DrawingElement) => {
+      if (element.points.length < 1) return;
+      
+      const point = element.points[0];
+      const size = 24;
+      
+      // Draw comment indicator
+      ctx.fillStyle = '#FFD700';
+      ctx.strokeStyle = '#D4AF37';
+      ctx.lineWidth = 1;
+      
+      ctx.beginPath();
+      ctx.moveTo(point.x, point.y);
+      ctx.lineTo(point.x + size, point.y - size/2);
+      ctx.lineTo(point.x + size, point.y - size);
+      ctx.lineTo(point.x, point.y - size);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      
+      // Draw comment count if multiple comments
+      ctx.fillStyle = '#000';
+      ctx.font = '10px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('1', point.x + size/2, point.y - size/2);
+    };
+
+    const drawElement = (ctx: CanvasRenderingContext2D, element: DrawingElement) => {
+      ctx.strokeStyle = element.style.stroke;
+      ctx.lineWidth = element.style.strokeWidth;
+      ctx.fillStyle = element.style.fill || 'transparent';
+
+      // Highlight selected element
+      if (element.id === selectedElement) {
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = element.style.strokeWidth + 2;
+      }
+
+      switch (element.type) {
+        case 'freehand':
+          ctx.beginPath();
+          element.points.forEach((point, index) => {
+            if (index === 0) {
+              ctx.moveTo(point.x, point.y);
+            } else {
+              ctx.lineTo(point.x, point.y);
+            }
+          });
+          ctx.stroke();
+          break;
+
+        case 'rectangle':
+          if (element.points.length >= 2) {
+            const [start, end] = element.points;
+            const width = end.x - start.x;
+            const height = end.y - start.y;
+            ctx.beginPath();
+            ctx.rect(start.x, start.y, width, height);
+            if (element.style.fill !== 'transparent') ctx.fill();
+            ctx.stroke();
+          }
+          break;
+
+        case 'circle':
+          if (element.points.length >= 2) {
+            const [start, end] = element.points;
+            const radius = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
+            ctx.beginPath();
+            ctx.arc(start.x, start.y, radius, 0, 2 * Math.PI);
+            if (element.style.fill !== 'transparent') ctx.fill();
+            ctx.stroke();
+          }
+          break;
+
+        case 'line':
+          if (element.points.length >= 2) {
+            const [start, end] = element.points;
+            ctx.beginPath();
+            ctx.moveTo(start.x, start.y);
+            ctx.lineTo(end.x, end.y);
+            ctx.stroke();
+          }
+          break;
+
+        case 'arrow':
+          if (element.points.length >= 2) {
+            const [start, end] = element.points;
+            const headLength = 15;
+            const angle = Math.atan2(end.y - start.y, end.x - start.x);
+
+            ctx.beginPath();
+            ctx.moveTo(start.x, start.y);
+            ctx.lineTo(end.x, end.y);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(end.x, end.y);
+            ctx.lineTo(
+              end.x - headLength * Math.cos(angle - Math.PI / 6),
+              end.y - headLength * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.moveTo(end.x, end.y);
+            ctx.lineTo(
+              end.x - headLength * Math.cos(angle + Math.PI / 6),
+              end.y - headLength * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.stroke();
+          }
+          break;
+
+        case 'curved-arrow':
+          if (element.points.length >= 2) {
+            const [start, end] = element.points;
+            drawCurvedArrow(ctx, start, end, element.style.stroke, element.style.strokeWidth);
+          }
+          break;
+
+        case 'text':
+          if (element.text && element.points.length > 0) {
+            ctx.fillStyle = element.style.stroke;
+            ctx.font = getFontStyle(element.style);
+            ctx.textAlign = element.style.textAlign || 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(element.text, element.points[0].x, element.points[0].y);
+            
+            if (element.style.textDecoration === 'underline') {
+              const textMetrics = ctx.measureText(element.text);
+              ctx.beginPath();
+              ctx.moveTo(element.points[0].x, element.points[0].y + textMetrics.actualBoundingBoxDescent + 2);
+              ctx.lineTo(element.points[0].x + textMetrics.width, element.points[0].y + textMetrics.actualBoundingBoxDescent + 2);
+              ctx.stroke();
+            }
+          }
+          break;
+
+        case 'node':
+          case 'icon':
+          case 'comment':
+          case 'freehand':
+          case 'rectangle':
+          case 'circle':
+          case 'line':
+          case 'arrow':
+          case 'curved-arrow':
+          case 'text':
+            // These cases are already handled above
+            break;
+      }
+
+      // Reset line dash for next element
+      ctx.setLineDash([]);
+    };
+
+    const redraw = useCallback(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(pan.x, pan.y);
+      ctx.scale(zoom / 100, zoom / 100);
+
+      // Draw grid
+      ctx.strokeStyle = '#e5e5e5';
+      ctx.lineWidth = 0.5;
+      const gridSize = 20;
+      for (let x = -pan.x / (zoom / 100) % gridSize; x < canvas.width / (zoom / 100); x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, -pan.y / (zoom / 100));
+        ctx.lineTo(x, (canvas.height - pan.y) / (zoom / 100));
+        ctx.stroke();
+      }
+      for (let y = -pan.y / (zoom / 100) % gridSize; y < canvas.height / (zoom / 100); y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(-pan.x / (zoom / 100), y);
+        ctx.lineTo((canvas.width - pan.x) / (zoom / 100), y);
+        ctx.stroke();
+      }
+
+      elements.forEach(element => {
+        drawElement(ctx, element);
+      });
+
+      if (currentElement) {
+        drawElement(ctx, currentElement);
+      }
+
+      ctx.restore();
+    }, [elements, currentElement, pan, zoom]);
+
+    useEffect(() => {
+      redraw();
+    }, [redraw]);
+
+    const isPointInElement = (point: Point, element: DrawingElement): boolean => {
+      switch (element.type) {
+        case 'rectangle':
+          if (element.points.length >= 2) {
+            const [start, end] = element.points;
+            const minX = Math.min(start.x, end.x);
+            const maxX = Math.max(start.x, end.x);
+            const minY = Math.min(start.y, end.y);
+            const maxY = Math.max(start.y, end.y);
+            return point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY;
+          }
+          return false;
+        
+        case 'circle':
+          if (element.points.length >= 2) {
+            const [start, end] = element.points;
+            const radius = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
+            const distance = Math.sqrt(Math.pow(point.x - start.x, 2) + Math.pow(point.y - start.y, 2));
+            return distance <= radius;
+          }
+          return false;
+        
+        case 'text':
+          if (element.points.length > 0) {
+            // Simple approximation for text selection
+            const canvas = canvasRef.current;
+            if (!canvas) return false;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return false;
+            
+            ctx.font = getFontStyle(element.style);
+            const metrics = ctx.measureText(element.text || '');
+            const height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+            
+            return point.x >= element.points[0].x && 
+                  point.x <= element.points[0].x + metrics.width && 
+                  point.y >= element.points[0].y && 
+                  point.y <= element.points[0].y + height;
+          }
+          return false;
+        
+        case 'node':
+          if (element.points.length >= 2) {
+            const [start, end] = element.points;
+            const minX = Math.min(start.x, end.x);
+            const maxX = Math.max(start.x, end.x);
+            const minY = Math.min(start.y, end.y);
+            const maxY = Math.max(start.y, end.y);
+            return point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY;
+          }
+          return false;
+        
+        case 'icon':
+          if (element.points.length > 0) {
+            const size = 32;
+            return point.x >= element.points[0].x - size/2 && 
+                  point.x <= element.points[0].x + size/2 && 
+                  point.y >= element.points[0].y - size/2 && 
+                  point.y <= element.points[0].y + size/2;
+          }
+          return false;
+        
+        case 'comment':
+          if (element.points.length > 0) {
+            const size = 24;
+            return point.x >= element.points[0].x && 
+                  point.x <= element.points[0].x + size && 
+                  point.y >= element.points[0].y - size && 
+                  point.y <= element.points[0].y;
+          }
+          return false;
+        
+        default:
+          return false;
+      }
+    };
+
+    const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+      const pos = getMousePos(e);
+
+      if (currentTool === 'hand') {
+        setIsPanning(true);
+        setLastPanPoint(pos);
         return;
       }
-    }
 
-    setDiagramElements([...diagramElements, newElement]);
-  };
+      if (currentTool === 'text') {
+        setIsTextEditing(true);
+        setTextPosition(pos);
+        setTextInput('');
+        return;
+      }
 
-  // Find element at position
-  const findElementAtPosition = (x: number, y: number) => {
-    return diagramElements.find(el => {
-      return x >= el.x && x <= el.x + el.width &&
-             y >= el.y && y <= el.y + el.height;
-    });
-  };
+      if (currentTool === 'comment') {
+        setIsCommentEditing(true);
+        setCommentPosition(pos);
+        setCommentInput('');
+        return;
+      }
 
-  // Handle element selection
-  const handleElementClick = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    setSelectedElementId(id);
-  };
+      if (currentTool === 'select') {
+        // Check if we're clicking on an element to select or move it
+        let clickedElement = null;
+        for (let i = elements.length - 1; i >= 0; i--) {
+          if (isPointInElement(pos, elements[i])) {
+            clickedElement = elements[i];
+            break;
+          }
+        }
 
-  // Handle element movement
-  const handleElementDrag = (e: React.MouseEvent, id: string) => {
-    if (toolMode !== 'select') return;
+        if (clickedElement) {
+          setSelectedElement(clickedElement.id);
+          setSelectedElementForMove(clickedElement);
+          setIsMovingElement(true);
+          setMoveStartPoint(pos);
+          return;
+        } else {
+          setSelectedElement(null);
+        }
+      }
 
-    const element = diagramElements.find(el => el.id === id);
-    if (!element) return;
+      if (currentTool === 'icon') {
+        const newElement: DrawingElement = {
+          id: generateId(),
+          type: 'icon',
+          points: [pos],
+          style: {
+            stroke: strokeColor,
+            strokeWidth: strokeWidth,
+            fill: fillColor,
+          },
+          iconType: selectedIcon,
+        };
+        setElements(prev => [...prev, newElement]);
+        return;
+      }
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+      setIsDrawing(true);
 
-    const rect = canvas.getBoundingClientRect();
-    const startX = e.clientX;
-    const startY = e.clientY;
-    const startLeft = element.x;
-    const startTop = element.y;
+      const newElement: DrawingElement = {
+        id: generateId(),
+        type: currentTool === 'pen' ? 'freehand' : 
+              currentTool === 'node' ? 'node' : 
+              currentTool === 'comment' ? 'comment' :
+              currentTool as any,
+        points: [pos],
+        style: {
+          stroke: strokeColor,
+          strokeWidth: strokeWidth,
+          fill: fillColor,
+          fontStyle: fontStyle,
+          textAlign: textAlign,
+          textDecoration: textDecoration
+        },
+        nodeType: currentTool === 'node' ? selectedNodeType : undefined,
+      };
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const newX = startLeft + (moveEvent.clientX - startX);
-      const newY = startTop + (moveEvent.clientY - startY);
-      
-      setDiagramElements(diagramElements.map(el => 
-        el.id === id ? { ...el, x: newX, y: newY } : el
-      ));
+      setCurrentElement(newElement);
+    };
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+      const pos = getMousePos(e);
+
+      if (isPanning && currentTool === 'hand') {
+        const deltaX = (pos.x - lastPanPoint.x) * (zoom / 100);
+        const deltaY = (pos.y - lastPanPoint.y) * (zoom / 100);
+        setPan(prev => ({ x: prev.x + deltaX, y: prev.y + deltaY }));
+        setLastPanPoint(pos);
+        return;
+      }
+
+      if (isMovingElement && selectedElementForMove) {
+        const deltaX = pos.x - moveStartPoint.x;
+        const deltaY = pos.y - moveStartPoint.y;
+        
+        setElements(prev => prev.map(el => {
+          if (el.id === selectedElementForMove.id) {
+            return {
+              ...el,
+              points: el.points.map(p => ({
+                x: p.x + deltaX,
+                y: p.y + deltaY
+              }))
+            };
+          }
+          return el;
+        }));
+        
+        setMoveStartPoint(pos);
+        return;
+      }
+
+      if (!isDrawing || !currentElement) return;
+
+      if (currentElement.type === 'freehand') {
+        setCurrentElement(prev => prev ? {
+          ...prev,
+          points: [...prev.points, pos]
+        } : null);
+      } else {
+        setCurrentElement(prev => prev ? {
+          ...prev,
+          points: [prev.points[0], pos]
+        } : null);
+      }
     };
 
     const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      if (isPanning) {
+        setIsPanning(false);
+        return;
+      }
+
+      if (isMovingElement) {
+        setIsMovingElement(false);
+        setSelectedElementForMove(null);
+        return;
+      }
+
+      if (isDrawing && currentElement) {
+        setElements(prev => [...prev, currentElement]);
+        setCurrentElement(null);
+      }
+      
+      setIsDrawing(false);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  };
+    const handleTextSubmit = () => {
+      if (textInput.trim() && isTextEditing) {
+        const textElement: DrawingElement = {
+          id: generateId(),
+          type: 'text',
+          points: [textPosition],
+          style: {
+            stroke: strokeColor,
+            strokeWidth: strokeWidth,
+            fontStyle: fontStyle,
+            textAlign: textAlign,
+            textDecoration: textDecoration
+          },
+          text: textInput,
+        };
+        setElements(prev => [...prev, textElement]);
+      }
+      setIsTextEditing(false);
+      setTextInput('');
+    };
 
-  // Handle text editing
-  const handleTextEdit = (e: React.MouseEvent, id: string) => {
-    if (e.detail !== 2) return; // Only on double click
-    const element = diagramElements.find(el => el.id === id);
-    if (!element || (element.type !== 'text' && element.type !== 'node')) return;
+    const handleCommentSubmit = () => {
+      if (commentInput.trim() && isCommentEditing) {
+        const commentElement: DrawingElement = {
+          id: generateId(),
+          type: 'comment',
+          points: [commentPosition],
+          style: {
+            stroke: strokeColor,
+            strokeWidth: strokeWidth,
+            fill: '#FFD700'
+          },
+          comment: commentInput,
+        };
+        setElements(prev => [...prev, commentElement]);
+      }
+      setIsCommentEditing(false);
+      setCommentInput('');
+    };
 
-    const newContent = prompt('Edit text:', element.content || '');
-    if (newContent !== null) {
-      setDiagramElements(diagramElements.map(el => 
-        el.id === id ? { ...el, content: newContent } : el
-      ));
-    }
-  };
+    const saveCanvas = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      const dataURL = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = 'whiteboard.png';
+      link.href = dataURL;
+      link.click();
+    };
 
-  // Render shape based on type
-  const renderShape = (shape: ShapeType, color: string = '#3b82f6') => {
-    switch (shape) {
-      case 'circle':
-        return <div className={`rounded-full border-2 bg-opacity-20 w-full h-full`} style={{ borderColor: color, backgroundColor: `${color}20` }}></div>;
-      case 'diamond':
-        return <div className={`transform rotate-45 border-2 bg-opacity-20 w-3/4 h-3/4`} style={{ borderColor: color, backgroundColor: `${color}20` }}></div>;
-      case 'triangle':
-        return (
-          <div className="relative w-full h-full">
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              <polygon points="50,0 100,100 0,100" fill={`${color}20`} stroke={color} strokeWidth="2" />
-            </svg>
-          </div>
-        );
-      case 'hexagon':
-        return (
-          <div className="relative w-full h-full">
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              <polygon points="25,0 75,0 100,50 75,100 25,100 0,50" fill={`${color}20`} stroke={color} strokeWidth="2" />
-            </svg>
-          </div>
-        );
-      default: // rectangle
-        return <div className={`border-2 bg-opacity-20 w-full h-full`} style={{ borderColor: color, backgroundColor: `${color}20` }}></div>;
-    }
-  };
+    const saveDocument = () => {
+      const blob = new Blob([documentContent], { type: 'text/markdown' });
+      const link = document.createElement('a');
+      link.download = 'document.md';
+      link.href = URL.createObjectURL(blob);
+      link.click();
+    };
 
-  // Render connection
-  const renderConnection = (conn: DiagramElement) => {
-    const fromElement = diagramElements.find(el => el.id === conn.from);
-    const toElement = diagramElements.find(el => el.id === conn.to);
-    
-    if (!fromElement || !toElement) return null;
-
-    const fromX = fromElement.x + fromElement.width / 2;
-    const fromY = fromElement.y + fromElement.height / 2;
-    const toX = toElement.x + toElement.width / 2;
-    const toY = toElement.y + toElement.height / 2;
-
-    return (
-      <svg className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
-        <line 
-          x1={fromX} 
-          y1={fromY} 
-          x2={toX} 
-          y2={toY} 
-          stroke={conn.color || '#3b82f6'} 
-          strokeWidth="2" 
-          markerEnd="url(#arrowhead)"
-        />
-      </svg>
-    );
-  };
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey) {
-        switch (e.key.toLowerCase()) {
-          case 'o':
-            e.preventDefault();
-            generateOutline();
-            break;
-          case 'j':
-            e.preventDefault();
-            generateDiagram();
-            break;
-          case 'i':
-            e.preventDefault();
-            togglePreview();
-            break;
-          case 'x':
-            e.preventDefault();
-            if (selectedElementId) {
-              setDiagramElements(diagramElements.filter(el => el.id !== selectedElementId));
-              setSelectedElementId(null);
-            }
-            break;
-          case 'k':
-            e.preventDefault();
-            setShowShortcuts(!showShortcuts);
-            break;
-          case 'd':
-            e.preventDefault();
-            if (selectedElementId) {
-              const element = diagramElements.find(el => el.id === selectedElementId);
-              if (element) {
-                const newElement = {
-                  ...element,
-                  id: `element-${Date.now()}`,
-                  x: element.x + 20,
-                  y: element.y + 20
-                };
-                setDiagramElements([...diagramElements, newElement]);
-                setSelectedElementId(newElement.id);
-              }
-            }
-            break;
+    const generateAIDiagram = async () => {
+      if (!aiPrompt.trim()) return;
+      
+      // Simulate AI diagram generation
+      const mockDiagramElements: DrawingElement[] = [
+        {
+          id: generateId(),
+          type: 'node',
+          points: [{ x: 100, y: 100 }, { x: 200, y: 150 }],
+          style: { stroke: '#3b82f6', strokeWidth: 2, fill: '#dbeafe' },
+          nodeType: 'rounded',
+          text: 'Start'
+        },
+        {
+          id: generateId(),
+          type: 'curved-arrow',
+          points: [{ x: 200, y: 125 }, { x: 300, y: 125 }],
+          style: { stroke: '#3b82f6', strokeWidth: 2 }
+        },
+        {
+          id: generateId(),
+          type: 'node',
+          points: [{ x: 300, y: 100 }, { x: 450, y: 150 }],
+          style: { stroke: '#10b981', strokeWidth: 2, fill: '#d1fae5' },
+          nodeType: 'diamond',
+          text: 'Decision'
+        },
+        {
+          id: generateId(),
+          type: 'curved-arrow',
+          points: [{ x: 450, y: 125 }, { x: 550, y: 125 }],
+          style: { stroke: '#10b981', strokeWidth: 2 }
+        },
+        {
+          id: generateId(),
+          type: 'node',
+          points: [{ x: 550, y: 100 }, { x: 650, y: 150 }],
+          style: { stroke: '#f59e0b', strokeWidth: 2, fill: '#fef3c7' },
+          nodeType: 'rounded',
+          text: 'End'
         }
+      ];
+
+      setElements(prev => [...prev, ...mockDiagramElements]);
+      setShowAIDialog(false);
+      setAiPrompt('');
+    };
+
+    const renderTabContent = () => {
+      switch (activeTab) {
+        case 'document':
+          return (
+            <div ref={documentRef} className="flex-1 p-8 bg-white">
+              <div className="max-w-4xl mx-auto">
+                <textarea
+                  value={documentContent}
+                  onChange={(e) => setDocumentContent(e.target.value)}
+                  className="w-full h-full min-h-screen border-none outline-none resize-none font-mono text-sm leading-relaxed"
+                  placeholder="Start typing your document..."
+                />
+              </div>
+            </div>
+          );
+        
+        case 'canvas':
+          return (
+            <div className="flex-1 relative overflow-hidden">
+              <canvas
+                ref={canvasRef}
+                width={window?.innerWidth - (sidebarOpen ? 350 : 100)}
+                height={window?.innerHeight - 100}
+                className="cursor-crosshair"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+              />
+              {renderCanvasOverlays()}
+            </div>
+          );
+        
+        default: // both
+          return (
+            <div className="flex-1 flex">
+              <div className="w-1/2 border-r border-gray-200">
+                <div ref={documentRef} className="h-full p-4 bg-white overflow-auto">
+                  <textarea
+                    value={documentContent}
+                    onChange={(e) => setDocumentContent(e.target.value)}
+                    className="w-full h-full border-none outline-none resize-none font-mono text-sm leading-relaxed"
+                    placeholder="Start typing your document..."
+                  />
+                </div>
+              </div>
+              <div className="w-1/2 relative overflow-hidden">
+                <canvas
+                  ref={canvasRef}
+                  width={(window?.innerWidth - (sidebarOpen ? 350 : 100)) / 2}
+                  height={window?.innerHeight - 100}
+                  className="cursor-crosshair"
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                />
+                {renderCanvasOverlays()}
+              </div>
+            </div>
+          );
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [selectedElementId, diagramElements, showShortcuts]);
-
-  const generateOutline = () => {
-    const headings = content.split('\n').filter(line => line.startsWith('#'));
-    alert(`Generated Outline:\n\n${headings.join('\n')}`);
-  };
-
-  const generateDiagram = () => {
-    // Auto-generate a simple diagram based on headings
-    const headings = content.split('\n').filter(line => line.startsWith('#'));
-    const newElements: DiagramElement[] = headings.map((heading, index) => ({
-      id: `auto-${index}`,
-      type: 'node',
-      content: heading.replace(/^#+\s*/, ''),
-      x: 100 + (index % 3) * 200,
-      y: 100 + Math.floor(index / 3) * 120,
-      width: 120,
-      height: 60,
-      color: availableColors[index % availableColors.length]
-    }));
-
-    setDiagramElements([...diagramElements, ...newElements]);
-    setMode('canvas');
-  };
-
-  const togglePreview = () => {
-    setIsPreview(!isPreview);
-  };
-
-  const handleShare = () => {
-    alert('Share functionality would go here');
-  };
-
-  const handleZoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setZoom(parseInt(e.target.value));
-  };
-
-  const resetCanvas = () => {
-    if (confirm('Are you sure you want to clear the canvas?')) {
-      setDiagramElements([]);
-      setSelectedElementId(null);
-    }
-  };
-
-  return (
-    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="text-2xl font-bold outline-none w-full max-w-md bg-transparent dark:text-white"
-        />
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 rounded-md p-1">
-            <button
-              onClick={() => setMode('document')}
-              className={`px-3 py-1 rounded ${mode === 'document' ? 'bg-white dark:bg-gray-600 shadow' : 'dark:text-gray-300'}`}
-            >
-              Document
-            </button>
-            <button
-              onClick={() => setMode('both')}
-              className={`px-3 py-1 rounded ${mode === 'both' ? 'bg-white dark:bg-gray-600 shadow' : 'dark:text-gray-300'}`}
-            >
-              Both
-            </button>
-            <button
-              onClick={() => setMode('canvas')}
-              className={`px-3 py-1 rounded ${mode === 'canvas' ? 'bg-white dark:bg-gray-600 shadow' : 'dark:text-gray-300'}`}
-            >
-              Canvas
-            </button>
-          </div>
-          
-          {mode === 'canvas' && (
-            <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 rounded-md p-1">
-              <button
-                onClick={() => setToolMode('select')}
-                className={`p-2 rounded ${toolMode === 'select' ? 'bg-white dark:bg-gray-600 shadow' : 'dark:text-gray-300'}`}
-                title="Select tool (S)"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clipRule="evenodd" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setToolMode('node')}
-                className={`p-2 rounded ${toolMode === 'node' ? 'bg-white dark:bg-gray-600 shadow' : 'dark:text-gray-300'}`}
-                title="Node tool (N)"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setToolMode('text')}
-                className={`p-2 rounded ${toolMode === 'text' ? 'bg-white dark:bg-gray-600 shadow' : 'dark:text-gray-300'}`}
-                title="Text tool (T)"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clipRule="evenodd" />
-                  <path fillRule="evenodd" d="M7 7h6v2H7V7zm0 4h6v2H7v-2z" clipRule="evenodd" />
-                </svg>
-              </button>
-              <div className="relative group">
-                <button
-                  onClick={() => setToolMode('shape')}
-                  className={`p-2 rounded ${toolMode === 'shape' ? 'bg-white dark:bg-gray-600 shadow' : 'dark:text-gray-300'}`}
-                  title="Shape tool (H)"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" clipRule="evenodd" />
-                  </svg>
-                </button>
-                {toolMode === 'shape' && (
-                  <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg z-10">
-                    <div className="p-2 grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => setSelectedShape('rectangle')}
-                        className={`p-2 rounded ${selectedShape === 'rectangle' ? 'bg-blue-100 dark:bg-gray-600' : ''}`}
-                      >
-                        <div className="w-6 h-6 border-2 border-blue-500 mx-auto"></div>
-                      </button>
-                      <button
-                        onClick={() => setSelectedShape('circle')}
-                        className={`p-2 rounded ${selectedShape === 'circle' ? 'bg-blue-100 dark:bg-gray-600' : ''}`}
-                      >
-                        <div className="w-6 h-6 border-2 border-blue-500 rounded-full mx-auto"></div>
-                      </button>
-                      <button
-                        onClick={() => setSelectedShape('diamond')}
-                        className={`p-2 rounded ${selectedShape === 'diamond' ? 'bg-blue-100 dark:bg-gray-600' : ''}`}
-                      >
-                        <div className="w-6 h-6 border-2 border-blue-500 transform rotate-45 mx-auto"></div>
-                      </button>
-                      <button
-                        onClick={() => setSelectedShape('triangle')}
-                        className={`p-2 rounded ${selectedShape === 'triangle' ? 'bg-blue-100 dark:bg-gray-600' : ''}`}
-                      >
-                        <div className="w-6 h-6 mx-auto">
-                          <svg viewBox="0 0 24 24" className="w-6 h-6">
-                            <polygon points="12,2 22,22 2,22" fill="none" stroke="#3b82f6" strokeWidth="2" />
-                          </svg>
-                        </div>
-                      </button>
-                      <button
-                        onClick={() => setSelectedShape('hexagon')}
-                        className={`p-2 rounded ${selectedShape === 'hexagon' ? 'bg-blue-100 dark:bg-gray-600' : ''}`}
-                      >
-                        <div className="w-6 h-6 mx-auto">
-                          <svg viewBox="0 0 24 24" className="w-6 h-6">
-                            <polygon points="12,2 18,6 18,16 12,20 6,16 6,6" fill="none" stroke="#3b82f6" strokeWidth="2" />
-                          </svg>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="relative group">
-                <button
-                  onClick={() => setToolMode('icon')}
-                  className={`p-2 rounded ${toolMode === 'icon' ? 'bg-white dark:bg-gray-600 shadow' : 'dark:text-gray-300'}`}
-                  title="Icon tool (I)"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm11 1H6v8l4-2 4 2V6z" clipRule="evenodd" />
-                  </svg>
-                </button>
-                {toolMode === 'icon' && (
-                  <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg z-10">
-                    <div className="p-2 grid grid-cols-3 gap-2">
-                      {availableIcons.map(icon => (
-                        <button
-                          key={icon}
-                          onClick={() => setSelectedIcon(icon)}
-                          className={`p-2 rounded text-2xl ${selectedIcon === icon ? 'bg-blue-100 dark:bg-gray-600' : ''}`}
-                        >
-                          {icon}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-              <button
-                onClick={() => setToolMode('connection')}
-                className={`p-2 rounded ${toolMode === 'connection' ? 'bg-white dark:bg-gray-600 shadow' : 'dark:text-gray-300'}`}
-                title="Connection tool (C)"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
-                </svg>
-              </button>
-              <button
-                onClick={resetCanvas}
-                className="p-2 rounded text-red-500 hover:bg-red-100 dark:hover:bg-gray-600"
-                title="Clear canvas"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          )}
-          
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-              title="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                </svg>
-              )}
-            </button>
-            <button
-              onClick={handleShare}
-              className="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Share
-            </button>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <button 
-              onClick={() => setZoom(Math.max(30, zoom - 10))} 
-              className="px-2 dark:text-gray-300"
-            >
-              -
-            </button>
-            <input
-              type="range"
-              min="30"
-              max="150"
-              value={zoom}
-              onChange={handleZoomChange}
-              className="w-20"
-            />
-            <span className="w-12 text-center dark:text-gray-300">{zoom}%</span>
-            <button 
-              onClick={() => setZoom(Math.min(150, zoom + 10))} 
-              className="px-2 dark:text-gray-300"
-            >
-              +
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto" style={{ zoom: `${zoom}%` }}>
-        {mode === 'document' && (
-          <div className="max-w-4xl mx-auto p-8">
-            {isPreview ? (
-              <div
-                className="prose max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={getMarkdownText()}
-              />
-            ) : (
-              <div
-                ref={editorRef}
-                contentEditable
-                suppressContentEditableWarning
-                className="min-h-[60vh] p-4 outline-none prose max-w-none dark:prose-invert dark:text-white"
-                onInput={(e) => setContent(e.currentTarget.textContent || '')}
-              >
-                {content}
-              </div>
-            )}
-          </div>
-        )}
-
-        {mode === 'both' && (
-          <div className="grid grid-cols-2 gap-8 max-w-6xl mx-auto p-8">
-            <div
-              ref={editorRef}
-              contentEditable
-              suppressContentEditableWarning
-              className="min-h-[60vh] p-4 outline-none prose max-w-none border rounded dark:border-gray-700 dark:prose-invert dark:text-white"
-              onInput={(e) => setContent(e.currentTarget.textContent || '')}
-            >
-              {content}
-            </div>
-            <div
-              className="prose max-w-none border rounded p-4 dark:border-gray-700 dark:prose-invert"
-              dangerouslySetInnerHTML={getMarkdownText()}
-            />
-          </div>
-        )}
-
-        {mode === 'canvas' && (
-          <div 
-            ref={canvasRef}
-            onClick={handleCanvasClick}
-            className="relative w-full h-full min-h-[60vh] bg-gray-50 dark:bg-gray-800 border rounded dark:border-gray-700"
-          >
-            {/* Arrowhead marker for connections */}
-            <svg className="absolute" width="0" height="0">
-              <defs>
-                <marker 
-                  id="arrowhead" 
-                  markerWidth="10" 
-                  markerHeight="7" 
-                  refX="9" 
-                  refY="3.5" 
-                  orient="auto"
-                >
-                  <polygon points="0 0, 10 3.5, 0 7" />
-                </marker>
-              </defs>
-            </svg>
-
-            {connectionStart && (
-              <div className="absolute inset-0 pointer-events-none">
-                <svg className="w-full h-full">
-                  <line 
-                    x1={diagramElements.find(el => el.id === connectionStart)?.x || 0} 
-                    y1={diagramElements.find(el => el.id === connectionStart)?.y || 0} 
-                    x2={0} 
-                    y2={0} 
-                    stroke="#3b82f6" 
-                    strokeWidth="2" 
-                    strokeDasharray="5,5"
-                  />
-                </svg>
-              </div>
-            )}
-
-            {diagramElements.filter(el => el.type === 'connection').map(conn => (
-              renderConnection(conn)
-            ))}
-
-            {diagramElements.filter(el => el.type !== 'connection').map(element => (
-              <div
-                key={element.id}
-                onClick={(e) => handleElementClick(e, element.id)}
-                onMouseDown={(e) => handleElementDrag(e, element.id)}
-                onDoubleClick={(e) => handleTextEdit(e, element.id)}
-                className={`absolute ${selectedElementId === element.id ? 'ring-2 ring-blue-500' : ''}`}
-                style={{
-                  left: `${element.x}px`,
-                  top: `${element.y}px`,
-                  width: `${element.width}px`,
-                  height: `${element.height}px`,
-                  cursor: toolMode === 'select' ? 'move' : 'default',
-                  zIndex: 1,
-                }}
-              >
-                {element.type === 'shape' && element.shape && (
-                  <div className="w-full h-full flex items-center justify-center">
-                    {renderShape(element.shape, element.color)}
-                    {element.content && (
-                      <div className="absolute inset-0 flex items-center justify-center text-sm p-2">
-                        {element.content}
-                      </div>
-                    )}
-                  </div>
-                )}
-                {element.type === 'node' && (
-                  <div 
-                    className="w-full h-full border-2 rounded flex items-center justify-center"
-                    style={{ 
-                      borderColor: element.color || '#3b82f6',
-                      backgroundColor: `${element.color || '#3b82f6'}20`
-                    }}
-                  >
-                    <div className="text-center p-2 dark:text-white">{element.content || 'Node'}</div>
-                  </div>
-                )}
-                {element.type === 'text' && (
-                  <div 
-                    className="w-full h-full border rounded p-2 dark:border-gray-600 dark:text-white"
-                    style={{ backgroundColor: element.color ? `${element.color}20` : 'white' }}
-                  >
-                    {element.content}
-                  </div>
-                )}
-                {element.type === 'icon' && element.icon && (
-                  <div 
-                    className="w-full h-full flex items-center justify-center text-4xl"
-                    style={{ color: element.color }}
-                  >
-                    {element.icon}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Footer */}
-      <div className="p-2 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-500 dark:text-gray-400 flex justify-between">
-        <div className="flex space-x-4">
-          <button onClick={generateOutline} className="hover:text-gray-700 dark:hover:text-gray-300">
-            Generate Outline (Ctrl+O)
-          </button>
-          <button onClick={generateDiagram} className="hover:text-gray-700 dark:hover:text-gray-300">
-            Generate Diagram (Ctrl+J)
-          </button>
-          <button onClick={togglePreview} className="hover:text-gray-700 dark:hover:text-gray-300">
-            Toggle Preview (Ctrl+I)
-          </button>
-          {mode === 'canvas' && selectedElementId && (
-            <button 
-              onClick={() => {
-                setDiagramElements(diagramElements.filter(el => el.id !== selectedElementId));
-                setSelectedElementId(null);
+    const renderCanvasOverlays = () => {
+      return (
+        <>
+          {isTextEditing && (
+            <div 
+              className="absolute bg-white p-2 shadow-lg rounded border border-gray-300"
+              style={{
+                left: `${textPosition.x * (zoom / 100) + pan.x}px`,
+                top: `${textPosition.y * (zoom / 100) + pan.y}px`,
+                transform: 'translateY(-100%)'
               }}
-              className="hover:text-gray-700 dark:hover:text-gray-300"
             >
-              Delete (Ctrl+X)
+              <div className="flex items-center mb-2 space-x-1">
+                <button 
+                  onClick={() => setFontStyle(fontStyle === 'bold' ? 'normal' : 'bold')}
+                  className={`p-1 rounded ${fontStyle.includes('bold') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+                  title="Bold"
+                >
+                  <Bold size={14} />
+                </button>
+                <button 
+                  onClick={() => setFontStyle(fontStyle === 'italic' ? 'normal' : 'italic')}
+                  className={`p-1 rounded ${fontStyle.includes('italic') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+                  title="Italic"
+                >
+                  <Italic size={14} />
+                </button>
+                <button 
+                  onClick={() => setTextDecoration(textDecoration === 'underline' ? 'none' : 'underline')}
+                  className={`p-1 rounded ${textDecoration === 'underline' ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+                  title="Underline"
+                >
+                  <Underline size={14} />
+                </button>
+                <select
+                  value={textAlign}
+                  onChange={(e) => setTextAlign(e.target.value as any)}
+                  className="ml-2 p-1 border rounded text-xs"
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
+              <input
+                type="text"
+                value={textInput}
+                onChange={(e) => setTextInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleTextSubmit()}
+                onBlur={handleTextSubmit}
+                autoFocus
+                className="w-full p-1 border rounded outline-none"
+                placeholder="Type text and press Enter..."
+              />
+            </div>
+          )}
+
+          {isCommentEditing && (
+            <div 
+              className="absolute bg-white p-2 shadow-lg rounded border border-gray-300"
+              style={{
+                left: `${commentPosition.x * (zoom / 100) + pan.x}px`,
+                top: `${commentPosition.y * (zoom / 100) + pan.y}px`,
+                transform: 'translateY(-100%)'
+              }}
+            >
+              <textarea
+                value={commentInput}
+                onChange={(e) => setCommentInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleCommentSubmit()}
+                onBlur={handleCommentSubmit}
+                autoFocus
+                className="w-full p-1 border rounded outline-none"
+                placeholder="Type comment and press Enter..."
+                rows={3}
+              />
+            </div>
+          )}
+
+          {showIconLibrary && (
+            <div 
+              className="absolute bg-white p-4 shadow-lg rounded border border-gray-300 z-10"
+              style={{
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '300px'
+              }}
+            >
+              <h3 className="text-lg font-medium mb-4">Select Icon</h3>
+              <div className="grid grid-cols-4 gap-4">
+                {iconLibrary.map((icon) => (
+                  <button
+                    key={icon.name}
+                    onClick={() => {
+                      setSelectedIcon(icon.name);
+                      setShowIconLibrary(false);
+                    }}
+                    className={`p-2 rounded flex flex-col items-center ${selectedIcon === icon.name ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+                  >
+                    <icon.icon size={20} />
+                    <span className="text-xs mt-1">{icon.name}</span>
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setShowIconLibrary(false)}
+                className="mt-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+
+          {showAIDialog && (
+            <div 
+              className="absolute bg-white p-4 shadow-lg rounded border border-gray-300 z-10"
+              style={{
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '400px'
+              }}
+            >
+              <h3 className="text-lg font-medium mb-4">Generate Diagram with AI</h3>
+              <textarea
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                className="w-full p-2 border rounded mb-4"
+                placeholder="Describe the diagram you want to generate..."
+                rows={4}
+              />
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={() => setShowAIDialog(false)}
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={generateAIDiagram}
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded flex items-center"
+                >
+                  <Sparkles size={16} className="mr-2" />
+                  Generate
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      );
+    };
+
+    const renderToolbar = () => {
+      return (
+        <div className="flex items-center justify-between p-2 border-b border-gray-200 bg-white">
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-2 rounded hover:bg-gray-100"
+              title="Toggle Sidebar"
+            >
+              <Menu size={18} />
             </button>
+
+            <div className="flex items-center space-x-1 mx-2">
+              <button
+                onClick={() => setZoom(prev => Math.max(50, prev - 10))}
+                className="p-2 rounded hover:bg-gray-100"
+                title="Zoom Out"
+              >
+                <ZoomOut size={18} />
+              </button>
+              <span className="text-sm">{zoom}%</span>
+              <button
+                onClick={() => setZoom(prev => Math.min(200, prev + 10))}
+                className="p-2 rounded hover:bg-gray-100"
+                title="Zoom In"
+              >
+                <ZoomIn size={18} />
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                setElements([]);
+                setCurrentElement(null);
+                setSelectedElement(null);
+              }}
+              className="p-2 rounded hover:bg-gray-100"
+              title="Clear Canvas"
+            >
+              <Trash2 size={18} />
+            </button>
+
+            <button
+              onClick={() => setElements(prev => prev.slice(0, -1))}
+              className="p-2 rounded hover:bg-gray-100"
+              title="Undo"
+            >
+              <RotateCcw size={18} />
+            </button>
+
+            <button
+              onClick={saveCanvas}
+              className="p-2 rounded hover:bg-gray-100"
+              title="Save Canvas"
+            >
+              <Download size={18} />
+            </button>
+
+            <button
+              onClick={saveDocument}
+              className="p-2 rounded hover:bg-gray-100 ml-2"
+              title="Save Document"
+            >
+              <Save size={18} />
+            </button>
+
+            <button
+              onClick={() => setShowAIDialog(true)}
+              className="p-2 rounded hover:bg-gray-100 ml-2 flex items-center"
+              title="AI Assist"
+            >
+              <Sparkles size={18} className="mr-1" />
+              <span className="text-sm">AI</span>
+            </button>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center">
+              <label htmlFor="stroke-color" className="text-xs mr-1">Stroke:</label>
+              <input
+                id="stroke-color"
+                type="color"
+                value={strokeColor}
+                onChange={(e) => setStrokeColor(e.target.value)}
+                className="w-6 h-6 cursor-pointer"
+              />
+            </div>
+            <div className="flex items-center">
+              <label htmlFor="fill-color" className="text-xs mr-1">Fill:</label>
+              <input
+                id="fill-color"
+                type="color"
+                value={fillColor}
+                onChange={(e) => setFillColor(e.target.value)}
+                className="w-6 h-6 cursor-pointer"
+              />
+            </div>
+            <div className="flex items-center">
+              <label htmlFor="stroke-width" className="text-xs mr-1">Width:</label>
+              <select
+                id="stroke-width"
+                value={strokeWidth}
+                onChange={(e) => setStrokeWidth(Number(e.target.value))}
+                className="text-xs border rounded p-1"
+              >
+                {[1, 2, 3, 4, 5, 6, 8, 10].map(width => (
+                  <option key={width} value={width}>{width}px</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const renderToolsPanel = () => {
+      return (
+        <div className="flex flex-col items-center p-2 space-y-2 border-r border-gray-200 bg-gray-50">
+          {tools.map(tool => (
+            <button
+              key={tool.id}
+              onClick={() => setCurrentTool(tool.id as Tool)}
+              className={`p-2 rounded ${currentTool === tool.id ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-200'}`}
+              title={tool.label}
+            >
+              <tool.icon size={20} />
+            </button>
+          ))}
+
+          {currentTool === 'node' && (
+            <div className="mt-4 p-2 border-t border-gray-200">
+              <h4 className="text-xs font-medium mb-2">Node Type</h4>
+              <div className="flex flex-col space-y-2">
+                {['rounded', 'diamond', 'circle'].map(type => (
+                  <button
+                    key={type}
+                    onClick={() => setSelectedNodeType(type as any)}
+                    className={`p-2 rounded text-xs flex items-center ${selectedNodeType === type ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-200'}`}
+                  >
+                    <span className="capitalize">{type}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {currentTool === 'icon' && (
+            <div className="mt-4 p-2 border-t border-gray-200">
+              <button
+                onClick={() => setShowIconLibrary(true)}
+                className="p-2 rounded hover:bg-gray-200 text-sm flex items-center"
+              >
+                <Database size={16} className="mr-2" />
+                <span>Select Icon</span>
+                <ChevronDown size={16} className="ml-1" />
+              </button>
+              <div className="mt-2 text-xs text-gray-500">
+                Selected: {selectedIcon}
+              </div>
+            </div>
           )}
         </div>
-        <div>
-          <span className="hidden md:inline">Some random ID: +98f38f8f</span>
+      );
+    };
+
+    const renderSidebar = () => {
+      if (!sidebarOpen) return null;
+
+      return (
+        <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Whiteboard</h2>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="p-1 rounded hover:bg-gray-100"
+              >
+                <ChevronDown size={18} />
+              </button>
+            </div>
+            <div className="mt-2 relative">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full pl-8 pr-3 py-1 text-sm border rounded"
+              />
+              <Search size={14} className="absolute left-2 top-2 text-gray-400" />
+            </div>
+          </div>
+
+          <div className="flex border-b border-gray-200">
+            {filterTabs.map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveFilter(tab)}
+                className={`flex-1 py-2 text-xs ${activeFilter === tab ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600'}`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex-1 overflow-y-auto">
+            <ul className="py-2">
+              {sidebarItems.map((item, index) => (
+                <li key={index}>
+                  <button
+                    className={`w-full flex items-center px-4 py-2 text-sm ${index === 0 ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-100'}`}
+                  >
+                    <item.icon size={16} className="mr-3" />
+                    <span className="flex-1 text-left">{item.label}</span>
+                    {item.shortcut && (
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        ⌘{item.shortcut}
+                      </span>
+                    )}
+                    {item.beta && (
+                      <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded ml-2">
+                        Beta
+                      </span>
+                    )}
+                    {item.upgrade && (
+                      <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded ml-2">
+                        Upgrade
+                      </span>
+                    )}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="p-4 border-t border-gray-200">
+            <div className="flex items-center">
+              <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center mr-2">
+                <User size={16} />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium">User Account</div>
+                <div className="text-xs text-gray-500">Free Plan</div>
+              </div>
+              <button className="p-1 rounded hover:bg-gray-100">
+                <Settings size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const renderViewTabs = () => {
+      return (
+        <div className="flex border-b border-gray-200 bg-white">
+          <button
+            onClick={() => setActiveTab('document')}
+            className={`px-4 py-2 text-sm ${activeTab === 'document' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            Document
+          </button>
+          <button
+            onClick={() => setActiveTab('canvas')}
+            className={`px-4 py-2 text-sm ${activeTab === 'canvas' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            Canvas
+          </button>
+          <button
+            onClick={() => setActiveTab('both')}
+            className={`px-4 py-2 text-sm ${activeTab === 'both' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            Both
+          </button>
+        </div>
+      );
+    };
+
+    return (
+      <div className="flex flex-col h-screen bg-gray-100">
+        {renderToolbar()}
+        {renderViewTabs()}
+        <div className="flex flex-1 overflow-hidden">
+          {renderSidebar()}
+          {renderToolsPanel()}
+          {renderTabContent()}
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
-export default ErasorEditor;
-            
+  export default EraserWhiteboard;

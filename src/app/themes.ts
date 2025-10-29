@@ -12,7 +12,7 @@ export type Theme = {
 export const themes: Theme[] = [
   {
     name: 'Classic Light',
-    primary: '#ffffff',
+    primary: 'black',
     background: '#f8f9fa',
     accent: '#3a86ff',
     text: '#212529',

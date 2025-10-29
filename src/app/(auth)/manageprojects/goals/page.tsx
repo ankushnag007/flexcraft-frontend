@@ -469,7 +469,8 @@ const Goals: React.FC = () => {
 
       {/* Goal Detail Drawer */}
       {isGoalDrawerOpen && selectedGoal && (
-        <div className="fixed inset-0 overflow-hidden z-50 bg-[rgba(0,0,0,0.4)]">
+        <div className="fixed inset-0 overflow-hidden z-50 bg-[rgba(0,0,0,0.4)]
+        transform transition-transform duration-300 ease-in-out">
           <div className="absolute inset-0 overflow-hidden">
             <div 
               className="absolute inset-0 " 

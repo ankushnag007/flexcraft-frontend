@@ -580,7 +580,7 @@ const SummaryComponent = () => {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-700">{activity.user.name}</p>
+                      {/* <p className="text-sm font-medium text-gray-700">{activity.user.name}</p> */}
                       <p className="text-xs text-gray-500">{formatTimeAgo(activity.timestamp)}</p>
                     </div>
                     <div className="flex items-start mt-1">
